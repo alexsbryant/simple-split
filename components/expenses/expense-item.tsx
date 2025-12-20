@@ -18,25 +18,25 @@ export function ExpenseItem({
   onDelete,
 }: ExpenseItemProps) {
   return (
-    <div className="border border-[#E5E5E5] bg-white p-4 rounded-lg shadow-sm transition-all duration-150 hover:shadow-md hover:-translate-y-0.5">
+    <div className="glass-sm p-4 transition-all duration-150 hover:bg-[rgba(255,255,255,0.08)]">
       <div className="flex items-start justify-between gap-4">
         {/* Date */}
-        <span className="text-sm text-[#888888] w-16 shrink-0">
+        <span className="text-sm text-[var(--text-muted)] w-16 shrink-0">
           {formatDate(expense.createdAt)}
         </span>
 
         {/* Description */}
-        <span className="flex-1 font-medium text-[#1A1A1A]">
+        <span className="flex-1 font-medium text-[var(--text-primary)]">
           {expense.description}
         </span>
 
         {/* Payer */}
-        <span className="text-sm text-[#888888]">
+        <span className="text-sm text-[var(--text-secondary)]">
           {payerName}
         </span>
 
         {/* Amount */}
-        <span className="font-semibold w-20 text-right text-[#1A1A1A]">
+        <span className="font-semibold w-20 text-right text-[var(--text-primary)]">
           {formatCurrency(expense.amount)}
         </span>
       </div>
@@ -47,14 +47,14 @@ export function ExpenseItem({
           <Button
             variant="secondary"
             onClick={() => onEdit(expense)}
-            className="text-xs py-1 px-2"
+            className="text-xs py-1.5 px-4"
           >
             Edit
           </Button>
           <Button
             variant="danger"
             onClick={() => onDelete(expense.id)}
-            className="text-xs py-1 px-2"
+            className="text-xs py-1.5 px-4"
           >
             Delete
           </Button>

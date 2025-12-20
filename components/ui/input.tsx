@@ -15,31 +15,26 @@ export function Input({
   const inputId = id || label.toLowerCase().replace(/\s+/g, '-')
 
   return (
-    <div className="flex flex-col gap-1">
+    <div className="flex flex-col gap-1.5">
       <label
         htmlFor={inputId}
-        className="text-sm font-medium uppercase tracking-wider text-[#666666]"
+        className="text-xs font-medium uppercase tracking-wider text-[var(--text-muted)] pl-4"
       >
         {label}
       </label>
       <input
         id={inputId}
         className={`
-          w-full px-3 py-2
-          bg-white
-          border border-[#E5E5E5]
-          text-[#1A1A1A]
-          placeholder:text-[#999999]
+          w-full px-5 py-3
+          glass-input
           transition-all duration-150
-          focus:outline-none focus:border-[#C4960C] focus:shadow-sm
-          hover:border-[#CCCCCC]
-          ${error ? 'border-[#C41E1E]' : ''}
+          ${error ? 'border-[var(--negative)]' : ''}
           ${className}
         `}
         {...props}
       />
       {error && (
-        <span className="text-xs text-[#C41E1E]">{error}</span>
+        <span className="text-xs text-[var(--negative)] pl-4">{error}</span>
       )}
     </div>
   )

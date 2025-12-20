@@ -15,28 +15,29 @@ export function Button({
   ...props
 }: ButtonProps) {
   const baseStyles = `
-    px-4 py-2
+    px-6 py-3
     text-sm font-semibold uppercase tracking-wider
+    rounded-full
     transition-all duration-150
     disabled:opacity-50 disabled:cursor-not-allowed
   `
 
   const variantStyles: Record<ButtonVariant, string> = {
     primary: `
-      bg-[#C4960C] text-[#1A1A1A]
-      hover:bg-[#A67D0A] hover:-translate-y-0.5 hover:shadow-md
-      active:translate-y-0
+      bg-[var(--accent)] text-black
+      hover:bg-[var(--accent-hover)] hover:shadow-lg
+      active:scale-[0.98]
     `,
     secondary: `
-      bg-transparent text-[#1A1A1A]
-      border-2 border-[#1A1A1A]
-      hover:bg-[#1A1A1A] hover:text-white hover:-translate-y-0.5
-      active:translate-y-0
+      bg-transparent text-[var(--text-primary)]
+      border border-[var(--glass-border)]
+      hover:bg-[var(--glass-bg)] hover:border-[rgba(255,255,255,0.2)]
+      active:scale-[0.98]
     `,
     danger: `
-      bg-[#C41E1E] text-white
-      hover:bg-[#A01818] hover:-translate-y-0.5 hover:shadow-md
-      active:translate-y-0
+      bg-[var(--negative)] text-white
+      hover:brightness-110 hover:shadow-lg
+      active:scale-[0.98]
     `,
   }
 

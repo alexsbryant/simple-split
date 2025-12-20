@@ -34,11 +34,11 @@ export function ExpenseList({
       </h2>
 
       {sortedExpenses.length === 0 ? (
-        <div className="border border-[#E5E5E5] bg-white p-6 text-center text-[#888888] rounded-lg shadow-sm">
+        <div className="glass p-6 text-center text-[var(--text-muted)]">
           No expenses yet. Add one above.
         </div>
       ) : (
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-3">
           {sortedExpenses.map((expense) => (
             <ExpenseItem
               key={expense.id}

@@ -10,8 +10,7 @@ export const CURRENT_USER: User = {
 // Mock group members
 export const MOCK_USERS: User[] = [
   CURRENT_USER,
-  { id: 'user-2', email: 'alex@example.com', displayName: 'Alex' },
-  { id: 'user-3', email: 'sam@example.com', displayName: 'Sam' },
+  { id: 'user-2', email: 'casey@example.com', displayName: 'Casey' },
 ]
 
 // Single default group

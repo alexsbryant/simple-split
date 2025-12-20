@@ -59,29 +59,23 @@ export function BalanceSummary({ balances, currentUserId }: BalanceSummaryProps)
 
   const oweSummary = getOweSummary()
 
-  // Color logic: red for owing, green for owed, warm ochre for settled
+  // Color logic: red for owing, green for owed, amber for settled
   const getStatusColor = () => {
-    if (!oweSummary) return '#C4960C'
-    if (oweSummary.isSettled) return '#C4960C'
-    if (oweSummary.isNegative) return '#C41E1E'
-    return '#1D7A1D'
+    if (!oweSummary) return 'var(--settled)'
+    if (oweSummary.isSettled) return 'var(--settled)'
+    if (oweSummary.isNegative) return 'var(--negative)'
+    return 'var(--positive)'
   }
 
   const statusColor = getStatusColor()
 
   return (
-    <section className="border border-[#E5E5E5] bg-white rounded-lg overflow-hidden shadow-sm">
+    <section className="glass overflow-hidden">
       {/* "You Owe" Hero Section - Large & Centered */}
       {oweSummary && (
-        <div
-          className="py-8 px-6 text-center border-b border-[#E5E5E5]"
-          style={{
-            borderLeftWidth: '4px',
-            borderLeftColor: statusColor
-          }}
-        >
+        <div className="py-8 px-6 text-center border-b border-[var(--glass-border)]">
           <p
-            className="text-2xl sm:text-3xl font-semibold font-[family-name:var(--font-bodoni)]"
+            className="text-2xl sm:text-3xl font-semibold"
             style={{ color: statusColor }}
           >
             {oweSummary.message}
@@ -90,25 +84,25 @@ export function BalanceSummary({ balances, currentUserId }: BalanceSummaryProps)
       )}
 
       {/* Totals - Smaller, subdued */}
-      <div className="px-4 py-3 border-b border-[#E5E5E5] flex justify-center gap-8 bg-[#FAFAFA]">
+      <div className="px-4 py-3 border-b border-[var(--glass-border)] flex justify-center gap-8 bg-[rgba(255,255,255,0.03)]">
         <div className="text-center">
-          <p className="text-xs font-medium uppercase tracking-wider text-[#888888]">Total</p>
-          <p className="text-base font-medium text-[#444444]">
+          <p className="text-xs font-medium uppercase tracking-wider text-[var(--text-muted)]">Total</p>
+          <p className="text-base font-medium text-[var(--text-primary)]">
             {formatCurrency(balances.totalExpenses)}
           </p>
         </div>
-        <div className="w-px bg-[#E5E5E5]" />
+        <div className="w-px bg-[var(--glass-border)]" />
         <div className="text-center">
-          <p className="text-xs font-medium uppercase tracking-wider text-[#888888]">Fair Share</p>
-          <p className="text-base font-medium text-[#444444]">
+          <p className="text-xs font-medium uppercase tracking-wider text-[var(--text-muted)]">Fair Share</p>
+          <p className="text-base font-medium text-[var(--text-primary)]">
             {formatCurrency(balances.fairSharePerPerson)}
-            <span className="text-xs font-normal text-[#888888] ml-1">/person</span>
+            <span className="text-xs font-normal text-[var(--text-muted)] ml-1">/person</span>
           </p>
         </div>
       </div>
 
       {/* Balance Cards */}
-      <div className="p-4 grid gap-2 sm:grid-cols-3">
+      <div className="p-4 grid gap-3 sm:grid-cols-2">
         {balances.balances.map((balance) => (
           <BalanceCard key={balance.userId} balance={balance} />
         ))}

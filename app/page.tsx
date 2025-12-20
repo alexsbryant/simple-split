@@ -75,12 +75,12 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-[#C5D1C5] paper-texture">
+    <div className="min-h-screen">
       <main className="max-w-[640px] mx-auto px-4 py-8">
         {/* Header */}
         <header className="mb-8">
-          <h1 className="text-4xl font-semibold text-[#1A1A1A] font-[family-name:var(--font-bodoni)]">Simple Split</h1>
-          <p className="text-[#666666] mt-1">
+          <h1 className="text-4xl font-semibold text-white font-[family-name:var(--font-bodoni)]">Simple Split</h1>
+          <p className="text-[var(--text-secondary)] mt-1">
             {MOCK_GROUP.name}
           </p>
         </header>

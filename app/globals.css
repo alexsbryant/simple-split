@@ -1,97 +1,98 @@
 @import "tailwindcss";
 
 :root {
-  /* Background */
-  --bg-base: #C5D1C5;
-  --bg-surface: #FFFFFF;
-  --bg-border: #E5E5E5;
+  /* Glass surfaces */
+  --glass-bg: rgba(255, 255, 255, 0.1);
+  --glass-border: rgba(255, 255, 255, 0.15);
 
   /* Text */
-  --text-primary: #1A1A1A;
-  --text-secondary: #666666;
+  --text-primary: rgba(255, 255, 255, 0.95);
+  --text-secondary: rgba(255, 255, 255, 0.7);
+  --text-muted: rgba(255, 255, 255, 0.5);
 
-  /* Accent - Muted Ochre */
-  --accent: #C4960C;
-  --accent-hover: #A67D0A;
+  /* Status (muted) */
+  --positive: #4ADE80;
+  --negative: #F87171;
+  --settled: #FBBF24;
 
-  /* Status */
-  --positive: #1D7A1D;
-  --negative: #C41E1E;
-  --neutral: #8B7355;
-
-  /* Spacing (8px grid) */
-  --space-1: 4px;
-  --space-2: 8px;
-  --space-3: 16px;
-  --space-4: 24px;
-  --space-5: 32px;
-  --space-6: 48px;
+  /* Accent */
+  --accent: #F59E0B;
+  --accent-hover: #D97706;
 }
 
 @theme inline {
-  --color-bg-base: var(--bg-base);
-  --color-bg-surface: var(--bg-surface);
-  --color-bg-border: var(--bg-border);
+  --color-glass-bg: var(--glass-bg);
+  --color-glass-border: var(--glass-border);
   --color-text-primary: var(--text-primary);
   --color-text-secondary: var(--text-secondary);
-  --color-accent: var(--accent);
-  --color-accent-hover: var(--accent-hover);
+  --color-text-muted: var(--text-muted);
   --color-positive: var(--positive);
   --color-negative: var(--negative);
-  --color-neutral: var(--neutral);
+  --color-settled: var(--settled);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
 body {
-  background: var(--bg-base);
+  /* Gradient applied directly */
+  background: linear-gradient(135deg, #2D1B4E 0%, #1A3A4A 50%, #4A3728 100%);
+  background-attachment: fixed;
   color: var(--text-primary);
   font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+  min-height: 100vh;
 }
 
-/* Subtle paper texture overlay */
-.paper-texture {
-  position: relative;
+/* Glass card effect */
+.glass {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 24px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
 }
 
-.paper-texture::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
-  opacity: 0.03;
-  pointer-events: none;
-  z-index: 0;
+/* Glass card - smaller radius variant */
+.glass-sm {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 16px;
 }
 
-/* Section label - Bodoni italic style */
+/* Glass input styling */
+.glass-input {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 9999px;
+  color: var(--text-primary);
+}
+
+.glass-input::placeholder {
+  color: var(--text-muted);
+}
+
+.glass-input:focus {
+  outline: none !important;
+  box-shadow: none !important;
+  border-color: rgba(255, 255, 255, 0.35);
+  background: rgba(255, 255, 255, 0.12);
+}
+
+/* Remove default focus ring on all inputs */
+input:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* Section label - matches input labels */
 .section-label {
-  font-family: var(--font-bodoni), Georgia, serif;
-  font-style: italic;
-  font-size: 13px;
-  font-weight: 400;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: #888888;
-}
-
-/* Swiss Style Typography */
-.label {
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 500;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--text-secondary);
-}
-
-.display {
-  font-size: 32px;
-  font-weight: 600;
-  color: var(--text-primary);
-}
-
-.heading {
-  font-size: 18px;
-  font-weight: 600;
-  color: var(--text-primary);
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
 }

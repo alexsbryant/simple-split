@@ -9,29 +9,20 @@ export function BalanceCard({ balance }: BalanceCardProps) {
   const isPositive = balance.balance > 0
   const isNegative = balance.balance < 0
 
-  const borderColor = isPositive
-    ? '#1D7A1D'
-    : isNegative
-      ? '#C41E1E'
-      : '#C4960C'
-
   const amountColor = isPositive
-    ? '#1D7A1D'
+    ? 'var(--positive)'
     : isNegative
-      ? '#C41E1E'
-      : '#C4960C'
+      ? 'var(--negative)'
+      : 'var(--settled)'
 
   const formattedBalance = isPositive
     ? `+${formatCurrency(balance.balance)}`
     : formatCurrency(balance.balance)
 
   return (
-    <div
-      className="bg-white border border-[#E5E5E5] p-4 rounded-lg shadow-sm transition-all duration-150 hover:shadow-md hover:-translate-y-0.5"
-      style={{ borderLeftWidth: '4px', borderLeftColor: borderColor }}
-    >
+    <div className="glass-sm p-4 transition-all duration-150 hover:bg-[rgba(255,255,255,0.08)]">
       <div className="flex justify-between items-start">
-        <span className="text-sm font-medium uppercase tracking-wider text-[#666666]">
+        <span className="text-sm font-medium text-[var(--text-secondary)]">
           {balance.displayName}
         </span>
         <span
@@ -41,7 +32,7 @@ export function BalanceCard({ balance }: BalanceCardProps) {
           {formattedBalance}
         </span>
       </div>
-      <p className="text-xs text-[#888888] mt-1">
+      <p className="text-xs text-[var(--text-muted)] mt-1">
         Paid {formatCurrency(balance.totalPaid)} · Owes {formatCurrency(balance.fairShare)}
       </p>
     </div>

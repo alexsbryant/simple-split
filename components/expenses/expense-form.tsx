@@ -4,6 +4,7 @@ import { useState, useEffect, FormEvent } from 'react'
 import { Expense } from '@/types'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { formatDateTime } from '@/lib/utils'
 
 interface ExpenseFormData {
   groupId: string
@@ -47,15 +48,19 @@ export function ExpenseForm({
     e.preventDefault()
 
     const parsedAmount = parseFloat(amount)
-    if (!description.trim() || isNaN(parsedAmount) || parsedAmount <= 0) {
+    // Only amount is required - description is optional
+    if (isNaN(parsedAmount) || parsedAmount <= 0) {
       return
     }
+
+    // Use date/time as description if none provided
+    const finalDescription = description.trim() || formatDateTime(new Date().toISOString())
 
     onSubmit({
       groupId,
       paidByUserId: currentUserId,
       amount: parsedAmount,
-      description: description.trim(),
+      description: finalDescription,
     })
 
     // Clear form after submission (only for new expenses)
@@ -72,8 +77,8 @@ export function ExpenseForm({
   }
 
   return (
-    <section className="border border-[#E5E5E5] bg-white rounded-lg overflow-hidden shadow-sm">
-      <div className="p-4 border-b border-[#E5E5E5] bg-[#FAFAFA]">
+    <section className="glass overflow-hidden">
+      <div className="p-4 border-b border-[var(--glass-border)]">
         <h2 className="section-label">
           {isEditing ? 'Edit Expense' : 'Add Expense'}
         </h2>
@@ -82,7 +87,7 @@ export function ExpenseForm({
       <form onSubmit={handleSubmit} className="p-4">
         <div className="flex flex-col gap-4">
           <Input
-            label="Description"
+            label="Description (optional)"
             type="text"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
@@ -99,7 +104,7 @@ export function ExpenseForm({
             step="0.01"
           />
 
-          <div className="flex gap-2">
+          <div className="flex gap-3 pt-2">
             <Button type="submit" variant="primary">
               {isEditing ? 'Save' : 'Add Expense'}
             </Button>
