@@ -23,20 +23,23 @@ All core functionality working:
 
 ---
 
-## Phase 3: Polish & UX — CURRENT
+## Phase 3: Polish & UX — IN PROGRESS
 
-### UI Refinements
-- [ ] Update mock users: You + Casey (2 users only)
-- [ ] Visual polish based on design inspiration
-- [ ] Tighten spacing, typography, and color usage
+### UI Refinements ✓
+- [x] Update mock users: You + Casey (2 users only)
+- [x] Frosted glass UI redesign (backdrop-blur, translucent cards)
+- [x] Gradient background (purple/teal/brown)
+- [x] Pill-shaped inputs and buttons
+- [x] Softer status colors (muted green/red/amber)
+- [x] Sans-serif throughout (Bodoni only for title)
 
 ### Form & Validation
-- [ ] Require description (non-empty)
-- [ ] Require amount > 0
-- [ ] Show validation feedback
+- [x] Description optional (uses date/time if empty)
+- [x] Amount > 0 required
+- [ ] Show validation feedback on invalid input
 
 ### UX Improvements
-- [ ] Empty state when no expenses
+- [x] Empty state when no expenses
 - [ ] Delete confirmation dialog
 - [ ] Mobile responsive tweaks
 
@@ -65,11 +68,13 @@ All core functionality working:
 | File | Purpose |
 |------|---------|
 | `types/index.ts` | Type definitions |
-| `lib/mock-data.ts` | Mock users, group, expenses |
+| `lib/mock-data.ts` | Mock users (You + Casey) |
 | `lib/balance.ts` | `calculateBalances()` function |
 | `lib/utils.ts` | Formatting utilities |
+| `app/globals.css` | Frosted glass theme & colors |
 | `app/page.tsx` | Main page component |
 | `components/` | UI components |
+| `design/` | Design reference screenshots |
 
 ---
 
@@ -81,3 +86,10 @@ npm run build    # Production build
 npm run lint     # ESLint
 npx tsc --noEmit # Type check
 ```
+
+---
+
+## Notes
+
+- Project moved from iCloud Drive to `~/Projects/simple-split` (Turbopack issues with iCloud)
+- Use `--webpack` flag if Turbopack causes issues: `npx next dev --webpack`
