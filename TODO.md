@@ -63,6 +63,37 @@ All core functionality working:
 
 ---
 
+## Implementation Details
+
+### Current Mock Data
+- **Users**: You (user-1) + Casey (user-2)
+- **Group**: "Household" (group-1)
+- **Initial expenses**: Groceries ($45, You) + Dinner ($120, Casey)
+- **Initial balances**: You owes Casey $37.50
+
+### Architecture
+- **State**: React `useState` in `app/page.tsx` (no external state library)
+- **Balance calc**: Pure function `calculateBalances()` in `lib/balance.ts`
+- **Styling**: CSS classes in `globals.css` (`.glass`, `.glass-sm`, `.glass-input`)
+- **Form**: Description optional → uses `formatDateTime()` from `lib/utils.ts` if empty
+
+### Component Structure
+```
+components/
+├── balances/
+│   ├── balance-summary.tsx  # Main balance display
+│   └── balance-card.tsx     # Individual user balance
+├── expenses/
+│   ├── expense-form.tsx     # Add/edit form
+│   ├── expense-list.tsx     # List container
+│   └── expense-item.tsx     # Individual expense row
+└── ui/
+    ├── button.tsx           # Variants: primary/secondary/danger
+    └── input.tsx            # Reusable input with label
+```
+
+---
+
 ## Key Files
 
 | File | Purpose |
@@ -70,10 +101,9 @@ All core functionality working:
 | `types/index.ts` | Type definitions |
 | `lib/mock-data.ts` | Mock users (You + Casey) |
 | `lib/balance.ts` | `calculateBalances()` function |
-| `lib/utils.ts` | Formatting utilities |
+| `lib/utils.ts` | `formatCurrency()`, `formatDate()`, `formatDateTime()` |
 | `app/globals.css` | Frosted glass theme & colors |
-| `app/page.tsx` | Main page component |
-| `components/` | UI components |
+| `app/page.tsx` | Main page component (state lives here) |
 | `design/` | Design reference screenshots |
 
 ---
@@ -91,5 +121,6 @@ npx tsc --noEmit # Type check
 
 ## Notes
 
-- Project moved from iCloud Drive to `~/Projects/simple-split` (Turbopack issues with iCloud)
+- Project location: `~/Projects/simple-split` (moved from iCloud Drive)
 - Use `--webpack` flag if Turbopack causes issues: `npx next dev --webpack`
+- Design reference: `design/screenshot_frost.PNG`
