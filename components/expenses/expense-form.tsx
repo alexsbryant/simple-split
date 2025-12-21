@@ -30,6 +30,7 @@ export function ExpenseForm({
 }: ExpenseFormProps) {
   const [description, setDescription] = useState('')
   const [amount, setAmount] = useState('')
+  const [amountError, setAmountError] = useState('')
 
   const isEditing = !!editingExpense
 
@@ -47,9 +48,13 @@ export function ExpenseForm({
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault()
 
+    // Clear any previous errors
+    setAmountError('')
+
     const parsedAmount = parseFloat(amount)
     // Only amount is required - description is optional
     if (isNaN(parsedAmount) || parsedAmount <= 0) {
+      setAmountError('Please enter an amount greater than 0')
       return
     }
 
@@ -98,10 +103,14 @@ export function ExpenseForm({
             label="Amount"
             type="number"
             value={amount}
-            onChange={(e) => setAmount(e.target.value)}
+            onChange={(e) => {
+              setAmount(e.target.value)
+              if (amountError) setAmountError('')
+            }}
             placeholder="0.00"
             min="0.01"
             step="0.01"
+            error={amountError}
           />
 
           <div className="flex gap-3 pt-2">
