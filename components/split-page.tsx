@@ -6,6 +6,7 @@ import { calculateBalances } from '@/lib/balance'
 import { BalanceSummary } from '@/components/balances/balance-summary'
 import { ExpenseForm } from '@/components/expenses/expense-form'
 import { ExpenseList } from '@/components/expenses/expense-list'
+import { Nav } from '@/components/nav'
 
 interface SimpleSplitPageProps {
   currentUser: User
@@ -87,6 +88,7 @@ export function SimpleSplitPage({
 
   return (
     <div className="min-h-screen">
+      <Nav />
       <main className="max-w-[640px] mx-auto px-4 py-8">
         {/* Header */}
         <header className="mb-8">

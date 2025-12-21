@@ -48,6 +48,29 @@ All core functionality working:
 - [ ] Test edge cases (zero amounts, long descriptions)
 - [ ] Verify balance calculations
 
+Test process for me (keep for future testing)-
+To test:
+  1. Visit / - see landing page (no nav)
+  2. Click "Log in" or "Create account" → /groups
+  3. See groups list with nav at top
+  4. Click "Household" → /groups/group-1
+  5. See Simple Split page with nav
+  6. Click "Simple Split" in nav → back to /groups
+
+On Split-Page:
+  1. Open http://localhost:3001
+  2. Add new expense: "Coffee" $15
+  3. Verify balances changed
+  4. Edit the Coffee expense to $20
+  5. Verify balances updated
+  6. Try to add expense with $0 - see error
+  7. Type valid amount - error clears
+  8. Delete Coffee expense (confirm dialog appears)
+  9. Cancel delete - expense stays
+  10. Delete again and confirm - expense removed
+  11. Resize browser to 375px - verify mobile layout
+  12. Add expense with no description - timestamp auto-fills
+
 ---
 
 ## Phase 4: Supabase Integration — DEFERRED
