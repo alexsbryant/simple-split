@@ -36,7 +36,7 @@ export function ExpenseItem({
         </span>
 
         {/* Amount */}
-        <span className="font-semibold w-20 text-right shrink-0 text-[var(--text-primary)]">
+        <span className="font-semibold min-w-20 text-right shrink-0 text-[var(--text-primary)]">
           {formatCurrency(expense.amount)}
         </span>
       </div>

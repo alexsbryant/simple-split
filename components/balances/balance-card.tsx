@@ -26,7 +26,7 @@ export function BalanceCard({ balance }: BalanceCardProps) {
           {balance.displayName}
         </span>
         <span
-          className="text-lg font-semibold"
+          className="text-lg font-semibold break-all"
           style={{ color: amountColor }}
         >
           {formattedBalance}
