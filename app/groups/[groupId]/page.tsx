@@ -1,9 +1,30 @@
-import { supabase } from '@/lib/supabase'
+import { createClient } from '@/lib/supabase-server'
 import { SimpleSplitPage } from '@/components/split-page'
 import { User, Group, Expense } from '@/types'
+import { redirect } from 'next/navigation'
 
 export default async function GroupPage({ params }: { params: { groupId: string } }) {
   const { groupId } = await params
+  const supabase = await createClient()
+
+  // Get authenticated user
+  const { data: { user: authUser } } = await supabase.auth.getUser()
+  if (!authUser) {
+    redirect('/')
+  }
+
+  // Fetch current user from public.users
+  const { data: currentUserData } = await supabase
+    .from('users')
+    .select('*')
+    .eq('id', authUser.id)
+    .single()
+
+  const currentUser: User = {
+    id: currentUserData.id,
+    email: currentUserData.email,
+    displayName: currentUserData.display_name,
+  }
 
   // Fetch group
   const { data: groupData } = await supabase
@@ -58,9 +79,6 @@ export default async function GroupPage({ params }: { params: { groupId: string 
     createdAt: e.created_at,
     updatedAt: e.updated_at,
   })) ?? []
-
-  // For now, use first user as "current user" (no auth yet)
-  const currentUser = users[0]
 
   return (
     <SimpleSplitPage

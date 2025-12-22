@@ -1,9 +1,11 @@
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Nav } from '@/components/nav'
-import { supabase } from '@/lib/supabase'
+import { createClient } from '@/lib/supabase-server'
 
 export default async function GroupsPage() {
+  const supabase = await createClient()
+
   // Fetch all groups with member counts
   const { data: groupsData } = await supabase
     .from('groups')
