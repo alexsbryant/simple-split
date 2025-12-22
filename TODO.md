@@ -14,258 +14,171 @@
 
 ## Phase 2: Core UI + Balance Logic — COMPLETE ✓
 
-All core functionality working:
-- [x] Balance summary displays with color-coded user balances
-- [x] Add new expenses via form
-- [x] Edit own expenses
-- [x] Delete own expenses
-- [x] Balances update in real-time after changes
+- Balance summary with color-coded user balances
+- Add/edit/delete expenses via form
+- Balances update in real-time
 
 ---
 
 ## Phase 3: Polish & UX — COMPLETE ✓
 
-### UI Refinements ✓
-- [x] Update mock users: You + Casey (2 users only)
-- [x] Frosted glass UI redesign (backdrop-blur, translucent cards)
-- [x] Gradient background (purple/teal/brown)
-- [x] Pill-shaped inputs and buttons
-- [x] Softer status colors (muted green/red/amber)
-- [x] Sans-serif throughout (Bodoni only for title)
-
-### Form & Validation ✓
-- [x] Description optional (uses date/time if empty)
-- [x] Amount > 0 required
-- [x] Show validation feedback on invalid input
-
-### UX Improvements ✓
-- [x] Empty state when no expenses
-- [x] Delete confirmation dialog (using window.confirm)
-- [x] Mobile responsive tweaks (vertical stack on <768px)
-- [x] Fix number overflow for large amounts (7+ digits)
-
-### Testing
-Manual testing completed for core CRUD operations. Edge cases verified:
-- ✓ Invalid amounts show validation errors
-- ✓ Large numbers (7+ digits) don't overflow containers
-- ✓ Mobile layout stacks properly
-- ✓ Delete confirmation prevents accidental deletions
+- Frosted glass UI, gradient background, pill-shaped inputs
+- Form validation, delete confirmation, mobile responsive
+- Number overflow fix for large amounts
 
 ---
 
 ## Phase 3.5: Multi-Page Structure — COMPLETE ✓
 
-**Goal:** Build page shells for landing, groups dashboard, and split page.
-
-### Pages Created
-- [x] Landing page at `/` (centered title, auth buttons)
-- [x] Groups dashboard at `/groups` (mock groups list)
-- [x] Simple Split page moved to `/groups/[groupId]`
-- [x] Navigation component with conditional buttons
-
-### Navigation Features
-- [x] "Simple Split" logo links to `/groups`
-- [x] "Back to Groups" button (only on split page)
-- [x] "Log out" button (placeholder, shown on all pages except landing)
-- [x] No nav on landing page (clean centered design)
-
-### Current Route Structure
-```
-/                    → Landing page
-/groups              → Groups dashboard
-/groups/[groupId]    → Simple Split page
-```
+- Landing page `/`, Groups dashboard `/groups`, Split page `/groups/[groupId]`
+- Navigation with conditional buttons
 
 ---
 
-## Phase 4: Supabase Integration — NEXT PHASE
+## Phase 4A: Supabase Setup — COMPLETE ✓
 
-**Prerequisites:**
-- ✓ UI validated with mock data
-- ✓ Multi-page structure in place
-- ✓ Component architecture ready for server data
+**Database Schema:**
+- `users` (id, email, display_name, created_at)
+- `groups` (id, name, created_by, created_at)
+- `group_members` (id, group_id, user_id, joined_at)
+- `expenses` (id, group_id, paid_by_user_id, amount, description, created_at, updated_at)
+
+**Data Fetching:**
+- Server components fetch from Supabase (read-only)
+- Snake_case DB columns transformed to camelCase types
+- `.env.local` configured with Supabase URL and anon key
+
+---
+
+## Phase 4B: Authentication — COMPLETE ✓
+
+**What's Working:**
+- Email/password signup and login via `AuthForm` component
+- `@supabase/ssr` for cookie-based sessions
+- Browser client (`lib/supabase.ts`) and server client (`lib/supabase-server.ts`)
+- Middleware redirects: unauthenticated → `/`, authenticated → `/groups`
+- Logout button in Nav works
+- Database trigger syncs `auth.users` → `public.users` on signup
+
+**Key Files:**
+| File | Purpose |
+|------|---------|
+| `lib/supabase.ts` | Browser client factory (for client components) |
+| `lib/supabase-server.ts` | Server client with cookies (for server components) |
+| `middleware.ts` | Route protection and auth redirects |
+| `components/auth/auth-form.tsx` | Login/signup form with mode toggle |
+
+**Latest Commits:**
+- `1a0c7e2` - Add Supabase authentication (Phase 4B)
+- `648ff04` - Add Supabase integration for data fetching
+
+---
+
+## Phase 4C: Group Membership — NEXT PHASE
+
+**Goal:** Wire up group membership so users only see groups they belong to.
+
+**Scope (intentionally minimal):**
+- No RLS yet
+- No permissions/roles logic
+- No group creation UI
+- No invitations
 
 **Tasks:**
-- [ ] Create Supabase project
-- [ ] Design and run database schema (users, groups, expenses, group_members)
-- [ ] Set up Row Level Security (RLS) policies
-- [ ] Implement authentication (login/signup)
-- [ ] Convert mock data loading to Supabase queries
-- [ ] Convert client handlers to server actions
-- [ ] Add group creation and management
-- [ ] Add user invitations and group membership
+- [ ] Filter `/groups` to show only groups where user is a member
+- [ ] Gate `/groups/[groupId]` — redirect if user is not a member
+- [ ] Auto-add new users to a default group (or create one on signup)
+
+**Success Criteria:**
+- `/groups` shows correct groups for the logged-in user
+- New users land in at least one group so the app is usable
+- `/groups/[groupId]` returns 404 or redirects if user isn't a member
+
+### Implementation Notes
+
+**Current State:**
+- `/groups` fetches ALL groups (no user filtering)
+- `/groups/[groupId]` fetches group data without checking membership
+- Test data has "Household" group with 2 members (You, Casey) — these are old mock users, not real auth users
+
+**Changes Needed:**
+
+1. **`app/groups/page.tsx`** — Filter by membership:
+   ```sql
+   -- Current: fetches all groups
+   -- Change to: fetch groups where user is a member
+   SELECT groups.* FROM groups
+   INNER JOIN group_members ON groups.id = group_members.group_id
+   WHERE group_members.user_id = {auth.user.id}
+   ```
+
+2. **`app/groups/[groupId]/page.tsx`** — Verify membership:
+   - After fetching group, check if `authUser.id` is in `group_members`
+   - If not, redirect to `/groups` (or show error)
+
+3. **Auto-add to default group** — Two options:
+   - **Option A:** Modify the `handle_new_user` trigger to also insert into `group_members` for a default group
+   - **Option B:** Create a "Personal" group for each new user on signup
+
+   Recommend Option A for simplicity — just add the new user to the existing "Household" group for now.
+
+**SQL to auto-add new users to Household group:**
+```sql
+-- Add to the existing handle_new_user() function:
+INSERT INTO group_members (group_id, user_id)
+VALUES (
+  (SELECT id FROM groups WHERE name = 'Household' LIMIT 1),
+  NEW.id
+);
+```
+
+**Testing:**
+1. Create a new account
+2. Should be redirected to `/groups`
+3. Should see "Household" group
+4. Click into group → should load split page
+5. Existing "You" and "Casey" users won't be visible (they're old mock data, not real auth users)
 
 ---
 
 ## Architecture
 
-### Data Flow (Current - Mock Data)
+### Current Data Flow
 ```
+Middleware (middleware.ts)
+  ↓ checks auth session
+  ↓ redirects if needed
 Server Component (page.tsx)
-  ↓ loads mock data
+  ↓ creates server Supabase client
+  ↓ fetches authenticated user
+  ↓ fetches data from Supabase
 Client Component (split-page.tsx)
-  ↓ manages state (useState)
-  ↓ handles CRUD operations
-  ↓ calculates balances
-  → renders UI components
+  ↓ receives data as props
+  ↓ manages local state (useState)
+  ↓ handles CRUD operations (still local, not persisted)
 ```
 
-### Data Flow (Future - Supabase)
-```
-Server Component (page.tsx)
-  ↓ async fetch from Supabase
-Client Component (split-page.tsx)
-  ↓ receives initial data as props
-  ↓ optimistic updates with state
-  → Server Actions for mutations
-  → Supabase real-time subscriptions
-```
-
-### Key Architectural Decisions
-
-**1. Data Loading Separation** (Completed)
-- Server Components load data (currently mock, future: Supabase)
-- Client Components handle interactivity and state
-- Clear separation enables easy Supabase integration
-
-**2. Mock Data Strategy**
-- `lib/mock-data.ts` contains: CURRENT_USER, MOCK_USERS, MOCK_GROUP, INITIAL_EXPENSES
-- Mock groups in `app/groups/page.tsx`: Household, Vacation Trip
-- All data passed as props to client components
-
-**3. State Management**
-- React `useState` in `split-page.tsx` (no external state library)
-- Balances calculated on each render via `calculateBalances()`
-- Form state managed locally in components
-
----
-
-## Component Structure
-
-```
-app/
-├── page.tsx                      # Landing page (server component)
-├── groups/
-│   ├── page.tsx                  # Groups dashboard (server component)
-│   └── [groupId]/
-│       └── page.tsx              # Split page wrapper (server component)
-├── globals.css                   # Frosted glass theme & colors
-└── layout.tsx                    # Root layout
-
-components/
-├── split-page.tsx                # Main split page logic (client component)
-├── nav.tsx                       # Navigation with conditional buttons
-├── balances/
-│   ├── balance-summary.tsx       # Main balance display
-│   └── balance-card.tsx          # Individual user balance
-├── expenses/
-│   ├── expense-form.tsx          # Add/edit form with validation
-│   ├── expense-list.tsx          # List container
-│   └── expense-item.tsx          # Individual expense row
-└── ui/
-    ├── button.tsx                # Variants: primary/secondary/danger
-    └── input.tsx                 # Reusable input with label & error display
-
-lib/
-├── mock-data.ts                  # Mock users, groups, expenses
-├── balance.ts                    # calculateBalances() pure function
-└── utils.ts                      # formatCurrency, formatDate, formatDateTime
-
-types/
-└── index.ts                      # TypeScript type definitions
-```
-
----
-
-## Key Files
+### Key Files
 
 | File | Purpose |
 |------|---------|
-| `app/page.tsx` | Landing page with auth buttons |
-| `app/groups/page.tsx` | Groups dashboard with mock groups |
-| `app/groups/[groupId]/page.tsx` | Wrapper for split page (loads data) |
+| `app/page.tsx` | Landing page with AuthForm |
+| `app/groups/page.tsx` | Groups dashboard (needs membership filter) |
+| `app/groups/[groupId]/page.tsx` | Split page wrapper (needs membership check) |
 | `components/split-page.tsx` | Main split page UI + logic (client) |
-| `components/nav.tsx` | Navigation with conditional buttons |
-| `types/index.ts` | Type definitions (User, Expense, Group, etc.) |
-| `lib/mock-data.ts` | Mock users, groups, and expenses |
-| `lib/balance.ts` | `calculateBalances()` pure function |
-| `lib/utils.ts` | Formatting utilities |
-| `app/globals.css` | Frosted glass theme, colors, CSS variables |
-
----
-
-## Recent Changes (Session Context)
-
-### Session Summary
-1. ✅ Completed Phase 3 UX improvements (validation, delete confirmation, mobile responsive)
-2. ✅ Refactored for Supabase readiness (separated data loading from UI logic)
-3. ✅ Built multi-page structure (landing, groups, split pages)
-4. ✅ Added navigation with conditional buttons
-5. ✅ Fixed number overflow for large amounts
-
-### Latest Commits
-- `b5dbf95` - Add Nav enhancements and fix number overflow
-- `f9e5c19` - Build page shells for multi-page structure
-- `3986bb8` - Complete Phase 3 + refactor for Supabase preparation
-
-### What's Ready for Next Session
-- ✅ All UI components built and tested
-- ✅ Multi-page routing structure in place
-- ✅ Mock data flow established
-- ✅ Component architecture ready for server data
-- ✅ Navigation working with conditional buttons
-
-### Next Steps
-The app is ready for Supabase integration. The refactored architecture makes this straightforward:
-1. Set up Supabase project and schema
-2. Replace mock data imports with Supabase queries in server components
-3. Convert client mutations to server actions
-4. Add authentication (the UI shells are already in place)
-5. Implement group creation and management features
-
----
-
-## Testing Guide
-
-### Navigation Flow
-1. Visit `/` - see landing page (no nav)
-2. Click "Log in" or "Create account" → `/groups`
-3. See groups list with nav at top (with "Log out" button)
-4. Click "Household" → `/groups/group-1`
-5. See Simple Split page with nav ("Simple Split" logo + "Back to Groups" + "Log out")
-6. Click "Back to Groups" → returns to `/groups`
-
-### Split Page CRUD Operations
-1. Add new expense: "Coffee" $15
-2. Verify balances changed
-3. Edit the Coffee expense to $20
-4. Verify balances updated
-5. Try to add expense with $0 - see validation error
-6. Type valid amount - error clears
-7. Delete Coffee expense - confirm dialog appears
-8. Cancel delete - expense stays
-9. Delete again and confirm - expense removed
-10. Add expense with no description - timestamp auto-fills
-
-### Responsive Design
-1. Resize browser to 375px (mobile)
-2. Verify expense items stack vertically
-3. Verify nav is usable on mobile
-4. Verify buttons are tappable
-
-### Number Overflow Test
-1. Add expense with large amount: $1,234,567.89
-2. Verify amount displays fully without overflow
-3. Check both expense list and balance cards
+| `components/auth/auth-form.tsx` | Login/signup form |
+| `components/nav.tsx` | Navigation with logout |
+| `lib/supabase.ts` | Browser Supabase client |
+| `lib/supabase-server.ts` | Server Supabase client |
+| `middleware.ts` | Auth route protection |
 
 ---
 
 ## Commands
 
 ```bash
-npm run dev      # localhost:3001 (or 3000)
+npm run dev      # localhost:3000 (or 3001)
 npm run build    # Production build
-npm run lint     # ESLint
 npx tsc --noEmit # Type check
 ```
 
@@ -273,10 +186,10 @@ npx tsc --noEmit # Type check
 
 ## Notes
 
-- Project location: `~/Projects/simple-split` (moved from iCloud Drive)
-- Use `--webpack` flag if Turbopack causes issues: `npx next dev --webpack`
-- Design reference: `design/screenshot_frost.PNG`
-- Dev server usually runs on port 3001 (3000 often occupied)
+- Supabase project: `ezlfsvbjkgxgrbcrsqlp.supabase.co`
+- Email confirmation is disabled for development
+- Database trigger `handle_new_user` syncs auth.users → public.users
+- Next.js 16 shows deprecation warning for middleware (still works)
 
 
 ## NON-CLAUDE BRAINSTORMING SECTION START
