@@ -1,13 +1,21 @@
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Nav } from '@/components/nav'
+import { supabase } from '@/lib/supabase'
 
-const MOCK_GROUPS = [
-  { id: 'group-1', name: 'Household', memberCount: 2 },
-  { id: 'group-2', name: 'Vacation Trip', memberCount: 4 },
-]
+export default async function GroupsPage() {
+  // Fetch all groups with member counts
+  const { data: groupsData } = await supabase
+    .from('groups')
+    .select('id, name, group_members(count)')
+    .order('created_at', { ascending: false })
 
-export default function GroupsPage() {
+  const groups = groupsData?.map((g: { id: string; name: string; group_members: { count: number }[] }) => ({
+    id: g.id,
+    name: g.name,
+    memberCount: g.group_members[0]?.count ?? 0,
+  })) ?? []
+
   return (
     <div className="min-h-screen">
       <Nav />
@@ -23,7 +31,7 @@ export default function GroupsPage() {
         </div>
 
         <div className="space-y-4">
-          {MOCK_GROUPS.map(group => (
+          {groups.map(group => (
             <Link
               key={group.id}
               href={`/groups/${group.id}`}
