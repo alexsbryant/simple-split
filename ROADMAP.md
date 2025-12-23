@@ -61,6 +61,8 @@ Goal: Allow users to create their own groups.
 	•	Insert into groups
 	•	Add creator to group_members
 	•	Redirect to new group page
+	 
+	 Group deletion intentionally deferred until roles, invitations, and RLS are in place
 
 ⸻
 
