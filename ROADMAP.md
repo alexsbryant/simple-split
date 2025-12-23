@@ -11,7 +11,7 @@ This document provides a high-level, end-to-end view of the Simple Split project
 
 ⸻
 
-✅ Completed Foundations
+✅ Completed Foundations (Phase 1 to 4B)
 
 UI & Routing
 	•	Landing page (login / signup)
@@ -38,7 +38,7 @@ Authentication
 
 ⸻
 
-🔜 Phase 1: Group Membership (CURRENT)
+🔜 Phase 4C: Group Membership (CURRENT)
 
 Goal: Connect authenticated users to the groups they belong to.
 	•	Ensure logged-in users only see groups they are members of
@@ -53,7 +53,7 @@ Constraints:
 
 ⸻
 
-🧩 Phase 2: Group Creation
+🧩 Phase 5: Group Creation
 
 Goal: Allow users to create their own groups.
 	•	Create group form
@@ -63,7 +63,7 @@ Goal: Allow users to create their own groups.
 
 ⸻
 
-💸 Phase 3: Expense Mutations
+💸 Phase 6: Expense Mutations
 
 Goal: Make Simple Split fully functional.
 	•	Add expense (insert)
@@ -74,7 +74,7 @@ Goal: Make Simple Split fully functional.
 
 ⸻
 
-🔐 Phase 4: Security (RLS)
+🔐 Phase 7: Security (RLS)
 
 Goal: Enforce access rules at the database level.
 	•	Enable RLS on all tables
@@ -86,7 +86,7 @@ Goal: Enforce access rules at the database level.
 
 ⸻
 
-🤝 Phase 5: Invitations & Collaboration
+🤝 Phase 8: Invitations & Collaboration
 
 Goal: Let users share groups.
 	•	Invite users to groups via:
@@ -98,7 +98,7 @@ Goal: Let users share groups.
 
 ⸻
 
-✨ Phase 6: UX & Polish
+✨ Phase 9: UX & Polish
 
 Goal: Improve usability and feel.
 	•	Loading states
@@ -109,7 +109,7 @@ Goal: Improve usability and feel.
 
 ⸻
 
-🚀 Phase 7: Deployment
+🚀 Phase 10: Deployment
 
 Goal: Ship it.
 	•	Deploy to Vercel
