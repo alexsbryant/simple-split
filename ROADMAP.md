@@ -1,5 +1,5 @@
-Current Phase: Phase 1 – Group Membership
-Last Updated: 2025-12-22
+Current Phase: Phase 5 – Group Creation
+Last Updated: 2025-12-23
 
 
 ######################################################
@@ -38,7 +38,7 @@ Authentication
 
 ⸻
 
-🔜 Phase 4C: Group Membership (CURRENT)
+✅ Phase 4C: Group Membership (COMPLETE)
 
 Goal: Connect authenticated users to the groups they belong to.
 	•	Ensure logged-in users only see groups they are members of
@@ -46,10 +46,11 @@ Goal: Connect authenticated users to the groups they belong to.
 	•	Prevent access to /groups/[groupId] if user is not a member
 	•	Friendly empty state if user has no groups
 
-Constraints:
-	•	No RLS yet
-	•	No permissions / roles
-	•	No complex logic
+What was implemented:
+	•	Database trigger creates personal group on signup (e.g., "Alex's Group")
+	•	Signup form collects displayName (required)
+	•	/groups filters by membership
+	•	/groups/[groupId] verifies membership, redirects if not a member
 
 ⸻
 
@@ -74,7 +75,15 @@ Goal: Make Simple Split fully functional.
 
 ⸻
 
-🔐 Phase 7: Security (RLS)
+⚙️ Phase 7: Basic User Settings
+
+Goal: Allow users to update their profile.
+	•	Change display name
+	•	Simple settings page or modal
+
+⸻
+
+🔐 Phase 8: Security (RLS)
 
 Goal: Enforce access rules at the database level.
 	•	Enable RLS on all tables
@@ -86,7 +95,7 @@ Goal: Enforce access rules at the database level.
 
 ⸻
 
-🤝 Phase 8: Invitations & Collaboration
+🤝 Phase 9: Invitations & Collaboration
 
 Goal: Let users share groups.
 	•	Invite users to groups via:
@@ -98,7 +107,7 @@ Goal: Let users share groups.
 
 ⸻
 
-✨ Phase 9: UX & Polish
+✨ Phase 10: UX & Polish
 
 Goal: Improve usability and feel.
 	•	Loading states
@@ -109,7 +118,7 @@ Goal: Improve usability and feel.
 
 ⸻
 
-🚀 Phase 10: Deployment
+🚀 Phase 11: Deployment
 
 Goal: Ship it.
 	•	Deploy to Vercel

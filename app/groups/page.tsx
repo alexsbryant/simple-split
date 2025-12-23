@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { redirect } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Nav } from '@/components/nav'
 import { createClient } from '@/lib/supabase-server'
@@ -6,11 +7,28 @@ import { createClient } from '@/lib/supabase-server'
 export default async function GroupsPage() {
   const supabase = await createClient()
 
-  // Fetch all groups with member counts
-  const { data: groupsData } = await supabase
-    .from('groups')
-    .select('id, name, group_members(count)')
-    .order('created_at', { ascending: false })
+  // Get authenticated user
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) {
+    redirect('/')
+  }
+
+  // Fetch group IDs where user is a member
+  const { data: membershipData } = await supabase
+    .from('group_members')
+    .select('group_id')
+    .eq('user_id', user.id)
+
+  const groupIds = membershipData?.map(m => m.group_id) ?? []
+
+  // Fetch those groups with member counts
+  const { data: groupsData } = groupIds.length > 0
+    ? await supabase
+        .from('groups')
+        .select('id, name, group_members(count)')
+        .in('id', groupIds)
+        .order('created_at', { ascending: false })
+    : { data: [] }
 
   const groups = groupsData?.map((g: { id: string; name: string; group_members: { count: number }[] }) => ({
     id: g.id,
@@ -32,20 +50,31 @@ export default async function GroupsPage() {
           <Button variant="primary">Create new group</Button>
         </div>
 
-        <div className="space-y-4">
-          {groups.map(group => (
-            <Link
-              key={group.id}
-              href={`/groups/${group.id}`}
-              className="glass p-4 block transition-all duration-150 hover:bg-[rgba(255,255,255,0.08)]"
-            >
-              <h3 className="font-semibold text-white text-lg">{group.name}</h3>
-              <p className="text-sm text-[var(--text-secondary)] mt-1">
-                {group.memberCount} {group.memberCount === 1 ? 'member' : 'members'}
-              </p>
-            </Link>
-          ))}
-        </div>
+        {groups.length === 0 ? (
+          <div className="glass p-8 text-center">
+            <p className="text-[var(--text-secondary)] mb-2">
+              You&apos;re not a member of any groups yet.
+            </p>
+            <p className="text-sm text-[var(--text-muted)]">
+              Groups will appear here once you create or join one.
+            </p>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {groups.map(group => (
+              <Link
+                key={group.id}
+                href={`/groups/${group.id}`}
+                className="glass p-4 block transition-all duration-150 hover:bg-[rgba(255,255,255,0.08)]"
+              >
+                <h3 className="font-semibold text-white text-lg">{group.name}</h3>
+                <p className="text-sm text-[var(--text-secondary)] mt-1">
+                  {group.memberCount} {group.memberCount === 1 ? 'member' : 'members'}
+                </p>
+              </Link>
+            ))}
+          </div>
+        )}
       </main>
     </div>
   )

@@ -74,8 +74,7 @@
 
 ---
 
-## Phase 4C: Group Membership
-### Phase 4C.1 — Capture display name on signup (NEXT)
+## Phase 4C: Group Membership — COMPLETE ✓
 
 **Goal:** Wire up group membership so users only see groups they belong to.
 
@@ -86,17 +85,19 @@
 - No invitations
 
 **Tasks:**
-- [ ] Filter `/groups` to show only groups where user is a member
-- [ ] Gate `/groups/[groupId]` — redirect if user is not a member
-- [ ] Auto-add new users to a default personal new group (or create one on signup)
--	[ ] Extend signup form to collect display_name
--	[ ] Pass display_name via auth metadata
--	[ ] Use display_name when creating default group
+- [x] Filter `/groups` to show only groups where user is a member
+- [x] Gate `/groups/[groupId]` — redirect if user is not a member
+- [x] Auto-add new users to a default personal new group (or create one on signup)
+- [x] Extend signup form to collect displayName
+- [x] Pass displayName via auth metadata
+- [x] Use displayName when creating default group (e.g., "Alex's Group")
 
-**Success Criteria:**
-- `/groups` shows correct groups for the logged-in user
-- New users land in at least one group so the app is usable
-- `/groups/[groupId]` returns 404 or redirects if user isn't a member
+**What was implemented:**
+- Database trigger `handle_new_user` updated to create personal group on signup
+- Signup form collects displayName (required field)
+- `/groups` filters by membership via `group_members` table
+- `/groups/[groupId]` verifies membership before loading, redirects if not a member
+- Empty state shown when user has no groups
 
 ### Implementation Notes
 

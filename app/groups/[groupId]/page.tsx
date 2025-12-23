@@ -13,6 +13,18 @@ export default async function GroupPage({ params }: { params: { groupId: string 
     redirect('/')
   }
 
+  // Verify user is a member of this group
+  const { data: membership } = await supabase
+    .from('group_members')
+    .select('id')
+    .eq('group_id', groupId)
+    .eq('user_id', authUser.id)
+    .single()
+
+  if (!membership) {
+    redirect('/groups')
+  }
+
   // Fetch current user from public.users
   const { data: currentUserData } = await supabase
     .from('users')

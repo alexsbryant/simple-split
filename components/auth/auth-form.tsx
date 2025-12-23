@@ -12,6 +12,7 @@ export function AuthForm() {
   const [mode, setMode] = useState<Mode>('login')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [displayName, setDisplayName] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const router = useRouter()
@@ -28,6 +29,9 @@ export function AuthForm() {
         const { error } = await supabase.auth.signUp({
           email,
           password,
+          options: {
+            data: { displayName },
+          },
         })
         if (error) throw error
       } else {
@@ -63,6 +67,16 @@ export function AuthForm() {
         required
         minLength={6}
       />
+      {mode === 'signup' && (
+        <Input
+          label="Display Name"
+          type="text"
+          value={displayName}
+          onChange={(e) => setDisplayName(e.target.value)}
+          required
+          placeholder="How others will see you"
+        />
+      )}
 
       {error && (
         <p className="text-sm text-[var(--negative)] text-center">{error}</p>
