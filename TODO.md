@@ -74,7 +74,8 @@
 
 ---
 
-## Phase 4C: Group Membership — NEXT PHASE
+## Phase 4C: Group Membership
+### Phase 4C.1 — Capture display name on signup (NEXT)
 
 **Goal:** Wire up group membership so users only see groups they belong to.
 
@@ -87,7 +88,10 @@
 **Tasks:**
 - [ ] Filter `/groups` to show only groups where user is a member
 - [ ] Gate `/groups/[groupId]` — redirect if user is not a member
-- [ ] Auto-add new users to a default group (or create one on signup)
+- [ ] Auto-add new users to a default personal new group (or create one on signup)
+-	[ ] Extend signup form to collect display_name
+-	[ ] Pass display_name via auth metadata
+-	[ ] Use display_name when creating default group
 
 **Success Criteria:**
 - `/groups` shows correct groups for the logged-in user
@@ -120,7 +124,13 @@
    - **Option A:** Modify the `handle_new_user` trigger to also insert into `group_members` for a default group
    - **Option B:** Create a "Personal" group for each new user on signup
 
-   Recommend Option A for simplicity — just add the new user to the existing "Household" group for now.
+  Decision (locked for this phase):
+  Create a new personal group for each user on signup (e.g. "Alex’s Group"), and add only that user as a member.
+  This avoids fake multi-user state and matches the final data model. Invitations and shared groups will come later.
+  
+  Casey and other mock users are no longer used from this phase onward.  All membership should be based on real authenticated users only.
+
+  New user's first group / default group should no longer be called "Household", instead ${display_name}'s Group.  For example a user called Alex would see "Alex's Group" when signing up.  
 
 **SQL to auto-add new users to Household group:**
 ```sql
