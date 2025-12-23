@@ -122,6 +122,7 @@ Goal: Improve usability and feel.
 	•	Empty states
 	•	Confirm dialogs
 	•	Mobile polish
+	•	Update README.md with a concise and appealing description of the simple cost splitting app, tech stack, version and what's included.
 
 ⸻
 
