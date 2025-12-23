@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
-import { Button } from '@/components/ui/button'
 import { Nav } from '@/components/nav'
+import { CreateGroupSection } from '@/components/groups/create-group-section'
 import { createClient } from '@/lib/supabase-server'
 
 export default async function GroupsPage() {
@@ -46,9 +46,7 @@ export default async function GroupsPage() {
           </h1>
         </header>
 
-        <div className="mb-6">
-          <Button variant="primary">Create new group</Button>
-        </div>
+        <CreateGroupSection userId={user.id} />
 
         {groups.length === 0 ? (
           <div className="glass p-8 text-center">

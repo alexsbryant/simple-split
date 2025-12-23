@@ -1,4 +1,4 @@
-Current Phase: Phase 5 – Group Creation
+Current Phase: Phase 6 – Expense Mutations
 Last Updated: 2025-12-23
 
 
@@ -54,15 +54,20 @@ What was implemented:
 
 ⸻
 
-🧩 Phase 5: Group Creation
+✅ Phase 5: Group Creation (COMPLETE)
 
 Goal: Allow users to create their own groups.
 	•	Create group form
 	•	Insert into groups
 	•	Add creator to group_members
 	•	Redirect to new group page
-	 
-	 Group deletion intentionally deferred until roles, invitations, and RLS are in place
+
+What was implemented:
+	•	GroupCreateForm component with inline toggle
+	•	Inserts into groups table, then group_members
+	•	Redirects to new group page on success
+
+Note: Group deletion intentionally deferred until roles, invitations, and RLS are in place
 
 ⸻
 

@@ -146,9 +146,33 @@ VALUES (
 **Testing:**
 1. Create a new account
 2. Should be redirected to `/groups`
-3. Should see "Household" group
+3. Should see personal group (e.g., "Alex's Group")
 4. Click into group → should load split page
-5. Existing "You" and "Casey" users won't be visible (they're old mock data, not real auth users)
+
+---
+
+## Phase 5: Group Creation — COMPLETE ✓
+
+**Goal:** Allow users to create their own groups.
+
+**Tasks:**
+- [x] Create group form component
+- [x] Insert into `groups` table
+- [x] Add creator to `group_members`
+- [x] Redirect to new group page
+
+**What was implemented:**
+- `GroupCreateForm` component with group name input
+- `CreateGroupSection` client wrapper for inline form toggle
+- Inserts into `groups` table, then `group_members`
+- Redirects to new group page on success
+
+**Key Files:**
+| File | Purpose |
+|------|---------|
+| `components/groups/group-create-form.tsx` | Form for creating groups |
+| `components/groups/create-group-section.tsx` | Client wrapper with toggle state |
+| `app/groups/page.tsx` | Groups dashboard with create button |
 
 ---
 
