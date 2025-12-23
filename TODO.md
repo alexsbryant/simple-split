@@ -176,6 +176,35 @@ VALUES (
 
 ---
 
+## Phase 6: Expense Mutations — PLANNED
+
+**Goal:** Make Simple Split fully functional by persisting expense add/edit/delete to Supabase.
+
+**Tasks:**
+- [ ] Create server actions file (`app/actions/expenses.ts`)
+- [ ] Convert `handleAddExpense` → `createExpense()` server action
+- [ ] Convert `handleUpdateExpense` → `updateExpense()` server action
+- [ ] Convert `handleDeleteExpense` → `deleteExpense()` server action
+- [ ] Add loading/error states
+
+**Implementation Notes:**
+- Use Next.js Server Actions (not API routes)
+- **Revalidation path:** `/groups/${groupId}` after each mutation
+- **Local state is transitional:** `expenses` state in `split-page.tsx` becomes a cache refreshed via `revalidatePath()`. May remove entirely later if revalidation is fast enough.
+
+**Files to modify:**
+| File | Action |
+|------|--------|
+| `app/actions/expenses.ts` | Create (server actions) |
+| `components/split-page.tsx` | Modify (call server actions) |
+
+**Constraints:**
+- No RLS yet (any group member can modify any expense)
+- No optimistic UI unless trivial
+- No real-time subscriptions
+
+---
+
 ## Architecture
 
 ### Current Data Flow
