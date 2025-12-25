@@ -18,6 +18,7 @@ export function Button({
     px-6 py-3
     text-sm font-semibold uppercase tracking-wider
     rounded-full
+    cursor-pointer
     transition-all duration-150
     disabled:opacity-50 disabled:cursor-not-allowed
   `
