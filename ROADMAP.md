@@ -128,6 +128,12 @@ Goal: Let users share groups.
 	•	Accept invite → add to group_members
 	•	Handle existing vs new users
 
+	Invitations will be accepted only by existing users (for now)
+
+Meaning:
+	•	If the email exists → they can accept
+	•	If not → show “Ask them to sign up first” (no magic auto-account yet)
+
 ⸻
 
 ✨ Phase 10: UX & Polish
