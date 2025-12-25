@@ -1,4 +1,4 @@
-Current Phase: Phase 8 – Security (RLS)
+Current Phase: Phase 9 – Invitations & Collaboration
 Last Updated: 2025-12-25
 
 
@@ -101,15 +101,20 @@ What was implemented:
 
 ⸻
 
-🔐 Phase 8: Security (RLS)
+✅ Phase 8: Security (RLS) (COMPLETE)
 
 Goal: Enforce access rules at the database level.
-	•	Enable RLS on all tables
-	•	Users can only:
-	•	Read groups they belong to
-	•	Read/write expenses in those groups
-	•	Block cross-group access
-	•	Test with multiple accounts
+
+What was implemented:
+	•	RLS enabled on all tables (users, groups, group_members, expenses)
+	•	Helper function `get_user_group_ids()` to avoid circular policy dependencies
+	•	Policies:
+	•	users: SELECT self + group members, UPDATE self only
+	•	groups: SELECT by membership or creator, INSERT for authenticated
+	•	group_members: SELECT by membership, INSERT self only
+	•	expenses: full CRUD by group membership (no ownership check)
+	•	Cross-group access blocked and verified with multiple accounts
+	•	Migration files in `supabase/migrations/`
 
 ⸻
 
@@ -132,7 +137,7 @@ Goal: Improve usability and feel.
 	•	Error handling
 	•	Empty states
 	•	Confirm dialogs
-	•	Mobile polish
+	•	Mobile polish (e.g. Expenses Table items become large and multiple lines when in smaller screen size, needs to look cleaner and smaller.)
 	•	Update README.md with a concise and appealing description of the simple cost splitting app, tech stack, version and what's included.
 
 ⸻
@@ -165,3 +170,9 @@ A solid v1 could stop after:
 	•	Basic RLS
 
 Everything beyond that is enhancement, not requirement.
+
+
+Future Ideas
+	•	User default currency change in settings
+	•	Currency choice on 'create new group', defaults to user's chosen prefrence currency
+	•	Option to choose currency per expense (with a warning that conversion from expense currency to group's currency is the conversion rate as of the time expense listed, and may not accuratly represent the amount spent at the time.)

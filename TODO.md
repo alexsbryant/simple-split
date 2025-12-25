@@ -232,41 +232,34 @@ VALUES (
 
 ---
 
-## Phase 8: Security (RLS) — NEXT
+## Phase 8: Security (RLS) — COMPLETE ✓
 
 **Goal:** Enforce access rules at the database level using Supabase Row Level Security.
 
-**Why RLS:**
-- Currently, any authenticated user could theoretically access any data via direct API calls
-- RLS ensures database-level protection regardless of client-side checks
-
 **Tasks:**
-- [ ] Enable RLS on `users` table
-- [ ] Enable RLS on `groups` table
-- [ ] Enable RLS on `group_members` table
-- [ ] Enable RLS on `expenses` table
-- [ ] Write policies for each table
-- [ ] Test with multiple accounts (verify cross-group access blocked)
-- [ ] Verify existing functionality still works
+- [x] Enable RLS on `users` table
+- [x] Enable RLS on `groups` table
+- [x] Enable RLS on `group_members` table
+- [x] Enable RLS on `expenses` table
+- [x] Write policies for each table
+- [x] Test with multiple accounts (verify cross-group access blocked)
+- [x] Verify existing functionality still works
 
-**Policies to implement:**
+**What was implemented:**
+- Helper function `get_user_group_ids(uid)` with SECURITY DEFINER to avoid circular policy dependencies
+- Policies:
+  - `users`: SELECT self + users in shared groups, UPDATE self only
+  - `groups`: SELECT by membership OR creator, INSERT for authenticated
+  - `group_members`: SELECT by membership, INSERT self only
+  - `expenses`: full CRUD by group membership (no ownership check)
+- Migration files in `supabase/migrations/` (01-07)
 
-```sql
--- users: can only read/update own profile
--- groups: can only read groups where user is a member
--- group_members: can only read memberships for groups user belongs to
--- expenses: can only read/write expenses in groups user belongs to
-```
-
-**Testing checklist:**
-- [ ] User A cannot see User B's groups
-- [ ] User A cannot see expenses in groups they don't belong to
-- [ ] User A can still CRUD expenses in their own groups
-- [ ] New user signup still works (trigger creates group)
-
-**Files that may need updates:**
-- Supabase dashboard (SQL policies)
-- Possibly server actions if error handling changes
+**Testing verified:**
+- [x] User A cannot see User B's groups
+- [x] User A cannot see expenses in groups they don't belong to
+- [x] User A can still CRUD expenses in their own groups
+- [x] New user signup still works (trigger creates group)
+- [x] Group creation works (creator can see group before membership added)
 
 ---
 
