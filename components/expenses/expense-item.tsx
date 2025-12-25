@@ -8,6 +8,7 @@ interface ExpenseItemProps {
   isOwner: boolean
   onEdit: (expense: Expense) => void
   onDelete: (id: string) => void
+  disabled?: boolean
 }
 
 export function ExpenseItem({
@@ -16,6 +17,7 @@ export function ExpenseItem({
   isOwner,
   onEdit,
   onDelete,
+  disabled = false,
 }: ExpenseItemProps) {
   return (
     <div className="glass-sm p-4 transition-all duration-150 hover:bg-[rgba(255,255,255,0.08)]">
@@ -48,6 +50,7 @@ export function ExpenseItem({
             variant="secondary"
             onClick={() => onEdit(expense)}
             className="text-xs py-1.5 px-4"
+            disabled={disabled}
           >
             Edit
           </Button>
@@ -59,6 +62,7 @@ export function ExpenseItem({
               }
             }}
             className="text-xs py-1.5 px-4"
+            disabled={disabled}
           >
             Delete
           </Button>

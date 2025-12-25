@@ -1,12 +1,14 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { User, Group, Expense } from '@/types'
 import { calculateBalances } from '@/lib/balance'
 import { BalanceSummary } from '@/components/balances/balance-summary'
 import { ExpenseForm } from '@/components/expenses/expense-form'
 import { ExpenseList } from '@/components/expenses/expense-list'
 import { Nav } from '@/components/nav'
+import { createExpense, updateExpense, deleteExpense } from '@/app/actions/expenses'
 
 interface SimpleSplitPageProps {
   currentUser: User
@@ -21,31 +23,37 @@ export function SimpleSplitPage({
   users,
   initialExpenses,
 }: SimpleSplitPageProps) {
-  const [expenses, setExpenses] = useState<Expense[]>(initialExpenses)
+  const router = useRouter()
   const [editingExpense, setEditingExpense] = useState<Expense | null>(null)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
-  // Calculate balances on each render
-  const balances = calculateBalances(expenses, users)
+  // Calculate balances from server data
+  const balances = calculateBalances(initialExpenses, users)
 
   // Add new expense
-  const handleAddExpense = (data: {
+  const handleAddExpense = async (data: {
     groupId: string
     paidByUserId: string
     amount: number
     description: string
   }) => {
-    const now = new Date().toISOString()
-    const newExpense: Expense = {
-      id: `exp-${Date.now()}`,
-      ...data,
-      createdAt: now,
-      updatedAt: now,
+    setLoading(true)
+    setError(null)
+
+    const result = await createExpense(data)
+
+    if (result.success) {
+      router.refresh()
+    } else {
+      setError(result.error || 'Failed to add expense')
     }
-    setExpenses((prev) => [...prev, newExpense])
+
+    setLoading(false)
   }
 
   // Update existing expense
-  const handleUpdateExpense = (data: {
+  const handleUpdateExpense = async (data: {
     groupId: string
     paidByUserId: string
     amount: number
@@ -53,27 +61,38 @@ export function SimpleSplitPage({
   }) => {
     if (!editingExpense) return
 
-    setExpenses((prev) =>
-      prev.map((exp) =>
-        exp.id === editingExpense.id
-          ? {
-              ...exp,
-              ...data,
-              updatedAt: new Date().toISOString(),
-            }
-          : exp
-      )
-    )
-    setEditingExpense(null)
+    setLoading(true)
+    setError(null)
+
+    const result = await updateExpense(editingExpense.id, data)
+
+    if (result.success) {
+      setEditingExpense(null)
+      router.refresh()
+    } else {
+      setError(result.error || 'Failed to update expense')
+    }
+
+    setLoading(false)
   }
 
   // Delete expense
-  const handleDeleteExpense = (id: string) => {
-    setExpenses((prev) => prev.filter((exp) => exp.id !== id))
-    // Clear editing if we deleted the expense being edited
-    if (editingExpense?.id === id) {
-      setEditingExpense(null)
+  const handleDeleteExpense = async (id: string) => {
+    setLoading(true)
+    setError(null)
+
+    const result = await deleteExpense(id, group.id)
+
+    if (result.success) {
+      if (editingExpense?.id === id) {
+        setEditingExpense(null)
+      }
+      router.refresh()
+    } else {
+      setError(result.error || 'Failed to delete expense')
     }
+
+    setLoading(false)
   }
 
   // Start editing
@@ -103,6 +122,13 @@ export function SimpleSplitPage({
           <BalanceSummary balances={balances} currentUserId={currentUser.id} />
         </div>
 
+        {/* Error Display */}
+        {error && (
+          <div className="mb-6 p-4 glass border border-[var(--negative)]">
+            <p className="text-[var(--negative)] text-sm">{error}</p>
+          </div>
+        )}
+
         {/* Expense Form */}
         <div className="mb-6">
           <ExpenseForm
@@ -111,16 +137,18 @@ export function SimpleSplitPage({
             groupId={group.id}
             editingExpense={editingExpense}
             onCancelEdit={handleCancelEdit}
+            loading={loading}
           />
         </div>
 
         {/* Expense List */}
         <ExpenseList
-          expenses={expenses}
+          expenses={initialExpenses}
           currentUserId={currentUser.id}
           users={users}
           onEdit={handleEditClick}
           onDelete={handleDeleteExpense}
+          loading={loading}
         />
       </main>
     </div>

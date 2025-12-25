@@ -7,6 +7,7 @@ interface ExpenseListProps {
   users: User[]
   onEdit: (expense: Expense) => void
   onDelete: (id: string) => void
+  loading?: boolean
 }
 
 export function ExpenseList({
@@ -15,6 +16,7 @@ export function ExpenseList({
   users,
   onEdit,
   onDelete,
+  loading = false,
 }: ExpenseListProps) {
   // Sort by createdAt (newest first)
   const sortedExpenses = [...expenses].sort(
@@ -47,6 +49,7 @@ export function ExpenseList({
               isOwner={expense.paidByUserId === currentUserId}
               onEdit={onEdit}
               onDelete={onDelete}
+              disabled={loading}
             />
           ))}
         </div>

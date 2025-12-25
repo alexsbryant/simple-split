@@ -19,6 +19,7 @@ interface ExpenseFormProps {
   groupId: string
   editingExpense?: Expense | null
   onCancelEdit?: () => void
+  loading?: boolean
 }
 
 export function ExpenseForm({
@@ -27,6 +28,7 @@ export function ExpenseForm({
   groupId,
   editingExpense,
   onCancelEdit,
+  loading = false,
 }: ExpenseFormProps) {
   const [description, setDescription] = useState('')
   const [amount, setAmount] = useState('')
@@ -114,11 +116,11 @@ export function ExpenseForm({
           />
 
           <div className="flex gap-3 pt-2">
-            <Button type="submit" variant="primary">
-              {isEditing ? 'Save' : 'Add Expense'}
+            <Button type="submit" variant="primary" disabled={loading}>
+              {loading ? 'Saving...' : isEditing ? 'Save' : 'Add Expense'}
             </Button>
             {isEditing && (
-              <Button type="button" variant="secondary" onClick={handleCancel}>
+              <Button type="button" variant="secondary" onClick={handleCancel} disabled={loading}>
                 Cancel
               </Button>
             )}
