@@ -37,9 +37,16 @@ export function Nav() {
           )}
         </div>
 
-        <Button variant="secondary" className="text-xs py-1.5 px-3" onClick={handleLogout}>
-          Log out
-        </Button>
+        <div className="flex items-center gap-2">
+          <Link href="/settings">
+            <Button variant="secondary" className="text-xs py-1.5 px-3">
+              Settings
+            </Button>
+          </Link>
+          <Button variant="secondary" className="text-xs py-1.5 px-3" onClick={handleLogout}>
+            Log out
+          </Button>
+        </div>
       </div>
     </nav>
   )
