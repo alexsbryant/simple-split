@@ -176,32 +176,97 @@ VALUES (
 
 ---
 
-## Phase 6: Expense Mutations — PLANNED
+## Phase 6: Expense Mutations — COMPLETE ✓
 
 **Goal:** Make Simple Split fully functional by persisting expense add/edit/delete to Supabase.
 
 **Tasks:**
-- [ ] Create server actions file (`app/actions/expenses.ts`)
-- [ ] Convert `handleAddExpense` → `createExpense()` server action
-- [ ] Convert `handleUpdateExpense` → `updateExpense()` server action
-- [ ] Convert `handleDeleteExpense` → `deleteExpense()` server action
-- [ ] Add loading/error states
+- [x] Create server actions file (`app/actions/expenses.ts`)
+- [x] Convert `handleAddExpense` → `createExpense()` server action
+- [x] Convert `handleUpdateExpense` → `updateExpense()` server action
+- [x] Convert `handleDeleteExpense` → `deleteExpense()` server action
+- [x] Add loading/error states
+- [x] Icon buttons for edit/delete
 
-**Implementation Notes:**
-- Use Next.js Server Actions (not API routes)
-- **Revalidation path:** `/groups/${groupId}` after each mutation
-- **Local state is transitional:** `expenses` state in `split-page.tsx` becomes a cache refreshed via `revalidatePath()`. May remove entirely later if revalidation is fast enough.
+**What was implemented:**
+- Server actions: `createExpense()`, `updateExpense()`, `deleteExpense()`
+- `split-page.tsx` removed local expenses state, now uses `initialExpenses` from server
+- Loading states disable buttons during operations
+- Error display for failed operations
+- `revalidatePath()` + `router.refresh()` for data sync
 
-**Files to modify:**
-| File | Action |
-|------|--------|
-| `app/actions/expenses.ts` | Create (server actions) |
-| `components/split-page.tsx` | Modify (call server actions) |
+**Key Files:**
+| File | Purpose |
+|------|---------|
+| `app/actions/expenses.ts` | Server actions for expense CRUD |
+| `components/split-page.tsx` | Calls server actions, manages UI state |
+| `components/expenses/expense-item.tsx` | Edit/delete icon buttons |
 
-**Constraints:**
-- No RLS yet (any group member can modify any expense)
-- No optimistic UI unless trivial
-- No real-time subscriptions
+---
+
+## Phase 7: Basic User Settings — COMPLETE ✓
+
+**Goal:** Allow users to update their display name.
+
+**Tasks:**
+- [x] Create server action (`app/actions/user.ts`)
+- [x] Create settings page (`app/settings/page.tsx`)
+- [x] Create settings form (`components/settings/settings-form.tsx`)
+- [x] Add settings link to Nav with gear icon
+
+**What was implemented:**
+- Server action `updateDisplayName(displayName)` gets user ID from auth session (not client props)
+- Settings page at `/settings` with display name form
+- Success/error feedback in form
+- Nav shows Settings (gear icon) and Log out (exit icon) buttons
+
+**Key Files:**
+| File | Purpose |
+|------|---------|
+| `app/actions/user.ts` | Server action for updating display name |
+| `app/settings/page.tsx` | Settings page (server component) |
+| `components/settings/settings-form.tsx` | Settings form (client component) |
+| `components/nav.tsx` | Navigation with Settings link |
+
+**Important:** Changing display_name does NOT rename existing groups. Group names are independent.
+
+---
+
+## Phase 8: Security (RLS) — NEXT
+
+**Goal:** Enforce access rules at the database level using Supabase Row Level Security.
+
+**Why RLS:**
+- Currently, any authenticated user could theoretically access any data via direct API calls
+- RLS ensures database-level protection regardless of client-side checks
+
+**Tasks:**
+- [ ] Enable RLS on `users` table
+- [ ] Enable RLS on `groups` table
+- [ ] Enable RLS on `group_members` table
+- [ ] Enable RLS on `expenses` table
+- [ ] Write policies for each table
+- [ ] Test with multiple accounts (verify cross-group access blocked)
+- [ ] Verify existing functionality still works
+
+**Policies to implement:**
+
+```sql
+-- users: can only read/update own profile
+-- groups: can only read groups where user is a member
+-- group_members: can only read memberships for groups user belongs to
+-- expenses: can only read/write expenses in groups user belongs to
+```
+
+**Testing checklist:**
+- [ ] User A cannot see User B's groups
+- [ ] User A cannot see expenses in groups they don't belong to
+- [ ] User A can still CRUD expenses in their own groups
+- [ ] New user signup still works (trigger creates group)
+
+**Files that may need updates:**
+- Supabase dashboard (SQL policies)
+- Possibly server actions if error handling changes
 
 ---
 
@@ -217,9 +282,14 @@ Server Component (page.tsx)
   ↓ fetches authenticated user
   ↓ fetches data from Supabase
 Client Component (split-page.tsx)
-  ↓ receives data as props
-  ↓ manages local state (useState)
-  ↓ handles CRUD operations (still local, not persisted)
+  ↓ receives data as props (initialExpenses, users, group)
+  ↓ manages UI state only (editingExpense, loading, error)
+  ↓ calls server actions for mutations
+Server Actions (app/actions/*.ts)
+  ↓ validates input
+  ↓ performs Supabase mutation
+  ↓ calls revalidatePath()
+  ↓ returns success/error
 ```
 
 ### Key Files
@@ -227,11 +297,15 @@ Client Component (split-page.tsx)
 | File | Purpose |
 |------|---------|
 | `app/page.tsx` | Landing page with AuthForm |
-| `app/groups/page.tsx` | Groups dashboard (needs membership filter) |
-| `app/groups/[groupId]/page.tsx` | Split page wrapper (needs membership check) |
+| `app/groups/page.tsx` | Groups dashboard |
+| `app/groups/[groupId]/page.tsx` | Split page wrapper |
+| `app/settings/page.tsx` | User settings page |
+| `app/actions/expenses.ts` | Expense CRUD server actions |
+| `app/actions/user.ts` | User profile server actions |
 | `components/split-page.tsx` | Main split page UI + logic (client) |
+| `components/settings/settings-form.tsx` | Settings form (client) |
 | `components/auth/auth-form.tsx` | Login/signup form |
-| `components/nav.tsx` | Navigation with logout |
+| `components/nav.tsx` | Navigation with settings/logout |
 | `lib/supabase.ts` | Browser Supabase client |
 | `lib/supabase-server.ts` | Server Supabase client |
 | `middleware.ts` | Auth route protection |

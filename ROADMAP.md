@@ -1,5 +1,5 @@
-Current Phase: Phase 6 – Expense Mutations
-Last Updated: 2025-12-23
+Current Phase: Phase 8 – Security (RLS)
+Last Updated: 2025-12-25
 
 
 ######################################################
@@ -71,22 +71,33 @@ Note: Group deletion intentionally deferred until roles, invitations, and RLS ar
 
 ⸻
 
-💸 Phase 6: Expense Mutations
+✅ Phase 6: Expense Mutations (COMPLETE)
 
 Goal: Make Simple Split fully functional.
 	•	Add expense (insert)
 	•	Edit expense (update)
 	•	Delete expense (delete)
 	•	Convert client handlers → server actions
-	•	Optional optimistic UI updates
+
+What was implemented:
+	•	Server actions in `app/actions/expenses.ts`
+	•	`split-page.tsx` calls server actions with loading/error states
+	•	Expenses persist to Supabase and survive page refresh
+	•	Icon buttons for edit (pencil) and delete (trash)
 
 ⸻
 
-⚙️ Phase 7: Basic User Settings
+✅ Phase 7: Basic User Settings (COMPLETE)
 
 Goal: Allow users to update their profile.
 	•	Change display name
-	•	Simple settings page or modal
+	•	Settings page at `/settings`
+
+What was implemented:
+	•	Settings page with display name form
+	•	Server action `updateDisplayName()` gets user from auth session
+	•	Nav includes Settings link with gear icon
+	•	Display name changes do NOT affect group names
 
 ⸻
 
