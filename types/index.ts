@@ -43,3 +43,22 @@ export type GroupBalances = {
   fairSharePerPerson: number
   balances: UserBalance[]
 }
+
+// Invitation types for Phase 9A
+export type InvitationStatus = 'pending' | 'accepted' | 'declined'
+
+export type Invitation = {
+  id: string
+  groupId: string
+  invitedByUserId: string
+  invitedEmail: string
+  status: InvitationStatus
+  createdAt: string
+  respondedAt: string | null
+}
+
+// Extended type with related data for UI display
+export type InvitationWithDetails = Invitation & {
+  groupName: string
+  inviterName: string
+}

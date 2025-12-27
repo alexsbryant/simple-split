@@ -8,13 +8,23 @@ import { BalanceSummary } from '@/components/balances/balance-summary'
 import { ExpenseForm } from '@/components/expenses/expense-form'
 import { ExpenseList } from '@/components/expenses/expense-list'
 import { Nav } from '@/components/nav'
+import { InviteForm } from '@/components/invitations/invite-form'
+import { GroupInvitationsList } from '@/components/invitations/group-invitations-list'
 import { createExpense, updateExpense, deleteExpense } from '@/app/actions/expenses'
+
+type PendingInvitation = {
+  id: string
+  invitedEmail: string
+  invitedByUserId: string
+  createdAt: string
+}
 
 interface SimpleSplitPageProps {
   currentUser: User
   group: Group
   users: User[]
   initialExpenses: Expense[]
+  pendingInvitations: PendingInvitation[]
 }
 
 export function SimpleSplitPage({
@@ -22,6 +32,7 @@ export function SimpleSplitPage({
   group,
   users,
   initialExpenses,
+  pendingInvitations,
 }: SimpleSplitPageProps) {
   const router = useRouter()
   const [editingExpense, setEditingExpense] = useState<Expense | null>(null)
@@ -110,12 +121,26 @@ export function SimpleSplitPage({
       <Nav />
       <main className="max-w-[640px] mx-auto px-4 py-8">
         {/* Header */}
-        <header className="mb-8">
-          <h1 className="text-4xl font-semibold text-white font-[family-name:var(--font-bodoni)]">Simple Split</h1>
-          <p className="text-[var(--text-secondary)] mt-1">
-            {group.name}
-          </p>
+        <header className="mb-6">
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <h1 className="text-4xl font-semibold text-white font-[family-name:var(--font-bodoni)]">Simple Split</h1>
+              <p className="text-[var(--text-secondary)] mt-1">
+                {group.name}
+              </p>
+            </div>
+            <div className="pt-2">
+              <InviteForm groupId={group.id} />
+            </div>
+          </div>
         </header>
+
+        {/* Pending Invitations */}
+        <GroupInvitationsList
+          invitations={pendingInvitations}
+          groupId={group.id}
+          currentUserId={currentUser.id}
+        />
 
         {/* Balance Summary */}
         <div className="mb-6">

@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { Nav } from '@/components/nav'
 import { CreateGroupSection } from '@/components/groups/create-group-section'
+import { PendingInvitationCard } from '@/components/invitations/pending-invitation-card'
 import { createClient } from '@/lib/supabase-server'
 
 export default async function GroupsPage() {
@@ -12,6 +13,33 @@ export default async function GroupsPage() {
   if (!user) {
     redirect('/')
   }
+
+  // Fetch user's email for invitation lookup
+  const { data: userData } = await supabase
+    .from('users')
+    .select('email')
+    .eq('id', user.id)
+    .single()
+
+  // Fetch pending invitations using helper function (bypasses RLS)
+  const { data: invitationsData } = userData?.email
+    ? await supabase.rpc('get_invitation_details', { user_email: userData.email })
+    : { data: [] }
+
+  type InvitationRow = {
+    id: string
+    group_id: string
+    group_name: string
+    inviter_name: string
+    created_at: string
+  }
+
+  const pendingInvitations = (invitationsData as InvitationRow[] | null)?.map(inv => ({
+    id: inv.id,
+    groupName: inv.group_name,
+    inviterName: inv.inviter_name,
+    createdAt: inv.created_at,
+  })) ?? []
 
   // Fetch group IDs where user is a member
   const { data: membershipData } = await supabase
@@ -45,6 +73,19 @@ export default async function GroupsPage() {
             Your Groups
           </h1>
         </header>
+
+        {pendingInvitations.length > 0 && (
+          <section className="mb-8">
+            <h2 className="text-lg font-semibold text-white mb-4">
+              Pending Invitations ({pendingInvitations.length})
+            </h2>
+            <div className="space-y-3">
+              {pendingInvitations.map(invitation => (
+                <PendingInvitationCard key={invitation.id} invitation={invitation} />
+              ))}
+            </div>
+          </section>
+        )}
 
         <CreateGroupSection userId={user.id} />
 

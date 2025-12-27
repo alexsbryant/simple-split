@@ -58,6 +58,14 @@ export default async function GroupPage({ params }: { params: { groupId: string 
     .eq('group_id', groupId)
     .order('created_at', { ascending: false })
 
+  // Fetch pending invitations for this group
+  const { data: invitationsData } = await supabase
+    .from('group_invitations')
+    .select('id, invited_email, invited_by_user_id, created_at')
+    .eq('group_id', groupId)
+    .eq('status', 'pending')
+    .order('created_at', { ascending: false })
+
   // Transform to match TypeScript types (snake_case → camelCase)
   const group: Group = {
     id: groupData.id,
@@ -92,12 +100,25 @@ export default async function GroupPage({ params }: { params: { groupId: string 
     updatedAt: e.updated_at,
   })) ?? []
 
+  const pendingInvitations = invitationsData?.map((inv: {
+    id: string
+    invited_email: string
+    invited_by_user_id: string
+    created_at: string
+  }) => ({
+    id: inv.id,
+    invitedEmail: inv.invited_email,
+    invitedByUserId: inv.invited_by_user_id,
+    createdAt: inv.created_at,
+  })) ?? []
+
   return (
     <SimpleSplitPage
       currentUser={currentUser}
       group={group}
       users={users}
       initialExpenses={expenses}
+      pendingInvitations={pendingInvitations}
     />
   )
 }

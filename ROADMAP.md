@@ -121,18 +121,24 @@ What was implemented:
 🤝 Phase 9: Invitations & Collaboration
 
 Goal: Let users share groups.
-	•	Invite users to groups via:
-	•	Email
-	•	Invite link
-	•	QR code (future-friendly)
-	•	Accept invite → add to group_members
-	•	Handle existing vs new users
 
-	Invitations will be accepted only by existing users (for now)
+### Phase 9A: Email-based Invitations (IN PROGRESS)
 
-Meaning:
-	•	If the email exists → they can accept
-	•	If not → show “Ask them to sign up first” (no magic auto-account yet)
+**What's being implemented:**
+- Invite users by email
+- Accept/decline invitations
+- Cancel pending invitations (inviter only)
+- Existing users only: if email not found → "Ask them to sign up first"
+- No notifications/emails — invitations appear on /groups dashboard
+
+**Code complete, pending database migration:**
+- `group_invitations` table with RLS policies (migrations 08, 09)
+- Server actions: createInvitation, acceptInvitation, declineInvitation, cancelInvitation
+- UI: Invite button on group page, pending invitations on dashboard
+
+### Phase 9B: Invite Links & QR Codes (FUTURE)
+- Invite link generation
+- QR code support
 
 ⸻
 

@@ -263,6 +263,69 @@ VALUES (
 
 ---
 
+## Phase 9A: Email-based Invitations — IN PROGRESS
+
+**Goal:** Let users invite others to groups by email. Minimal implementation for existing users only.
+
+**Scope:**
+- Email-based invitations only (no invite links, no QR codes)
+- Invitations can only be accepted by existing users
+- If email not found → show "Ask them to sign up first"
+- No roles/permissions beyond membership
+
+**Database:**
+- [x] Create `group_invitations` table (`supabase/migrations/08_invitations_table.sql`)
+- [x] Add RLS policies for invitations (`supabase/migrations/09_invitations_rls.sql`)
+- [ ] Run migrations in Supabase dashboard
+
+**Types:**
+- [x] Add `Invitation` and `InvitationWithDetails` types to `types/index.ts`
+
+**Server Actions** (`app/actions/invitations.ts`):
+- [x] `createInvitation(groupId, email)` - create pending invitation
+- [x] `acceptInvitation(invitationId)` - accept and join group
+- [x] `declineInvitation(invitationId)` - decline invitation
+- [x] `cancelInvitation(invitationId, groupId)` - cancel pending invitation (inviter only)
+
+**UI - Groups Dashboard** (`app/groups/page.tsx`):
+- [x] Fetch pending invitations for current user
+- [x] Display "Pending Invitations" section with Accept/Decline buttons
+- [x] Create `components/invitations/pending-invitation-card.tsx`
+
+**UI - Group Detail Page**:
+- [x] Add "Invite" button to header (`components/split-page.tsx`)
+- [x] Create invite form component (`components/invitations/invite-form.tsx`)
+- [x] Display pending invitations for the group (`components/invitations/group-invitations-list.tsx`)
+- [x] Allow inviter to cancel their pending invitations
+
+**Testing:**
+- [ ] Run migrations in Supabase
+- [ ] Test invite flow: send invite to existing user email
+- [ ] Test accept flow: invitee sees invitation on dashboard, can accept
+- [ ] Test decline flow: invitee can decline
+- [ ] Test cancel flow: inviter can cancel pending invitation
+- [ ] Test error cases:
+  - [ ] Invite non-existent email → shows "Ask them to sign up first"
+  - [ ] Invite existing member → shows "Already a member"
+  - [ ] Duplicate pending invite → shows "Invitation already sent"
+- [ ] Verify RLS: users can only see/modify their own invitations
+
+**Key Files:**
+| File | Purpose |
+|------|---------|
+| `supabase/migrations/08_invitations_table.sql` | Invitations table definition |
+| `supabase/migrations/09_invitations_rls.sql` | RLS policies for invitations |
+| `types/index.ts` | Invitation type definitions |
+| `app/actions/invitations.ts` | Server actions for invite CRUD |
+| `app/groups/page.tsx` | Groups dashboard with pending invitations |
+| `app/groups/[groupId]/page.tsx` | Group detail fetching invitations |
+| `components/split-page.tsx` | Group page with invite button |
+| `components/invitations/invite-form.tsx` | Email invite form |
+| `components/invitations/pending-invitation-card.tsx` | Accept/Decline card |
+| `components/invitations/group-invitations-list.tsx` | Pending invites for group |
+
+---
+
 ## Architecture
 
 ### Current Data Flow
@@ -295,10 +358,12 @@ Server Actions (app/actions/*.ts)
 | `app/settings/page.tsx` | User settings page |
 | `app/actions/expenses.ts` | Expense CRUD server actions |
 | `app/actions/user.ts` | User profile server actions |
+| `app/actions/invitations.ts` | Invitation server actions |
 | `components/split-page.tsx` | Main split page UI + logic (client) |
 | `components/settings/settings-form.tsx` | Settings form (client) |
 | `components/auth/auth-form.tsx` | Login/signup form |
 | `components/nav.tsx` | Navigation with settings/logout |
+| `components/invitations/*` | Invitation UI components |
 | `lib/supabase.ts` | Browser Supabase client |
 | `lib/supabase-server.ts` | Server Supabase client |
 | `middleware.ts` | Auth route protection |
