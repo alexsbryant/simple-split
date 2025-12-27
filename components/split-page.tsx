@@ -10,7 +10,9 @@ import { ExpenseList } from '@/components/expenses/expense-list'
 import { Nav } from '@/components/nav'
 import { InviteForm } from '@/components/invitations/invite-form'
 import { GroupInvitationsList } from '@/components/invitations/group-invitations-list'
+import { Button } from '@/components/ui/button'
 import { createExpense, updateExpense, deleteExpense } from '@/app/actions/expenses'
+import { deleteGroup } from '@/app/actions/groups'
 
 type PendingInvitation = {
   id: string
@@ -25,6 +27,7 @@ interface SimpleSplitPageProps {
   users: User[]
   initialExpenses: Expense[]
   pendingInvitations: PendingInvitation[]
+  isCreator: boolean
 }
 
 export function SimpleSplitPage({
@@ -33,11 +36,14 @@ export function SimpleSplitPage({
   users,
   initialExpenses,
   pendingInvitations,
+  isCreator,
 }: SimpleSplitPageProps) {
   const router = useRouter()
   const [editingExpense, setEditingExpense] = useState<Expense | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [deletingGroup, setDeletingGroup] = useState(false)
+  const [deleteError, setDeleteError] = useState<string | null>(null)
 
   // Calculate balances from server data
   const balances = calculateBalances(initialExpenses, users)
@@ -116,6 +122,27 @@ export function SimpleSplitPage({
     setEditingExpense(null)
   }
 
+  // Delete group (creator only)
+  const handleDeleteGroup = async () => {
+    const confirmed = window.confirm(
+      `Delete "${group.name}"? This will permanently delete all expenses, members, and invitations. This action cannot be undone.`
+    )
+
+    if (!confirmed) return
+
+    setDeletingGroup(true)
+    setDeleteError(null)
+
+    const result = await deleteGroup(group.id)
+
+    if (result.success) {
+      router.push('/groups')
+    } else {
+      setDeleteError(result.error || 'Failed to delete group')
+      setDeletingGroup(false)
+    }
+  }
+
   return (
     <div className="min-h-screen">
       <Nav />
@@ -175,6 +202,27 @@ export function SimpleSplitPage({
           onDelete={handleDeleteExpense}
           loading={loading}
         />
+
+        {/* Danger Zone - Only visible to creator */}
+        {isCreator && (
+          <section className="glass p-6 mt-8">
+            <h2 className="text-lg font-semibold text-white mb-3">Danger Zone</h2>
+            <p className="text-sm text-[var(--text-secondary)] mb-4">
+              Once you delete a group, there is no going back. All expenses and data will be permanently deleted.
+            </p>
+            <Button
+              variant="danger"
+              onClick={handleDeleteGroup}
+              disabled={deletingGroup}
+              className="cursor-pointer"
+            >
+              {deletingGroup ? 'Deleting...' : 'Delete Group'}
+            </Button>
+            {deleteError && (
+              <p className="text-sm text-red-400 mt-2">{deleteError}</p>
+            )}
+          </section>
+        )}
       </main>
     </div>
   )

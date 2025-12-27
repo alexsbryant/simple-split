@@ -1,5 +1,5 @@
-Current Phase: Phase 9 – Invitations & Collaboration
-Last Updated: 2025-12-25
+Current Phase: Phase 10 – UX & Polish
+Last Updated: 2025-12-27
 
 
 ######################################################
@@ -118,27 +118,39 @@ What was implemented:
 
 ⸻
 
-🤝 Phase 9: Invitations & Collaboration
+✅ Phase 9A: Email-based Invitations (COMPLETE)
 
-Goal: Let users share groups.
+Goal: Let users invite others to groups by email.
 
-### Phase 9A: Email-based Invitations (IN PROGRESS)
-
-**What's being implemented:**
-- Invite users by email
-- Accept/decline invitations
+**What was implemented:**
+- Invite users by email from group detail page
+- Accept/decline invitations from groups dashboard
 - Cancel pending invitations (inviter only)
 - Existing users only: if email not found → "Ask them to sign up first"
 - No notifications/emails — invitations appear on /groups dashboard
+- Helper functions (SECURITY DEFINER) to bypass RLS for invitation lookups
+- Migration files: 08-11 in `supabase/migrations/`
 
-**Code complete, pending database migration:**
-- `group_invitations` table with RLS policies (migrations 08, 09)
-- Server actions: createInvitation, acceptInvitation, declineInvitation, cancelInvitation
-- UI: Invite button on group page, pending invitations on dashboard
+⸻
 
-### Phase 9B: Invite Links & QR Codes (FUTURE)
-- Invite link generation
-- QR code support
+✅ Phase 9B: Group Deletion (COMPLETE)
+
+Goal: Allow group creators to delete their groups.
+
+**What was implemented:**
+- Creator-only deletion (RLS DELETE policy enforces `created_by = auth.uid()`)
+- "Danger Zone" section at bottom of group page (visible to creator only)
+- Confirmation dialog before deletion
+- Hard delete with cascade cleanup (removes group_members, expenses, invitations)
+- Redirects to `/groups` after successful deletion
+- Error handling and loading states
+- Migration file: 12 in `supabase/migrations/`
+
+**Important notes:**
+- Only group creators can delete (enforced at both RLS and server action level)
+- No soft delete, ownership transfer, or undo functionality
+- Database cascade deletes handle cleanup automatically
+- Non-creators do not see deletion UI
 
 ⸻
 
@@ -149,7 +161,7 @@ Goal: Improve usability and feel.
 	•	Error handling
 	•	Empty states
 	•	Confirm dialogs
-	•	Mobile polish (e.g. Expenses Table items become large and multiple lines when in smaller screen size, needs to look cleaner and smaller.)
+	•	Mobile polish (e.g. Expenses Table items become large and multiple lines when in smaller screen size, needs to look cleaner and smaller when viewing on smallest windows.)
 	•	Update README.md with a concise and appealing description of the simple cost splitting app, tech stack, version and what's included.
 
 ⸻
@@ -188,3 +200,6 @@ Future Ideas
 	•	User default currency change in settings
 	•	Currency choice on 'create new group', defaults to user's chosen prefrence currency
 	•	Option to choose currency per expense (with a warning that conversion from expense currency to group's currency is the conversion rate as of the time expense listed, and may not accuratly represent the amount spent at the time.)
+
+	- Invite link generation
+	- QR code support

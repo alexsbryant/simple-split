@@ -263,7 +263,7 @@ VALUES (
 
 ---
 
-## Phase 9A: Email-based Invitations — IN PROGRESS
+## Phase 9A: Email-based Invitations — COMPLETE ✓
 
 **Goal:** Let users invite others to groups by email. Minimal implementation for existing users only.
 
@@ -273,48 +273,32 @@ VALUES (
 - If email not found → show "Ask them to sign up first"
 - No roles/permissions beyond membership
 
-**Database:**
-- [x] Create `group_invitations` table (`supabase/migrations/08_invitations_table.sql`)
-- [x] Add RLS policies for invitations (`supabase/migrations/09_invitations_rls.sql`)
-- [ ] Run migrations in Supabase dashboard
+**What was implemented:**
+- Database schema: `group_invitations` table with RLS policies
+- Helper functions (SECURITY DEFINER) to bypass RLS for invitation lookups
+- Server actions: createInvitation, acceptInvitation, declineInvitation, cancelInvitation
+- UI: Invite button on group page, pending invitations on dashboard
+- Inviter can cancel pending invitations
+- Fixed hydration errors with consistent date formatting
 
-**Types:**
-- [x] Add `Invitation` and `InvitationWithDetails` types to `types/index.ts`
-
-**Server Actions** (`app/actions/invitations.ts`):
-- [x] `createInvitation(groupId, email)` - create pending invitation
-- [x] `acceptInvitation(invitationId)` - accept and join group
-- [x] `declineInvitation(invitationId)` - decline invitation
-- [x] `cancelInvitation(invitationId, groupId)` - cancel pending invitation (inviter only)
-
-**UI - Groups Dashboard** (`app/groups/page.tsx`):
-- [x] Fetch pending invitations for current user
-- [x] Display "Pending Invitations" section with Accept/Decline buttons
-- [x] Create `components/invitations/pending-invitation-card.tsx`
-
-**UI - Group Detail Page**:
-- [x] Add "Invite" button to header (`components/split-page.tsx`)
-- [x] Create invite form component (`components/invitations/invite-form.tsx`)
-- [x] Display pending invitations for the group (`components/invitations/group-invitations-list.tsx`)
-- [x] Allow inviter to cancel their pending invitations
-
-**Testing:**
-- [ ] Run migrations in Supabase
-- [ ] Test invite flow: send invite to existing user email
-- [ ] Test accept flow: invitee sees invitation on dashboard, can accept
-- [ ] Test decline flow: invitee can decline
-- [ ] Test cancel flow: inviter can cancel pending invitation
-- [ ] Test error cases:
-  - [ ] Invite non-existent email → shows "Ask them to sign up first"
-  - [ ] Invite existing member → shows "Already a member"
-  - [ ] Duplicate pending invite → shows "Invitation already sent"
-- [ ] Verify RLS: users can only see/modify their own invitations
+**Testing verified:**
+- [x] Run migrations in Supabase (08-11)
+- [x] Test invite flow: send invite to existing user email
+- [x] Test accept flow: invitee sees invitation on dashboard, can accept
+- [x] Test decline flow: invitee can decline
+- [x] Test cancel flow: inviter can cancel pending invitation
+- [x] Test error cases:
+  - [x] Invite non-existent email → shows "Ask them to sign up first"
+  - [x] Invite existing member → shows "Already a member"
+  - [x] Duplicate pending invite → shows "Invitation already sent"
 
 **Key Files:**
 | File | Purpose |
 |------|---------|
 | `supabase/migrations/08_invitations_table.sql` | Invitations table definition |
 | `supabase/migrations/09_invitations_rls.sql` | RLS policies for invitations |
+| `supabase/migrations/10_email_exists_function.sql` | Helper to check email exists (bypasses RLS) |
+| `supabase/migrations/11_invitation_helpers.sql` | Helper functions for invitation details |
 | `types/index.ts` | Invitation type definitions |
 | `app/actions/invitations.ts` | Server actions for invite CRUD |
 | `app/groups/page.tsx` | Groups dashboard with pending invitations |
@@ -323,6 +307,65 @@ VALUES (
 | `components/invitations/invite-form.tsx` | Email invite form |
 | `components/invitations/pending-invitation-card.tsx` | Accept/Decline card |
 | `components/invitations/group-invitations-list.tsx` | Pending invites for group |
+
+---
+
+## Phase 9B: Group Deletion (Minimal) — COMPLETE ✓
+
+**Goal:** Allow group creators to delete their groups.
+
+**Scope (strict):**
+- Only the group creator can delete
+- Hard delete only (no soft delete)
+- Cascade delete is acceptable
+- No leave-group functionality
+- No ownership transfer
+- No undo
+- No audit/history
+- No UI for non-creators
+
+**What was implemented:**
+- Database: RLS DELETE policy (creator-only)
+- Server action: `deleteGroup(groupId)` in `app/actions/groups.ts`
+- UI: "Danger Zone" section at bottom of group page (only visible to creator)
+- Confirmation dialog before deletion
+- Error handling and loading states
+- Redirects to `/groups` after successful deletion
+- Relies on database CASCADE constraints for cleanup
+
+**Testing verified:**
+- [x] Group creator sees "Danger Zone" section
+- [x] Non-creator does NOT see "Danger Zone"
+- [x] Confirmation dialog appears on delete
+- [x] Successful deletion redirects to `/groups`
+- [x] Deleted group removed from groups list
+- [x] RLS blocks non-creator deletion attempts
+
+**Key Files:**
+| File | Purpose |
+|------|---------|
+| `supabase/migrations/12_groups_delete_policy.sql` | RLS DELETE policy for groups |
+| `app/actions/groups.ts` | Server action for deleteGroup |
+| `app/groups/[groupId]/page.tsx` | Determines isCreator, passes to component |
+| `components/split-page.tsx` | Danger Zone UI with delete button |
+
+**Important Notes:**
+- The `groups` table already had `created_by` column (from Phase 5)
+- Database cascade deletes handle cleanup of:
+  - `group_members` (members removed)
+  - `expenses` (all expenses deleted)
+  - `group_invitations` (pending invites deleted)
+- RLS policy: `created_by = auth.uid()` enforces creator-only delete at DB level
+- Server action includes defensive creator check before RLS
+- UI uses existing `Button` component with `variant="danger"`
+- Matches existing confirmation pattern (`window.confirm()`)
+
+**Future Considerations (NOT implemented):**
+- Leave group functionality (for non-creators)
+- Ownership transfer
+- Soft delete / archiving
+- Deletion audit log
+- Email notifications to members
 
 ---
 

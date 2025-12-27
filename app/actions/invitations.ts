@@ -43,7 +43,7 @@ export async function createInvitation(
     return { success: false, error: 'User not found. Ask them to sign up first.' }
   }
 
-  const invitedUserId = invitedUser.user_id
+  const invitedUserId = (invitedUser as { user_id: string }).user_id
 
   // Check if user is already a member
   const { data: existingMember } = await supabase

@@ -66,6 +66,9 @@ export default async function GroupPage({ params }: { params: { groupId: string 
     .eq('status', 'pending')
     .order('created_at', { ascending: false })
 
+  // Determine if current user is the group creator
+  const isCreator = groupData.created_by === authUser.id
+
   // Transform to match TypeScript types (snake_case → camelCase)
   const group: Group = {
     id: groupData.id,
@@ -119,6 +122,7 @@ export default async function GroupPage({ params }: { params: { groupId: string 
       users={users}
       initialExpenses={expenses}
       pendingInvitations={pendingInvitations}
+      isCreator={isCreator}
     />
   )
 }

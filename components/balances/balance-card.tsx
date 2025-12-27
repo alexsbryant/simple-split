@@ -33,7 +33,7 @@ export function BalanceCard({ balance }: BalanceCardProps) {
         </span>
       </div>
       <p className="text-xs text-[var(--text-muted)] mt-1">
-        Paid {formatCurrency(balance.totalPaid)} · Owes {formatCurrency(balance.fairShare)}
+        Paid {formatCurrency(balance.totalPaid)}
       </p>
     </div>
   )
