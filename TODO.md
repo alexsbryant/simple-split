@@ -392,6 +392,31 @@ VALUES (
 
 ---
 
+## Phase 11: Deployment — COMPLETE ✓
+
+**Goal:** Ship it to production.
+
+**What was implemented:**
+- [x] Pre-deployment audit (auth, RLS, env vars, middleware)
+- [x] Added `/settings` to middleware route protection
+- [x] Deployed to Vercel at https://simple-split-seven.vercel.app/
+- [x] Configured environment variables on Vercel
+- [x] Added production URL to Supabase Auth redirect URLs
+- [x] Production testing passed (auth flow, route protection, expense CRUD)
+
+**Production Setup:**
+| Service | Configuration |
+|---------|---------------|
+| Vercel | Auto-deploys on push to `main` |
+| Supabase | Auth redirects configured for production URL |
+| Middleware | Protects `/groups/*` and `/settings` routes |
+
+**Environment Variables (Vercel):**
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+
+---
+
 ## Architecture
 
 ### Current Data Flow
