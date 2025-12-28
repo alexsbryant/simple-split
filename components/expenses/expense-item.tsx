@@ -20,60 +20,57 @@ export function ExpenseItem({
   disabled = false,
 }: ExpenseItemProps) {
   return (
-    <div className="glass-sm p-4 transition-all duration-150 hover:bg-[rgba(255,255,255,0.08)]">
-      <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
-        {/* Date */}
-        <span className="text-sm text-[var(--text-muted)] w-full md:w-16 shrink-0">
-          {formatDate(expense.createdAt)}
-        </span>
+    <div className="glass-sm p-3 md:p-4 transition-all duration-150 hover:bg-[rgba(255,255,255,0.08)]">
+      {/* Mobile: 2-line compact layout, Desktop: horizontal layout */}
 
-        {/* Description */}
-        <span className="flex-1 font-medium text-[var(--text-primary)]">
+      {/* Line 1: Description + Amount */}
+      <div className="flex items-start justify-between gap-2">
+        <span className="flex-1 font-medium text-[var(--text-primary)] text-sm md:text-base leading-tight">
           {expense.description}
         </span>
-
-        {/* Payer */}
-        <span className="text-sm text-[var(--text-secondary)]">
-          {payerName}
-        </span>
-
-        {/* Amount */}
-        <span className="font-semibold min-w-20 text-right shrink-0 text-[var(--text-primary)]">
+        <span className="font-semibold text-[var(--text-primary)] shrink-0">
           {formatCurrency(expense.amount)}
         </span>
       </div>
 
-      {/* Actions - only for owner */}
-      {isOwner && (
-        <div className="flex gap-2 mt-3 md:justify-end">
-          <Button
-            variant="secondary"
-            onClick={() => onEdit(expense)}
-            className="p-2"
-            disabled={disabled}
-            aria-label="Edit expense"
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-            </svg>
-          </Button>
-          <Button
-            variant="danger"
-            onClick={() => {
-              if (window.confirm(`Delete "${expense.description}"?`)) {
-                onDelete(expense.id)
-              }
-            }}
-            className="p-2"
-            disabled={disabled}
-            aria-label="Delete expense"
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-            </svg>
-          </Button>
-        </div>
-      )}
+      {/* Line 2: Payer • Date + Actions */}
+      <div className="flex items-center justify-between gap-2 mt-1">
+        <span className="text-xs md:text-sm text-[var(--text-muted)]">
+          {payerName} · {formatDate(expense.createdAt)}
+        </span>
+
+        {/* Actions - only for owner */}
+        {isOwner && (
+          <div className="flex gap-1">
+            <Button
+              variant="secondary"
+              onClick={() => onEdit(expense)}
+              className="p-1.5 md:p-2"
+              disabled={disabled}
+              aria-label="Edit expense"
+            >
+              <svg className="w-3.5 h-3.5 md:w-4 md:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+              </svg>
+            </Button>
+            <Button
+              variant="danger"
+              onClick={() => {
+                if (window.confirm(`Delete "${expense.description}"?`)) {
+                  onDelete(expense.id)
+                }
+              }}
+              className="p-1.5 md:p-2"
+              disabled={disabled}
+              aria-label="Delete expense"
+            >
+              <svg className="w-3.5 h-3.5 md:w-4 md:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              </svg>
+            </Button>
+          </div>
+        )}
+      </div>
     </div>
   )
 }

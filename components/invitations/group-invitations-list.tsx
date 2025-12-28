@@ -91,7 +91,11 @@ export function GroupInvitationsList({
               </div>
               {isOwner && (
                 <button
-                  onClick={() => handleCancel(invitation.id)}
+                  onClick={() => {
+                    if (window.confirm(`Cancel invitation to ${invitation.invitedEmail}?`)) {
+                      handleCancel(invitation.id)
+                    }
+                  }}
                   disabled={loadingId === invitation.id}
                   className="text-[var(--text-secondary)] hover:text-red-400 disabled:opacity-50 cursor-pointer p-1"
                   title="Cancel invitation"

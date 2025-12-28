@@ -27,30 +27,30 @@ type PendingInvitationCardProps = {
 
 export function PendingInvitationCard({ invitation }: PendingInvitationCardProps) {
   const router = useRouter()
-  const [loading, setLoading] = useState(false)
+  const [loadingAction, setLoadingAction] = useState<'accept' | 'decline' | null>(null)
   const [error, setError] = useState<string | null>(null)
 
   const handleAccept = async () => {
-    setLoading(true)
+    setLoadingAction('accept')
     setError(null)
     const result = await acceptInvitation(invitation.id)
     if (result.success && result.groupId) {
       router.push(`/groups/${result.groupId}`)
     } else {
       setError(result.error || 'Failed to accept invitation')
-      setLoading(false)
+      setLoadingAction(null)
     }
   }
 
   const handleDecline = async () => {
-    setLoading(true)
+    setLoadingAction('decline')
     setError(null)
     const result = await declineInvitation(invitation.id)
     if (result.success) {
       router.refresh()
     } else {
       setError(result.error || 'Failed to decline invitation')
-      setLoading(false)
+      setLoadingAction(null)
     }
   }
 
@@ -72,19 +72,31 @@ export function PendingInvitationCard({ invitation }: PendingInvitationCardProps
         <div className="flex gap-2">
           <button
             onClick={handleAccept}
-            disabled={loading}
+            disabled={loadingAction !== null}
             className="btn-primary px-3 py-2 text-sm flex items-center gap-1 disabled:opacity-50 cursor-pointer"
           >
-            <CheckIcon />
-            Accept
+            {loadingAction === 'accept' ? (
+              'Accepting...'
+            ) : (
+              <>
+                <CheckIcon />
+                Accept
+              </>
+            )}
           </button>
           <button
             onClick={handleDecline}
-            disabled={loading}
+            disabled={loadingAction !== null}
             className="btn-secondary px-3 py-2 text-sm flex items-center gap-1 disabled:opacity-50 cursor-pointer"
           >
-            <XIcon />
-            Decline
+            {loadingAction === 'decline' ? (
+              'Declining...'
+            ) : (
+              <>
+                <XIcon />
+                Decline
+              </>
+            )}
           </button>
         </div>
       </div>
