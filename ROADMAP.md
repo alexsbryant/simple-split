@@ -181,7 +181,7 @@ Goal: Improve usability and feel.
 Goal: Ship it.
 
 **What was implemented:**
-- Deployed to Vercel at https://simple-split-seven.vercel.app/
+- Deployed to Vercel at https://settleit.xyz (also: https://simple-split-seven.vercel.app/)
 - Environment variables configured (NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY)
 - Supabase Auth redirect URLs configured for production domain
 - Added `/settings` route to middleware protection

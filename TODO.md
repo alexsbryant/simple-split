@@ -399,7 +399,7 @@ VALUES (
 **What was implemented:**
 - [x] Pre-deployment audit (auth, RLS, env vars, middleware)
 - [x] Added `/settings` to middleware route protection
-- [x] Deployed to Vercel at https://simple-split-seven.vercel.app/
+- [x] Deployed to Vercel at https://settleit.xyz (also: https://simple-split-seven.vercel.app/)
 - [x] Configured environment variables on Vercel
 - [x] Added production URL to Supabase Auth redirect URLs
 - [x] Production testing passed (auth flow, route protection, expense CRUD)
