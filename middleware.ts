@@ -26,7 +26,7 @@ export async function middleware(request: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser()
 
   // Redirect unauthenticated users away from protected routes
-  if (!user && request.nextUrl.pathname.startsWith('/groups')) {
+  if (!user && (request.nextUrl.pathname.startsWith('/groups') || request.nextUrl.pathname === '/settings')) {
     const url = request.nextUrl.clone()
     url.pathname = '/'
     return NextResponse.redirect(url)
@@ -43,5 +43,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/', '/groups/:path*'],
+  matcher: ['/', '/groups/:path*', '/settings'],
 }
