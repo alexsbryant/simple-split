@@ -2,6 +2,8 @@
 
 A simple expense-splitting app for groups. Track shared costs, see who owes what, and keep things fair.
 
+Designed for trips, shared households, and small groups who want to split costs without unnecessary complexity.
+
 ## Features
 
 - Create and manage expense groups
@@ -39,6 +41,6 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 
 ## Status
 
-**Version:** 1.0 (Phase 10 - UX Polish)
+**Version:** 1.0
 
-All core functionality is complete. Currently in polish phase for improved usability and mobile experience.
+Settle is feature-complete and stable. Future work may include invitation links, QR codes, and mobile-native builds.
