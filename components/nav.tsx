@@ -19,18 +19,18 @@ export function Nav() {
 
   return (
     <nav className="border-b border-[var(--glass-border)] bg-[rgba(0,0,0,0.2)] backdrop-blur-sm">
-      <div className="max-w-[640px] mx-auto px-4 py-3 flex items-center justify-between">
+      <div className="max-w-full mx-auto px-4 py-2 flex items-center justify-between">
         <div className="flex items-center gap-4">
           <Link
             href="/groups"
-            className="flex items-center gap-2 hover:opacity-80 transition-opacity"
+            className="flex items-center gap-2 opacity-90 hover:opacity-75 transition-opacity"
           >
             <img
               src="/logos/settle-icon.png"
               alt="Settle"
-              className="h-8 w-8 rounded-lg"
+              className="h-9 w-9 rounded-lg"
             />
-            <span className="text-lg font-semibold text-white font-[family-name:var(--font-bodoni)]">
+            <span className="text-2xl font-semibold text-white font-[family-name:var(--font-bodoni)]">
               Settle
             </span>
           </Link>

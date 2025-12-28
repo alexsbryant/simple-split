@@ -10,7 +10,7 @@ export default function LandingPage() {
           className="mb-10 h-32 md:h-40 w-auto rounded-[16px]"
         />
         <p className="text-lg text-[var(--text-secondary)] mb-10 text-center">
-          Split expenses with friends, simply.
+          Expense splitting, simplified.
         </p>
         <AuthForm />
       </div>
