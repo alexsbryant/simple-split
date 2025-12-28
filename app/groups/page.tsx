@@ -69,7 +69,7 @@ export default async function GroupsPage() {
       <Nav />
       <main className="max-w-[640px] mx-auto px-4 py-8">
         <header className="mb-8">
-          <h1 className="text-4xl font-semibold text-white font-[family-name:var(--font-bodoni)]">
+          <h1 className="text-4xl font-semibold text-white">
             Your Groups
           </h1>
         </header>

@@ -23,9 +23,16 @@ export function Nav() {
         <div className="flex items-center gap-4">
           <Link
             href="/groups"
-            className="text-lg font-semibold text-white font-[family-name:var(--font-bodoni)] hover:text-[var(--text-secondary)] transition-colors"
+            className="flex items-center gap-2 hover:opacity-80 transition-opacity"
           >
-            Simple Split
+            <img
+              src="/logos/settle-icon.png"
+              alt="Settle"
+              className="h-8 w-8 rounded-lg"
+            />
+            <span className="text-lg font-semibold text-white font-[family-name:var(--font-bodoni)]">
+              Settle
+            </span>
           </Link>
 
           {isOnSplitPage && (

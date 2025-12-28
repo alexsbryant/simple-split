@@ -19,7 +19,7 @@ const bodoniModa = Bodoni_Moda({
 });
 
 export const metadata: Metadata = {
-  title: "Simple Split",
+  title: "Settle",
   description: "Split expenses with your group",
 };
 

@@ -28,6 +28,7 @@ interface SimpleSplitPageProps {
   initialExpenses: Expense[]
   pendingInvitations: PendingInvitation[]
   isCreator: boolean
+  creatorName: string
 }
 
 export function SimpleSplitPage({
@@ -37,6 +38,7 @@ export function SimpleSplitPage({
   initialExpenses,
   pendingInvitations,
   isCreator,
+  creatorName,
 }: SimpleSplitPageProps) {
   const router = useRouter()
   const [editingExpense, setEditingExpense] = useState<Expense | null>(null)
@@ -151,9 +153,9 @@ export function SimpleSplitPage({
         <header className="mb-6">
           <div className="flex items-start justify-between gap-4">
             <div>
-              <h1 className="text-4xl font-semibold text-white font-[family-name:var(--font-bodoni)]">Simple Split</h1>
+              <h1 className="text-4xl font-semibold text-white">{group.name}</h1>
               <p className="text-[var(--text-secondary)] mt-1">
-                {group.name}
+                Created by {creatorName}
               </p>
             </div>
             <div className="pt-2">

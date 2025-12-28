@@ -85,6 +85,10 @@ export default async function GroupPage({ params }: { params: { groupId: string 
     }
   }) ?? []
 
+  // Find the creator's display name
+  const creator = users.find(u => u.id === groupData.created_by)
+  const creatorName = creator?.displayName ?? 'Unknown'
+
   const expenses: Expense[] = expensesData?.map((e: {
     id: string
     group_id: string
@@ -123,6 +127,7 @@ export default async function GroupPage({ params }: { params: { groupId: string 
       initialExpenses={expenses}
       pendingInvitations={pendingInvitations}
       isCreator={isCreator}
+      creatorName={creatorName}
     />
   )
 }
