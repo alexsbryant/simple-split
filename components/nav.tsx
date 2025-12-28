@@ -28,7 +28,7 @@ export function Nav() {
             <img
               src="/logos/settle-icon.png"
               alt="Settle"
-              className="h-9 w-9 rounded-lg"
+              className="h-8 w-8 rounded-lg"
             />
             <span className="text-2xl font-semibold text-white font-[family-name:var(--font-bodoni)]">
               Settle
