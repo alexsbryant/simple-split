@@ -435,19 +435,5 @@ npx tsc --noEmit # Type check
 
 *DO NOT DELETE WHEN UPDATING TODO.md - CLAUDE CAN RESPOND TO IDEAS IN THIS SECTION DURING PLAN MODE AND DISCUSS ITEMS WITH ME, BUT DO NOT EDIT OR DELETE*
 
-- I see the app as being three pages
-
-    1. Landing page - login / create account component and large Simple Split title.
-
-    2. Dashboard / groups page - A simple table of groups available to user if any, with a button to create a 'new group'.
-
-    3. The main Simple Split page that has been worked on already, showing the working Simple Split app, balance card with summary, expense form below, and expense list below that.
-
-- Users create an account or log in, taken to a page with no groups, option to either create a split group or join a group.  If they select join they put in the email address or username of the person whos group they are trying to join.  Once a group is created, there is an option to add to group, and use either another user's username or their email address.  Invited users can join the group and will remain in the group.  They have the option to leave groups.  The creator has the option to remove users from groups.
-
-(Big question is how do we implement this?  Is this all dooable on Supabase?  When is the best time to create the UI for the landing / log-in page and groups page, following the main app's design?)
-
-
-
 
 *NON-CLAUDE BRAINSTORMING SECTION ENDS*

@@ -203,3 +203,5 @@ Future Ideas
 
 	- Invite link generation
 	- QR code support
+	- Change group name
+	- Remove user from group / leave group, but keep history of user's expenses held within group
