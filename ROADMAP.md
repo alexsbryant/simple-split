@@ -1,4 +1,4 @@
-Current Phase: Phase 11 – Deployment
+Current Phase: v1 Complete
 Last Updated: 2025-12-28
 
 
@@ -176,13 +176,23 @@ Goal: Improve usability and feel.
 
 ⸻
 
-🚀 Phase 11: Deployment
+✅ Phase 11: Deployment (COMPLETE)
 
 Goal: Ship it.
-	•	Deploy to Vercel
-	•	Configure environment variables
-	•	Test auth & redirects in production
-	•	Share with real users
+
+**What was implemented:**
+- Deployed to Vercel at https://simple-split-seven.vercel.app/
+- Environment variables configured (NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY)
+- Supabase Auth redirect URLs configured for production domain
+- Added `/settings` route to middleware protection
+- Production testing passed: auth flow, route protection, expense CRUD
+
+**Production Setup:**
+| Service | Configuration |
+|---------|---------------|
+| Vercel | Auto-deploys on push to `main` |
+| Supabase | Auth redirects configured for production URL |
+| Middleware | Protects `/groups/*` and `/settings` routes |
 
 ⸻
 
