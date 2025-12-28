@@ -1,5 +1,5 @@
-Current Phase: Phase 10 – UX & Polish
-Last Updated: 2025-12-27
+Current Phase: Phase 11 – Deployment
+Last Updated: 2025-12-28
 
 
 ######################################################
@@ -154,15 +154,25 @@ Goal: Allow group creators to delete their groups.
 
 ⸻
 
-✨ Phase 10: UX & Polish
+✅ Phase 10: UX & Polish (COMPLETE)
 
 Goal: Improve usability and feel.
-	•	Loading states
-	•	Error handling
-	•	Empty states
-	•	Confirm dialogs
-	•	Mobile polish (e.g. Expenses Table items become large and multiple lines when in smaller screen size, needs to look cleaner and smaller when viewing on smallest windows.)
-	•	Update README.md with a concise and appealing description of the simple cost splitting app, tech stack, version and what's included.
+
+**What was implemented:**
+- Compact 2-line expense layout on mobile (description+amount, payer+date+actions)
+- Accept/Decline invitation buttons show loading text ("Accepting...", "Declining...")
+- Cancel invitation requires confirmation dialog
+- Mobile hamburger menu in nav (logo icon only on mobile, dropdown for Settings/Logout/Back)
+- Updated README.md with app description, features, and tech stack
+
+**Key Files:**
+| File | Purpose |
+|------|---------|
+| `components/expenses/expense-item.tsx` | Compact mobile expense layout |
+| `components/invitations/pending-invitation-card.tsx` | Loading text on Accept/Decline |
+| `components/invitations/group-invitations-list.tsx` | Confirm dialog for cancel |
+| `components/nav.tsx` | Mobile hamburger menu |
+| `README.md` | App description, features, tech stack |
 
 ⸻
 

@@ -369,6 +369,29 @@ VALUES (
 
 ---
 
+## Phase 10: UX & Polish — COMPLETE ✓
+
+**Goal:** Improve usability, feedback, and mobile experience.
+
+**What was implemented:**
+- [x] Compact 2-line expense layout on mobile (vs 4-5 lines previously)
+- [x] Accept/Decline invitation buttons show loading text
+- [x] Cancel invitation requires confirmation dialog
+- [x] Mobile hamburger menu in nav (dropdown for Settings/Logout/Back to Groups)
+- [x] Hide "Settle" text on mobile (logo icon only)
+- [x] Updated README.md with app description, features, tech stack
+
+**Key Files:**
+| File | Purpose |
+|------|---------|
+| `components/expenses/expense-item.tsx` | Compact mobile expense layout |
+| `components/invitations/pending-invitation-card.tsx` | Loading text on Accept/Decline |
+| `components/invitations/group-invitations-list.tsx` | Confirm dialog for cancel |
+| `components/nav.tsx` | Mobile hamburger menu |
+| `README.md` | App description, features, tech stack |
+
+---
+
 ## Architecture
 
 ### Current Data Flow
