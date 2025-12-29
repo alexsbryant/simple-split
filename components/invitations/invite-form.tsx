@@ -59,6 +59,17 @@ const CheckIcon = () => (
   </svg>
 )
 
+const ShareIcon = () => (
+  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={2}
+      d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"
+    />
+  </svg>
+)
+
 type InviteFormProps = {
   groupId: string
 }
@@ -94,6 +105,7 @@ export function InviteFormPanel({ groupId, onClose }: InviteFormPanelProps) {
   const [linkExpiresAt, setLinkExpiresAt] = useState<string | null>(null)
   const [linkLoading, setLinkLoading] = useState(false)
   const [copied, setCopied] = useState(false)
+  const [canShare, setCanShare] = useState(false)
 
   // Email tab state
   const [email, setEmail] = useState('')
@@ -101,9 +113,10 @@ export function InviteFormPanel({ groupId, onClose }: InviteFormPanelProps) {
   // Shared state
   const [error, setError] = useState<string | null>(null)
 
-  // Generate invite link on mount
+  // Generate invite link on mount and detect Web Share API support
   useEffect(() => {
     handleGenerateLink()
+    setCanShare(typeof navigator !== 'undefined' && !!navigator.share)
   }, [])
 
   const handleGenerateLink = async () => {
@@ -129,6 +142,23 @@ export function InviteFormPanel({ groupId, onClose }: InviteFormPanelProps) {
     await navigator.clipboard.writeText(inviteLink)
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
+  }
+
+  const handleShare = async () => {
+    if (!inviteLink) return
+
+    try {
+      await navigator.share({
+        title: 'Join my group on Settle',
+        text: "I'd like you to join my expense-sharing group on Settle.",
+        url: inviteLink,
+      })
+    } catch (err) {
+      // User cancelled or share failed - fall back to copy if not AbortError
+      if ((err as Error).name !== 'AbortError') {
+        handleCopyLink()
+      }
+    }
   }
 
   const handleEmailSubmit = (e: React.FormEvent) => {
@@ -209,13 +239,23 @@ export function InviteFormPanel({ groupId, onClose }: InviteFormPanelProps) {
                   readOnly
                   className="input flex-1 text-sm truncate"
                 />
-                <button
-                  onClick={handleCopyLink}
-                  className="btn-primary px-3 py-2 text-sm flex items-center gap-1 cursor-pointer"
-                >
-                  {copied ? <CheckIcon /> : <CopyIcon />}
-                  {copied ? 'Copied' : 'Copy'}
-                </button>
+                {canShare ? (
+                  <button
+                    onClick={handleShare}
+                    className="btn-primary px-3 py-2 text-sm flex items-center gap-1 cursor-pointer"
+                  >
+                    <ShareIcon />
+                    Share
+                  </button>
+                ) : (
+                  <button
+                    onClick={handleCopyLink}
+                    className="btn-primary px-3 py-2 text-sm flex items-center gap-1 cursor-pointer"
+                  >
+                    {copied ? <CheckIcon /> : <CopyIcon />}
+                    {copied ? 'Copied' : 'Copy'}
+                  </button>
+                )}
               </div>
               {linkExpiresAt && (
                 <p className="text-xs text-[var(--text-muted)]">
