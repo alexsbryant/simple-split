@@ -49,18 +49,28 @@ export default async function GroupsPage() {
 
   const groupIds = membershipData?.map(m => m.group_id) ?? []
 
-  // Fetch those groups with member counts
+  // Fetch those groups with member counts and creator info
   const { data: groupsData } = groupIds.length > 0
     ? await supabase
         .from('groups')
-        .select('id, name, group_members(count)')
+        .select('id, name, created_by, group_members(count), users!created_by(display_name, email)')
         .in('id', groupIds)
         .order('created_at', { ascending: false })
     : { data: [] }
 
-  const groups = groupsData?.map((g: { id: string; name: string; group_members: { count: number }[] }) => ({
+  type GroupRow = {
+    id: string
+    name: string
+    created_by: string
+    group_members: { count: number }[]
+    users: { display_name: string | null; email: string } | null
+  }
+
+  const groups = (groupsData as GroupRow[] | null)?.map((g) => ({
     id: g.id,
     name: g.name,
+    createdBy: g.created_by,
+    creatorName: g.users?.display_name || g.users?.email || 'Unknown',
     memberCount: g.group_members[0]?.count ?? 0,
   })) ?? []
 
@@ -108,6 +118,7 @@ export default async function GroupsPage() {
               >
                 <h3 className="font-semibold text-white text-lg">{group.name}</h3>
                 <p className="text-sm text-[var(--text-secondary)] mt-1">
+                  {group.createdBy !== user.id && `Created by ${group.creatorName} · `}
                   {group.memberCount} {group.memberCount === 1 ? 'member' : 'members'}
                 </p>
               </Link>
