@@ -270,19 +270,13 @@ export function SimpleSplitPage({
             </div>
             {isCreator && (
               <div className="pt-2">
-                <InviteButton onClick={() => setIsInviteOpen(true)} />
-              </div>
-            )}
-            {/* Form panel on desktop - appears next to button */}
-            {isCreator && isInviteOpen && (
-              <div className="hidden md:block pt-2">
-                <InviteFormPanel groupId={group.id} onClose={() => setIsInviteOpen(false)} />
+                <InviteButton onClick={() => setIsInviteOpen(!isInviteOpen)} />
               </div>
             )}
           </div>
-          {/* Form panel on mobile - appears below header */}
+          {/* Invite form - appears as block below header */}
           {isCreator && isInviteOpen && (
-            <div className="md:hidden mt-4">
+            <div className="mt-4">
               <InviteFormPanel groupId={group.id} onClose={() => setIsInviteOpen(false)} />
             </div>
           )}

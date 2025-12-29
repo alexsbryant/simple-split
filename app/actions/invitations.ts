@@ -12,6 +12,16 @@ type AcceptResult = ActionResult & {
   groupId?: string
 }
 
+type InviteLinkResult = ActionResult & {
+  token?: string
+  expiresAt?: string
+}
+
+type JoinResult = ActionResult & {
+  groupId?: string
+  groupName?: string
+}
+
 export async function createInvitation(
   groupId: string,
   email: string
@@ -249,6 +259,124 @@ export async function cancelInvitation(
     .eq('id', invitationId)
     .eq('invited_by_user_id', user.id)
     .eq('status', 'pending')
+
+  if (deleteError) {
+    return { success: false, error: deleteError.message }
+  }
+
+  revalidatePath(`/groups/${groupId}`)
+  return { success: true }
+}
+
+// ============================================================================
+// Invite Link Actions (token-based invites)
+// ============================================================================
+
+export async function getOrCreateInviteLink(groupId: string): Promise<InviteLinkResult> {
+  const supabase = await createClient()
+
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser()
+
+  if (authError || !user) {
+    return { success: false, error: 'Not authenticated' }
+  }
+
+  // Verify user is group creator
+  const { data: group } = await supabase
+    .from('groups')
+    .select('created_by')
+    .eq('id', groupId)
+    .single()
+
+  if (!group || group.created_by !== user.id) {
+    return { success: false, error: 'Only the group creator can generate invite links' }
+  }
+
+  // Check for existing valid (non-expired) link
+  const { data: existingLink } = await supabase
+    .from('group_invite_links')
+    .select('token, expires_at')
+    .eq('group_id', groupId)
+    .gt('expires_at', new Date().toISOString())
+    .single()
+
+  if (existingLink) {
+    return {
+      success: true,
+      token: existingLink.token,
+      expiresAt: existingLink.expires_at,
+    }
+  }
+
+  // Generate new token (256-bit, URL-safe)
+  const { randomBytes } = await import('crypto')
+  const token = randomBytes(32).toString('base64url')
+  const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // 7 days
+
+  // Delete any existing link first (expired or otherwise) to satisfy unique constraint
+  await supabase.from('group_invite_links').delete().eq('group_id', groupId)
+
+  // Create new link
+  const { error: insertError } = await supabase.from('group_invite_links').insert({
+    group_id: groupId,
+    created_by_user_id: user.id,
+    token,
+    expires_at: expiresAt.toISOString(),
+  })
+
+  if (insertError) {
+    return { success: false, error: insertError.message }
+  }
+
+  revalidatePath(`/groups/${groupId}`)
+  return { success: true, token, expiresAt: expiresAt.toISOString() }
+}
+
+export async function joinGroupViaLink(token: string): Promise<JoinResult> {
+  const supabase = await createClient()
+
+  const { data, error } = await supabase.rpc('join_group_via_link', {
+    invite_token: token,
+  })
+
+  if (error) {
+    return { success: false, error: error.message }
+  }
+
+  const result = data?.[0]
+  if (!result?.success) {
+    return { success: false, error: result?.error_message || 'Failed to join group' }
+  }
+
+  revalidatePath('/groups')
+  revalidatePath(`/groups/${result.group_id}`)
+  return {
+    success: true,
+    groupId: result.group_id,
+    groupName: result.group_name,
+  }
+}
+
+export async function revokeInviteLink(groupId: string): Promise<ActionResult> {
+  const supabase = await createClient()
+
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser()
+
+  if (authError || !user) {
+    return { success: false, error: 'Not authenticated' }
+  }
+
+  // RLS ensures only group creator can delete
+  const { error: deleteError } = await supabase
+    .from('group_invite_links')
+    .delete()
+    .eq('group_id', groupId)
 
   if (deleteError) {
     return { success: false, error: deleteError.message }

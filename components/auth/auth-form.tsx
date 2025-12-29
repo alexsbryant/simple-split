@@ -8,7 +8,11 @@ import { Input } from '@/components/ui/input'
 
 type Mode = 'login' | 'signup'
 
-export function AuthForm() {
+type AuthFormProps = {
+  redirectTo?: string
+}
+
+export function AuthForm({ redirectTo }: AuthFormProps = {}) {
   const [mode, setMode] = useState<Mode>('login')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -41,7 +45,7 @@ export function AuthForm() {
         })
         if (error) throw error
       }
-      router.push('/groups')
+      router.push(redirectTo || '/groups')
       router.refresh()
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred')
