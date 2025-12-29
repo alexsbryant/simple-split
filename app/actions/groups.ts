@@ -103,3 +103,30 @@ export async function updateGroupName(
   revalidatePath(`/groups/${groupId}`)
   return { success: true }
 }
+
+export async function updateLastSeen(groupId: string): Promise<ActionResult> {
+  const supabase = await createClient()
+
+  // Get authenticated user
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser()
+
+  if (authError || !user) {
+    return { success: false, error: 'Not authenticated' }
+  }
+
+  // Update last_seen_at for this user's membership in this group
+  const { error: updateError } = await supabase
+    .from('group_members')
+    .update({ last_seen_at: new Date().toISOString() })
+    .eq('group_id', groupId)
+    .eq('user_id', user.id)
+
+  if (updateError) {
+    return { success: false, error: updateError.message }
+  }
+
+  return { success: true }
+}

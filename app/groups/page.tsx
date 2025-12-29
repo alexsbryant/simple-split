@@ -53,15 +53,21 @@ export default async function GroupsPage() {
     creator_display_name: string | null
     creator_email: string | null
     last_activity: string
+    last_seen_at: string | null
   }
 
-  const groups = (groupsData as GroupRow[] | null)?.map((g) => ({
-    id: g.id,
-    name: g.name,
-    createdBy: g.created_by,
-    creatorName: g.creator_display_name || g.creator_email || 'Unknown',
-    memberCount: g.member_count,
-  })) ?? []
+  const groups = (groupsData as GroupRow[] | null)?.map((g) => {
+    const lastActivity = new Date(g.last_activity).getTime()
+    const lastSeenAt = g.last_seen_at ? new Date(g.last_seen_at).getTime() : 0
+    return {
+      id: g.id,
+      name: g.name,
+      createdBy: g.created_by,
+      creatorName: g.creator_display_name || g.creator_email || 'Unknown',
+      memberCount: g.member_count,
+      hasUnread: lastActivity > lastSeenAt,
+    }
+  }) ?? []
 
   return (
     <div className="min-h-screen">
@@ -105,7 +111,12 @@ export default async function GroupsPage() {
                 href={`/groups/${group.id}`}
                 className="glass p-4 block transition-all duration-150 hover:bg-[rgba(255,255,255,0.08)]"
               >
-                <h3 className="font-semibold text-white text-lg">{group.name}</h3>
+                <h3 className="font-semibold text-white text-lg flex items-center gap-2">
+                  {group.name}
+                  {group.hasUnread && (
+                    <span className="w-2 h-2 bg-red-500 rounded-full" aria-label="New activity" />
+                  )}
+                </h3>
                 <p className="text-sm text-[var(--text-secondary)] mt-1">
                   {group.createdBy !== user.id && `Created by ${group.creatorName} · `}
                   {group.memberCount} {group.memberCount === 1 ? 'member' : 'members'}

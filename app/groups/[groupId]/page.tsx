@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase-server'
 import { SimpleSplitPage } from '@/components/split-page'
 import { User, Group, Expense } from '@/types'
 import { redirect } from 'next/navigation'
+import { updateLastSeen } from '@/app/actions/groups'
 
 export default async function GroupPage({ params }: { params: { groupId: string } }) {
   const { groupId } = await params
@@ -24,6 +25,9 @@ export default async function GroupPage({ params }: { params: { groupId: string 
   if (!membership) {
     redirect('/groups')
   }
+
+  // Update last_seen_at for unread indicator (fire-and-forget, doesn't block render)
+  updateLastSeen(groupId)
 
   // Fetch current user from public.users
   const { data: currentUserData } = await supabase
