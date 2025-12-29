@@ -492,7 +492,97 @@ After implementation:
   a) Groups I created
   b) Groups created by others
 
-## Phase 12C: Unread Group Activity Indicator (Minimal)  
+## Phase 12C: Sorting groups by recent activity
+
+Goal:
+On the Groups page, display groups sorted by most recent activity so the most recently active groups appear first.
+
+Definition of "Recent Activity":
+- A group is considered active when:
+  - An expense is added, edited, or deleted
+- Group creation time alone is NOT sufficient for activity ranking
+
+Expected Behavior:
+- Groups with recent expense activity appear at the top
+- Inactive groups naturally fall lower in the list
+- Sorting happens automatically (no user toggle yet)
+- Sorting applies only to the Groups dashboard page
+
+Constraints:
+- Do NOT add unread indicators yet (that is Phase 12D)
+- Do NOT add UI controls for sorting (no dropdowns)
+- Do NOT refactor unrelated queries or components
+- Avoid schema changes unless necessary
+
+Implementation Guidance:
+- First, explain how recent activity will be determined:
+  - Either via existing timestamps (e.g. expenses.created_at)
+  - Or via a group-level updated_at field if one exists
+- Prefer computing activity via existing data if possible
+- If a minimal schema change is required, explain why before doing it
+
+Technical Notes:
+- Respect existing RLS policies
+- Ensure sorting works correctly for:
+  a) Groups I created
+  b) Groups I was invited to
+- Sorting must not leak data across users
+
+Process:
+1. Briefly explain your chosen activity signal
+2. Show how the groups query is updated
+3. Apply sorting logic
+4. Keep UI unchanged (only order changes)
+
+After implementation:
+- Groups list should feel “smartly ordered”
+- Recently updated groups should rise immediately after changesPlease implement Phase 12C for Settle: sorting groups by recent activity.
+
+Goal:
+On the Groups page, display groups sorted by most recent activity so the most recently active groups appear first.
+
+Definition of "Recent Activity":
+- A group is considered active when:
+  - An expense is added, edited, or deleted
+- Group creation time alone is NOT sufficient for activity ranking
+
+Expected Behavior:
+- Groups with recent expense activity appear at the top
+- Inactive groups naturally fall lower in the list
+- Sorting happens automatically (no user toggle yet)
+- Sorting applies only to the Groups dashboard page
+
+Constraints:
+- Do NOT add unread indicators yet (that is Phase 12D)
+- Do NOT add UI controls for sorting (no dropdowns)
+- Do NOT refactor unrelated queries or components
+- Avoid schema changes unless necessary
+
+Implementation Guidance:
+- First, explain how recent activity will be determined:
+  - Either via existing timestamps (e.g. expenses.created_at)
+  - Or via a group-level updated_at field if one exists
+- Prefer computing activity via existing data if possible
+- If a minimal schema change is required, explain why before doing it
+
+Technical Notes:
+- Respect existing RLS policies
+- Ensure sorting works correctly for:
+  a) Groups I created
+  b) Groups I was invited to
+- Sorting must not leak data across users
+
+Process:
+1. Briefly explain your chosen activity signal
+2. Show how the groups query is updated
+3. Apply sorting logic
+4. Keep UI unchanged (only order changes)
+
+After implementation:
+- Groups list should feel “smartly ordered”
+- Recently updated groups should rise immediately after changes
+
+## Phase 12D: Unread Group Activity Indicator (Minimal)  
 
 Goal: Show a visual indicator (red dot) next to groups with unseen activity.
 
