@@ -41,37 +41,26 @@ export default async function GroupsPage() {
     createdAt: inv.created_at,
   })) ?? []
 
-  // Fetch group IDs where user is a member
-  const { data: membershipData } = await supabase
-    .from('group_members')
-    .select('group_id')
-    .eq('user_id', user.id)
-
-  const groupIds = membershipData?.map(m => m.group_id) ?? []
-
-  // Fetch those groups with member counts and creator info
-  const { data: groupsData } = groupIds.length > 0
-    ? await supabase
-        .from('groups')
-        .select('id, name, created_by, group_members(count), users!created_by(display_name, email)')
-        .in('id', groupIds)
-        .order('created_at', { ascending: false })
-    : { data: [] }
+  // Fetch groups sorted by recent activity (RLS handles membership filtering)
+  const { data: groupsData } = await supabase.rpc('get_user_groups_with_activity')
 
   type GroupRow = {
     id: string
     name: string
     created_by: string
-    group_members: { count: number }[]
-    users: { display_name: string | null; email: string } | null
+    created_at: string
+    member_count: number
+    creator_display_name: string | null
+    creator_email: string | null
+    last_activity: string
   }
 
   const groups = (groupsData as GroupRow[] | null)?.map((g) => ({
     id: g.id,
     name: g.name,
     createdBy: g.created_by,
-    creatorName: g.users?.display_name || g.users?.email || 'Unknown',
-    memberCount: g.group_members[0]?.count ?? 0,
+    creatorName: g.creator_display_name || g.creator_email || 'Unknown',
+    memberCount: g.member_count,
   })) ?? []
 
   return (
