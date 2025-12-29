@@ -26,9 +26,31 @@ type InviteFormProps = {
   groupId: string
 }
 
-export function InviteForm({ groupId }: InviteFormProps) {
+type InviteButtonProps = {
+  onClick: () => void
+}
+
+type InviteFormPanelProps = {
+  groupId: string
+  onClose: () => void
+}
+
+// Separate button component
+export function InviteButton({ onClick }: InviteButtonProps) {
+  return (
+    <button
+      onClick={onClick}
+      className="btn-secondary px-3 py-2 text-sm flex items-center gap-1 cursor-pointer"
+    >
+      <UserPlusIcon />
+      Invite
+    </button>
+  )
+}
+
+// Separate form panel component
+export function InviteFormPanel({ groupId, onClose }: InviteFormPanelProps) {
   const router = useRouter()
-  const [isOpen, setIsOpen] = useState(false)
   const [email, setEmail] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -48,7 +70,7 @@ export function InviteForm({ groupId }: InviteFormProps) {
       router.refresh()
       // Auto-close after success
       setTimeout(() => {
-        setIsOpen(false)
+        onClose()
         setSuccess(false)
       }, 2000)
     } else {
@@ -59,22 +81,10 @@ export function InviteForm({ groupId }: InviteFormProps) {
   }
 
   const handleClose = () => {
-    setIsOpen(false)
+    onClose()
     setEmail('')
     setError(null)
     setSuccess(false)
-  }
-
-  if (!isOpen) {
-    return (
-      <button
-        onClick={() => setIsOpen(true)}
-        className="btn-secondary px-3 py-2 text-sm flex items-center gap-1 cursor-pointer"
-      >
-        <UserPlusIcon />
-        Invite
-      </button>
-    )
   }
 
   return (
@@ -117,4 +127,15 @@ export function InviteForm({ groupId }: InviteFormProps) {
       )}
     </div>
   )
+}
+
+// Original combined component for backwards compatibility
+export function InviteForm({ groupId }: InviteFormProps) {
+  const [isOpen, setIsOpen] = useState(false)
+
+  if (!isOpen) {
+    return <InviteButton onClick={() => setIsOpen(true)} />
+  }
+
+  return <InviteFormPanel groupId={groupId} onClose={() => setIsOpen(false)} />
 }

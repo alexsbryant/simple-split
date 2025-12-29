@@ -8,7 +8,7 @@ import { BalanceSummary } from '@/components/balances/balance-summary'
 import { ExpenseForm } from '@/components/expenses/expense-form'
 import { ExpenseList } from '@/components/expenses/expense-list'
 import { Nav } from '@/components/nav'
-import { InviteForm } from '@/components/invitations/invite-form'
+import { InviteButton, InviteFormPanel } from '@/components/invitations/invite-form'
 import { GroupInvitationsList } from '@/components/invitations/group-invitations-list'
 import { Button } from '@/components/ui/button'
 import { createExpense, updateExpense, deleteExpense } from '@/app/actions/expenses'
@@ -46,6 +46,7 @@ export function SimpleSplitPage({
   const [error, setError] = useState<string | null>(null)
   const [deletingGroup, setDeletingGroup] = useState(false)
   const [deleteError, setDeleteError] = useState<string | null>(null)
+  const [isInviteOpen, setIsInviteOpen] = useState(false)
 
   // Calculate balances from server data
   const balances = calculateBalances(initialExpenses, users)
@@ -151,7 +152,7 @@ export function SimpleSplitPage({
       <main className="max-w-[640px] mx-auto px-4 py-8">
         {/* Header */}
         <header className="mb-6">
-          <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+          <div className="flex items-start justify-between gap-4">
             <div className="flex-1">
               <h1 className="text-3xl md:text-4xl font-semibold text-white">{group.name}</h1>
               <p className="text-[var(--text-secondary)] mt-1">
@@ -159,11 +160,23 @@ export function SimpleSplitPage({
               </p>
             </div>
             {isCreator && (
-              <div className="md:pt-2">
-                <InviteForm groupId={group.id} />
+              <div className="pt-2">
+                <InviteButton onClick={() => setIsInviteOpen(true)} />
+              </div>
+            )}
+            {/* Form panel on desktop - appears next to button */}
+            {isCreator && isInviteOpen && (
+              <div className="hidden md:block pt-2">
+                <InviteFormPanel groupId={group.id} onClose={() => setIsInviteOpen(false)} />
               </div>
             )}
           </div>
+          {/* Form panel on mobile - appears below header */}
+          {isCreator && isInviteOpen && (
+            <div className="md:hidden mt-4">
+              <InviteFormPanel groupId={group.id} onClose={() => setIsInviteOpen(false)} />
+            </div>
+          )}
         </header>
 
         {/* Pending Invitations */}

@@ -217,6 +217,7 @@ Everything beyond that is enhancement, not requirement.
 
 
 Future Ideas
+	- As a small sub-heading, show 'group created by {creatorName}' on groups page, when it's a group not made by you/. 	 
 	- Notification if new item added to group (red dot next to group name in groups page maybe)
 	- Allow an added expense to not be split evenly 
 	- User default currency change in settings
