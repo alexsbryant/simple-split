@@ -509,6 +509,59 @@ Constraints:
 
 ---
 
+## Phase 13A: Upgrade Invite System
+
+We want to upgrade Settle’s group invitation system to support link-based invites alongside email invites.
+
+Current state:
+- group_invitations table exists
+- Email-based invites require accepting a pending invite
+- group_members insertion is protected by RLS (user_id = auth.uid())
+
+Target behavior:
+1. Inviting a user generates a single invite URL with a secure token
+2. The invite modal shows:
+   - Option A: enter email (optional)
+   - Option B: copy invite link
+3. Both options generate the same invite URL
+4. If email is provided:
+   - Create a pending invitation (current behavior)
+   - Also generate the invite URL
+   - Use a mailto: link (not transactional email)
+5. Visiting the invite URL:
+   - If logged in → user is added to the group immediately
+   - If not logged in → redirect to signup, then add them after signup
+   - Email used to sign up does NOT matter
+6. Existing users who follow the link bypass pending invites and are added directly
+
+Constraints:
+- Minimal schema changes
+- Reuse group_invitations if possible
+- No push notifications
+- No email service (mailto only)
+- Keep RLS simple and intact
+
+Please:
+- Propose schema changes
+- Define RLS implications
+- Design server actions
+- Define the /invite/[token] route behavior
+- Suggest UI changes
+- Provide an incremental implementation plan
+
+## Phase 13B: iOS Invites
+
+Enhance the existing invite link UI to support native sharing on mobile using the Web Share API.
+
+Requirements:
+- Use navigator.share() when available to open the native share sheet (iOS/Android)
+- Fallback to copy-to-clipboard when Web Share is not supported
+- No backend changes
+- No schema or RLS changes
+- Reuse the existing generated invite URL
+
+Apply this only to the invite UI.
+
 ## Architecture
 
 ### Current Data Flow

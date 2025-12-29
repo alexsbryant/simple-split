@@ -269,10 +269,11 @@ Goal: Show red dot next to groups with unseen activity.
 ⸻
 
 Future Ideas
+	- Generate a share URL that doesn't require my friends to already have an email or account
+	- POSSIBLY allow anonymous user participation without an account, using alphanumeric ID's in the URL
 	- Allow an added expense to not be split evenly
 	- User default currency change in settings
 	- Currency choice on 'create new group', defaults to user's chosen prefrence currency
 	- Option to choose currency per expense (with a warning that conversion from expense currency to group's currency is the conversion rate as of the time expense listed, and may not accuratly represent the amount spent at the time.)
-	- Invite link generation
 	- QR code support
 	- Remove user from group / leave group, but keep history of user's expenses held within group
