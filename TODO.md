@@ -417,6 +417,58 @@ VALUES (
 
 ---
 
+## Phase 12A: Group Renaming (Minimal)
+
+Goal: Allow the group creator to rename a group.
+
+Scope:
+	•	Creator-only (use created_by)
+	•	Simple UI (inline edit or small form)
+	•	Server action to update groups.name
+	•	RLS enforcement (UPDATE policy)
+	•	No notifications
+	•	No rename history
+
+Constraints:
+	•	Do not touch group membership
+	•	Do not cascade changes
+	•	No new tables
+
+Please propose:
+	•	RLS UPDATE policy (if needed)
+	•	Server action
+	•	UI placement recommendation
+	•	Minimal implementation plan
+
+  
+## Phase 12B: Unread Group Activity Indicator (Minimal)  
+
+Goal: Show a visual indicator (red dot) next to groups with unseen activity.
+
+Definition:
+	•	A group is “unread” if activity occurred after the user last viewed it
+	•	No notifications feed
+	•	No per-expense tracking
+
+Scope:
+	•	Minimal schema change (prefer extending group_members)
+	•	Update “last seen” when user views a group
+	•	Update “last activity” when expenses change
+	•	Display unread indicator on /groups page
+
+Constraints:
+	•	No push notifications
+	•	No email
+	•	No audit log
+	•	Keep RLS simple
+
+Please propose:
+	•	Schema change
+	•	RLS impact
+	•	Server actions needed
+	•	UI changes
+	•	Incremental implementation order
+
 ## Architecture
 
 ### Current Data Flow
@@ -483,5 +535,16 @@ npx tsc --noEmit # Type check
 
 *DO NOT DELETE WHEN UPDATING TODO.md - CLAUDE CAN RESPOND TO IDEAS IN THIS SECTION DURING PLAN MODE AND DISCUSS ITEMS WITH ME, BUT DO NOT EDIT OR DELETE*
 
+Today's tasks:
+
+- Group name mobile UI fix (12A)
+- Group invite permissions
+- Group creator's name on list of 'your groups'
+- Unread expense on groups page when group updated - red dot next to group name or alert icon.
+    Minimal v1.1 approach
+    •	Track last activity timestamp per group
+    •	Track last seen timestamp per user per group
+    •	Compare the two to show a dot
+- Choose currrency when creating a group.  Simple for now, just changes currency icon within payments.  No link to conversion rates or anything in this version. 
 
 *NON-CLAUDE BRAINSTORMING SECTION ENDS*

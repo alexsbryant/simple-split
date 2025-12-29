@@ -217,12 +217,11 @@ Everything beyond that is enhancement, not requirement.
 
 
 Future Ideas
-	• Notification if new item added to group (red dot next to group name in groups page maybe)
-	• Allow an added expense to not be split evenly
-	•	User default currency change in settings
-	•	Currency choice on 'create new group', defaults to user's chosen prefrence currency
-	•	Option to choose currency per expense (with a warning that conversion from expense currency to group's currency is the conversion rate as of the time expense listed, and may not accuratly represent the amount spent at the time.)
-
+	- Notification if new item added to group (red dot next to group name in groups page maybe)
+	- Allow an added expense to not be split evenly 
+	- User default currency change in settings
+	- Currency choice on 'create new group', defaults to user's chosen prefrence currency
+	- Option to choose currency per expense (with a warning that conversion from expense currency to group's currency is the conversion rate as of the time expense listed, and may not accuratly represent the amount spent at the time.)
 	- Invite link generation
 	- QR code support
 	- Change group name

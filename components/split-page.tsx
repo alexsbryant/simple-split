@@ -151,16 +151,18 @@ export function SimpleSplitPage({
       <main className="max-w-[640px] mx-auto px-4 py-8">
         {/* Header */}
         <header className="mb-6">
-          <div className="flex items-start justify-between gap-4">
-            <div>
-              <h1 className="text-4xl font-semibold text-white">{group.name}</h1>
+          <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+            <div className="flex-1">
+              <h1 className="text-3xl md:text-4xl font-semibold text-white">{group.name}</h1>
               <p className="text-[var(--text-secondary)] mt-1">
                 Created by {creatorName}
               </p>
             </div>
-            <div className="pt-2">
-              <InviteForm groupId={group.id} />
-            </div>
+            {isCreator && (
+              <div className="md:pt-2">
+                <InviteForm groupId={group.id} />
+              </div>
+            )}
           </div>
         </header>
 

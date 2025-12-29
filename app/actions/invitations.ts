@@ -28,6 +28,21 @@ export async function createInvitation(
     return { success: false, error: 'Not authenticated' }
   }
 
+  // Check if user is the group creator
+  const { data: groupData, error: groupError } = await supabase
+    .from('groups')
+    .select('created_by')
+    .eq('id', groupId)
+    .single()
+
+  if (groupError || !groupData) {
+    return { success: false, error: 'Group not found' }
+  }
+
+  if (groupData.created_by !== user.id) {
+    return { success: false, error: 'Only the group creator can send invitations' }
+  }
+
   // Validate email
   const trimmedEmail = email.trim().toLowerCase()
   if (!trimmedEmail) {
