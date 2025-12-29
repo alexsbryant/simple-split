@@ -46,6 +46,6 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 
 ## Status
 
-**Version:** 1.1
+**Version:** 1.2
 
 Settle is feature-complete and stable. Future work may include currency selection, uneven expense splits, and mobile-native builds.
