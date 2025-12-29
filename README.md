@@ -4,6 +4,8 @@ A simple expense-splitting app for groups. Track shared costs, see who owes what
 
 Designed for trips, shared households, and small groups who want to split costs without unnecessary complexity.
 
+**Live at:** [https://settleit.xyz](https://settleit.xyz)
+
 ## Features
 
 - Create and manage expense groups
@@ -11,7 +13,10 @@ Designed for trips, shared households, and small groups who want to split costs 
 - Real-time balance calculations per member
 - Invite others by email
 - Accept or decline group invitations
+- Rename groups (creator only)
 - Delete groups (creator only)
+- Groups sorted by recent activity
+- Unread activity indicator (red dot for new expenses)
 
 ## Tech Stack
 
@@ -41,6 +46,6 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 
 ## Status
 
-**Version:** 1.0
+**Version:** 1.1
 
-Settle is feature-complete and stable. Future work may include invitation links, QR codes, and mobile-native builds.
+Settle is feature-complete and stable. Future work may include currency selection, uneven expense splits, and mobile-native builds.

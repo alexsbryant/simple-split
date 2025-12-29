@@ -1,5 +1,5 @@
-Current Phase: v1 Complete
-Last Updated: 2025-12-28
+Current Phase: v1.1 Complete
+Last Updated: 2025-12-29
 
 
 ######################################################
@@ -232,9 +232,43 @@ Goal: Allow group creators to rename their groups.
 
 ⸻
 
+✅ Phase 12B: Show Group Creator (COMPLETE)
+
+Goal: Show "Created by {name}" on groups page for groups created by others.
+
+**What was implemented:**
+- Groups query joins users table to fetch creator info
+- Conditional display (only shows for groups not created by current user)
+- Fallback chain: display_name → email → "Unknown"
+
+⸻
+
+✅ Phase 12C: Activity-Based Sorting (COMPLETE)
+
+Goal: Sort groups by most recent expense activity.
+
+**What was implemented:**
+- Postgres function `get_user_groups_with_activity()` computes last_activity per group
+- Uses MAX of expense timestamps, falls back to group created_at
+- Groups list automatically sorted by most recently active first
+- SECURITY INVOKER respects existing RLS policies
+
+⸻
+
+✅ Phase 12D: Unread Activity Indicator (COMPLETE)
+
+Goal: Show red dot next to groups with unseen activity.
+
+**What was implemented:**
+- `last_seen_at` column added to group_members
+- RLS UPDATE policy for users to update their own last_seen_at
+- `updateLastSeen()` server action called on group page load
+- Red dot shows when `last_activity > last_seen_at`
+- Dot clears after visiting the group
+
+⸻
+
 Future Ideas
-	- As a small sub-heading, show 'group created by {creatorName}' on groups page, when it's a group not made by you.
-	- Notification if new item added to group (red dot next to group name in groups page maybe)
 	- Allow an added expense to not be split evenly
 	- User default currency change in settings
 	- Currency choice on 'create new group', defaults to user's chosen prefrence currency

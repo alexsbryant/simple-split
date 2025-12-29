@@ -451,164 +451,63 @@ Constraints:
 		- Error handling
 
 
-## Phase 12B: Add Group created by on groups page
+## Phase 12B: Show Group Creator on Groups Page — COMPLETE ✓
 
-Please implement the following UX enhancement in Settle.
+**Goal:** Show "Created by {creatorName}" under group names on the /groups page, but only for groups created by other users.
 
-Goal:
-On the Groups page, show a small sub-heading:
-"Group created by {creatorName}"
-ONLY when the group was not created by the currently logged-in user.
+**What was implemented:**
+- Updated groups query to join `users` table via `created_by` foreign key
+- Added creator's display name (with fallback to email or "Unknown")
+- Conditional display: only shows "Created by X" when group was not created by current user
+- Format: "Created by Alex · 2 members"
 
-Behavior:
-- If I created the group → do NOT show the sub-heading
-- If another user created the group → show:
-  "Created by {creatorName}"
-- The creator name should be the display name from the users table
-- If display name is missing, fall back gracefully (e.g. email or "Unknown")
+**Key Files:**
+| File | Purpose |
+|------|---------|
+| `app/groups/page.tsx` | Updated query and UI rendering |
 
-Constraints:
-- Do NOT change the database schema unless absolutely required
-- Prefer using existing relationships or queries
-- Respect existing RLS policies
-- Keep UI subtle (small, muted text under group name)
-- Do not affect group creation, deletion, or invites
+---
 
-Implementation guidance:
-- Identify how group creator is currently stored (e.g. created_by / owner_id)
-- Ensure the groups query fetches creator info efficiently
-- If needed, join users table safely under RLS
-- Update only the groups list UI (not group detail page)
+## Phase 12C: Sort Groups by Recent Activity — COMPLETE ✓
 
-Process:
-1. Briefly explain how creator info is being sourced
-2. Implement minimal code changes
-3. Call out any assumptions made
-4. Do not refactor unrelated code
+**Goal:** Display groups sorted by most recent expense activity, not creation date.
 
-After implementation:
-- App must still load
-- Groups page must render correctly for:
-  a) Groups I created
-  b) Groups created by others
+**What was implemented:**
+- Created Postgres function `get_user_groups_with_activity()` (SECURITY INVOKER)
+- Computes `last_activity` from MAX of expense timestamps per group
+- Falls back to group `created_at` if no expenses exist
+- Groups list automatically sorted by most recently active first
 
-## Phase 12C: Sorting groups by recent activity
+**Key Files:**
+| File | Purpose |
+|------|---------|
+| `supabase/migrations/15_groups_activity_sort.sql` | Postgres function for activity-based sorting |
+| `app/groups/page.tsx` | Uses `.rpc()` call instead of direct query |
 
-Goal:
-On the Groups page, display groups sorted by most recent activity so the most recently active groups appear first.
+---
 
-Definition of "Recent Activity":
-- A group is considered active when:
-  - An expense is added, edited, or deleted
-- Group creation time alone is NOT sufficient for activity ranking
+## Phase 12D: Unread Activity Indicator — COMPLETE ✓
 
-Expected Behavior:
-- Groups with recent expense activity appear at the top
-- Inactive groups naturally fall lower in the list
-- Sorting happens automatically (no user toggle yet)
-- Sorting applies only to the Groups dashboard page
+**Goal:** Show red dot next to groups with unseen expense activity.
 
-Constraints:
-- Do NOT add unread indicators yet (that is Phase 12D)
-- Do NOT add UI controls for sorting (no dropdowns)
-- Do NOT refactor unrelated queries or components
-- Avoid schema changes unless necessary
+**What was implemented:**
+- Added `last_seen_at` column to `group_members` table
+- Added RLS UPDATE policy for users to update their own `last_seen_at`
+- Created `updateLastSeen()` server action
+- Group detail page calls `updateLastSeen()` on load (fire-and-forget)
+- Groups list compares `last_activity > last_seen_at` to show red dot
+- Red dot disappears after visiting the group
 
-Implementation Guidance:
-- First, explain how recent activity will be determined:
-  - Either via existing timestamps (e.g. expenses.created_at)
-  - Or via a group-level updated_at field if one exists
-- Prefer computing activity via existing data if possible
-- If a minimal schema change is required, explain why before doing it
+**Key Files:**
+| File | Purpose |
+|------|---------|
+| `supabase/migrations/16_group_members_last_seen.sql` | Schema + RLS for last_seen_at |
+| `supabase/migrations/17_update_groups_activity_function.sql` | Updated function with last_seen_at |
+| `app/actions/groups.ts` | `updateLastSeen()` server action |
+| `app/groups/[groupId]/page.tsx` | Calls updateLastSeen on load |
+| `app/groups/page.tsx` | Red dot indicator UI |
 
-Technical Notes:
-- Respect existing RLS policies
-- Ensure sorting works correctly for:
-  a) Groups I created
-  b) Groups I was invited to
-- Sorting must not leak data across users
-
-Process:
-1. Briefly explain your chosen activity signal
-2. Show how the groups query is updated
-3. Apply sorting logic
-4. Keep UI unchanged (only order changes)
-
-After implementation:
-- Groups list should feel “smartly ordered”
-- Recently updated groups should rise immediately after changesPlease implement Phase 12C for Settle: sorting groups by recent activity.
-
-Goal:
-On the Groups page, display groups sorted by most recent activity so the most recently active groups appear first.
-
-Definition of "Recent Activity":
-- A group is considered active when:
-  - An expense is added, edited, or deleted
-- Group creation time alone is NOT sufficient for activity ranking
-
-Expected Behavior:
-- Groups with recent expense activity appear at the top
-- Inactive groups naturally fall lower in the list
-- Sorting happens automatically (no user toggle yet)
-- Sorting applies only to the Groups dashboard page
-
-Constraints:
-- Do NOT add unread indicators yet (that is Phase 12D)
-- Do NOT add UI controls for sorting (no dropdowns)
-- Do NOT refactor unrelated queries or components
-- Avoid schema changes unless necessary
-
-Implementation Guidance:
-- First, explain how recent activity will be determined:
-  - Either via existing timestamps (e.g. expenses.created_at)
-  - Or via a group-level updated_at field if one exists
-- Prefer computing activity via existing data if possible
-- If a minimal schema change is required, explain why before doing it
-
-Technical Notes:
-- Respect existing RLS policies
-- Ensure sorting works correctly for:
-  a) Groups I created
-  b) Groups I was invited to
-- Sorting must not leak data across users
-
-Process:
-1. Briefly explain your chosen activity signal
-2. Show how the groups query is updated
-3. Apply sorting logic
-4. Keep UI unchanged (only order changes)
-
-After implementation:
-- Groups list should feel “smartly ordered”
-- Recently updated groups should rise immediately after changes
-
-## Phase 12D: Unread Group Activity Indicator (Minimal)  
-
-Goal: Show a visual indicator (red dot) next to groups with unseen activity.
-
-Definition:
-	•	A group is “unread” if activity occurred after the user last viewed it
-	•	No notifications feed
-	•	No per-expense tracking
-
-Scope:
-	•	Minimal schema change (prefer extending group_members)
-	•	Update “last seen” when user views a group
-	•	Update “last activity” when expenses change
-	•	Display unread indicator on /groups page
-
-Constraints:
-	•	No push notifications
-	•	No email
-	•	No audit log
-	•	Keep RLS simple
-
-Please propose:
-	•	Schema change
-	•	RLS impact
-	•	Server actions needed
-	•	UI changes
-	•	Incremental implementation order
+---
 
 ## Architecture
 
