@@ -1,4 +1,4 @@
-# Simple Split - Progress & Plan
+# Settle - Progress & Plan
 
 > **Approach:** UI-first with mocked data. Validate UX before integrating Supabase.
 
