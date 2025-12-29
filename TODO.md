@@ -509,7 +509,7 @@ Constraints:
 
 ---
 
-## Phase 13A: Upgrade Invite System
+## Phase 13A: Upgrade Invite System - COMPLETE
 
 We want to upgrade Settle’s group invitation system to support link-based invites alongside email invites.
 
@@ -549,7 +549,7 @@ Please:
 - Suggest UI changes
 - Provide an incremental implementation plan
 
-## Phase 13B: iOS Invites
+## Phase 13B: iOS Invites - COMPLETE
 
 Enhance the existing invite link UI to support native sharing on mobile using the Web Share API.
 
