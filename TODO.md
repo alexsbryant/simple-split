@@ -417,7 +417,7 @@ VALUES (
 
 ---
 
-## Phase 12A: Group Renaming (Minimal)
+## Phase 12A: Group Renaming (Minimal) — COMPLETE ✓
 
 Goal: Allow the group creator to rename a group.
 
@@ -434,14 +434,65 @@ Constraints:
 	•	Do not cascade changes
 	•	No new tables
 
-Please propose:
-	•	RLS UPDATE policy (if needed)
-	•	Server action
-	•	UI placement recommendation
-	•	Minimal implementation plan
+**What was implemented:**
+	•	RLS UPDATE policy: `/supabase/migrations/14_groups_update_policy.sql`
+		- Creator-only access using `created_by = auth.uid()`
+	•	Server action: `updateGroupName()` in `/app/actions/groups.ts`
+		- Validates input (empty, max 100 chars)
+		- Verifies creator status
+		- Updates group name with revalidation
+	•	UI: Inline edit form in `/components/split-page.tsx`
+		- Pencil icon next to group name (creator-only)
+		- Click to edit → inline form appears
+		- Save/Cancel buttons with loading states
+		- Keyboard shortcuts (Enter/Escape)
+		- Mobile responsive
+		- Client + server validation
+		- Error handling
 
-  
-## Phase 12B: Unread Group Activity Indicator (Minimal)  
+
+## Phase 12B: Add Group created by on groups page
+
+Please implement the following UX enhancement in Settle.
+
+Goal:
+On the Groups page, show a small sub-heading:
+"Group created by {creatorName}"
+ONLY when the group was not created by the currently logged-in user.
+
+Behavior:
+- If I created the group → do NOT show the sub-heading
+- If another user created the group → show:
+  "Created by {creatorName}"
+- The creator name should be the display name from the users table
+- If display name is missing, fall back gracefully (e.g. email or "Unknown")
+
+Constraints:
+- Do NOT change the database schema unless absolutely required
+- Prefer using existing relationships or queries
+- Respect existing RLS policies
+- Keep UI subtle (small, muted text under group name)
+- Do not affect group creation, deletion, or invites
+
+Implementation guidance:
+- Identify how group creator is currently stored (e.g. created_by / owner_id)
+- Ensure the groups query fetches creator info efficiently
+- If needed, join users table safely under RLS
+- Update only the groups list UI (not group detail page)
+
+Process:
+1. Briefly explain how creator info is being sourced
+2. Implement minimal code changes
+3. Call out any assumptions made
+4. Do not refactor unrelated code
+
+After implementation:
+- App must still load
+- Groups page must render correctly for:
+  a) Groups I created
+  b) Groups created by others
+
+## Phase 12C: Unread Group Activity Indicator (Minimal)  
 
 Goal: Show a visual indicator (red dot) next to groups with unseen activity.
 
@@ -537,8 +588,6 @@ npx tsc --noEmit # Type check
 
 Today's tasks:
 
-- Group name mobile UI fix (12A)
-- Group invite permissions
 - Group creator's name on list of 'your groups'
 - Unread expense on groups page when group updated - red dot next to group name or alert icon.
     Minimal v1.1 approach

@@ -12,7 +12,7 @@ import { InviteButton, InviteFormPanel } from '@/components/invitations/invite-f
 import { GroupInvitationsList } from '@/components/invitations/group-invitations-list'
 import { Button } from '@/components/ui/button'
 import { createExpense, updateExpense, deleteExpense } from '@/app/actions/expenses'
-import { deleteGroup } from '@/app/actions/groups'
+import { deleteGroup, updateGroupName } from '@/app/actions/groups'
 
 type PendingInvitation = {
   id: string
@@ -47,6 +47,10 @@ export function SimpleSplitPage({
   const [deletingGroup, setDeletingGroup] = useState(false)
   const [deleteError, setDeleteError] = useState<string | null>(null)
   const [isInviteOpen, setIsInviteOpen] = useState(false)
+  const [isEditingName, setIsEditingName] = useState(false)
+  const [editedName, setEditedName] = useState(group.name)
+  const [nameError, setNameError] = useState<string | null>(null)
+  const [updatingName, setUpdatingName] = useState(false)
 
   // Calculate balances from server data
   const balances = calculateBalances(initialExpenses, users)
@@ -146,6 +150,54 @@ export function SimpleSplitPage({
     }
   }
 
+  // Start editing group name
+  const handleStartEditName = () => {
+    setIsEditingName(true)
+    setEditedName(group.name)
+    setNameError(null)
+  }
+
+  // Cancel editing group name
+  const handleCancelEditName = () => {
+    setIsEditingName(false)
+    setEditedName(group.name)
+    setNameError(null)
+  }
+
+  // Save group name
+  const handleSaveGroupName = async () => {
+    const trimmedName = editedName.trim()
+
+    // Client-side validation
+    if (!trimmedName) {
+      setNameError('Group name cannot be empty')
+      return
+    }
+    if (trimmedName.length > 100) {
+      setNameError('Group name must be 100 characters or less')
+      return
+    }
+
+    // Skip if unchanged
+    if (trimmedName === group.name) {
+      setIsEditingName(false)
+      return
+    }
+
+    setUpdatingName(true)
+    setNameError(null)
+
+    const result = await updateGroupName(group.id, trimmedName)
+
+    if (result.success) {
+      setIsEditingName(false)
+      router.refresh()
+    } else {
+      setNameError(result.error || 'Failed to update group name')
+      setUpdatingName(false)
+    }
+  }
+
   return (
     <div className="min-h-screen">
       <Nav />
@@ -154,7 +206,64 @@ export function SimpleSplitPage({
         <header className="mb-6">
           <div className="flex items-start justify-between gap-4">
             <div className="flex-1">
-              <h1 className="text-3xl md:text-4xl font-semibold text-white">{group.name}</h1>
+              {!isEditingName ? (
+                <div className="flex items-center gap-2">
+                  <h1 className="text-3xl md:text-4xl font-semibold text-white">{group.name}</h1>
+                  {isCreator && (
+                    <button
+                      onClick={handleStartEditName}
+                      className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors p-1"
+                      aria-label="Edit group name"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                      </svg>
+                    </button>
+                  )}
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  <div className="flex flex-col md:flex-row gap-2">
+                    <input
+                      type="text"
+                      value={editedName}
+                      onChange={(e) => {
+                        setEditedName(e.target.value)
+                        if (nameError) setNameError(null)
+                      }}
+                      className="flex-1 px-4 py-2 glass-input text-2xl md:text-3xl font-semibold"
+                      placeholder="Group name"
+                      maxLength={100}
+                      autoFocus
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') handleSaveGroupName()
+                        if (e.key === 'Escape') handleCancelEditName()
+                      }}
+                    />
+                    <div className="flex gap-2">
+                      <Button
+                        onClick={handleSaveGroupName}
+                        disabled={updatingName}
+                        variant="primary"
+                        className="text-xs px-4 py-2"
+                      >
+                        {updatingName ? 'Saving...' : 'Save'}
+                      </Button>
+                      <Button
+                        onClick={handleCancelEditName}
+                        disabled={updatingName}
+                        variant="secondary"
+                        className="text-xs px-4 py-2"
+                      >
+                        Cancel
+                      </Button>
+                    </div>
+                  </div>
+                  {nameError && (
+                    <p className="text-sm text-[var(--negative)] pl-4">{nameError}</p>
+                  )}
+                </div>
+              )}
               <p className="text-[var(--text-secondary)] mt-1">
                 Created by {creatorName}
               </p>

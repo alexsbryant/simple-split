@@ -216,14 +216,29 @@ A solid v1 could stop after:
 Everything beyond that is enhancement, not requirement.
 
 
+⸻
+
+✅ Phase 12A: Group Renaming (COMPLETE)
+
+Goal: Allow group creators to rename their groups.
+
+**What was implemented:**
+- RLS UPDATE policy for creator-only access
+- `updateGroupName()` server action with validation
+- Inline edit UI with pencil icon (creator-only)
+- Mobile responsive design
+- Keyboard shortcuts (Enter/Escape)
+- Input validation (empty names, max 100 chars)
+
+⸻
+
 Future Ideas
-	- As a small sub-heading, show 'group created by {creatorName}' on groups page, when it's a group not made by you/. 	 
+	- As a small sub-heading, show 'group created by {creatorName}' on groups page, when it's a group not made by you.
 	- Notification if new item added to group (red dot next to group name in groups page maybe)
-	- Allow an added expense to not be split evenly 
+	- Allow an added expense to not be split evenly
 	- User default currency change in settings
 	- Currency choice on 'create new group', defaults to user's chosen prefrence currency
 	- Option to choose currency per expense (with a warning that conversion from expense currency to group's currency is the conversion rate as of the time expense listed, and may not accuratly represent the amount spent at the time.)
 	- Invite link generation
 	- QR code support
-	- Change group name
 	- Remove user from group / leave group, but keep history of user's expenses held within group

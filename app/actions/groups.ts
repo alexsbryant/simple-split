@@ -49,3 +49,57 @@ export async function deleteGroup(groupId: string): Promise<ActionResult> {
   revalidatePath('/groups')
   return { success: true }
 }
+
+export async function updateGroupName(
+  groupId: string,
+  newName: string
+): Promise<ActionResult> {
+  const supabase = await createClient()
+
+  // Validate input
+  const trimmedName = newName.trim()
+  if (!trimmedName) {
+    return { success: false, error: 'Group name cannot be empty' }
+  }
+  if (trimmedName.length > 100) {
+    return { success: false, error: 'Group name must be 100 characters or less' }
+  }
+
+  // Get authenticated user
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser()
+
+  if (authError || !user) {
+    return { success: false, error: 'Not authenticated' }
+  }
+
+  // Verify user is the creator (RLS will also enforce this)
+  const { data: group, error: fetchError } = await supabase
+    .from('groups')
+    .select('created_by')
+    .eq('id', groupId)
+    .single()
+
+  if (fetchError || !group) {
+    return { success: false, error: 'Group not found' }
+  }
+
+  if (group.created_by !== user.id) {
+    return { success: false, error: 'Only the group creator can rename this group' }
+  }
+
+  // Update the group name
+  const { error: updateError } = await supabase
+    .from('groups')
+    .update({ name: trimmedName })
+    .eq('id', groupId)
+
+  if (updateError) {
+    return { success: false, error: updateError.message }
+  }
+
+  revalidatePath(`/groups/${groupId}`)
+  return { success: true }
+}
