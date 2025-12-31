@@ -109,7 +109,7 @@ export default async function GroupsPage() {
               <Link
                 key={group.id}
                 href={`/groups/${group.id}`}
-                className="glass p-4 block transition-all duration-150 hover:bg-[rgba(255,255,255,0.08)]"
+                className="glass p-4 block transition-all duration-150 hover:bg-[rgba(255,255,255,0.12)] hover:border-[rgba(255,255,255,0.25)] hover:scale-[1.01]"
               >
                 <h3 className="font-semibold text-white text-lg flex items-center gap-2">
                   {group.name}

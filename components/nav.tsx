@@ -43,11 +43,11 @@ export function Nav() {
           className="flex items-center gap-2 opacity-90 hover:opacity-75 transition-opacity"
         >
           <img
-            src="/logos/settle-icon.png"
+            src="/logos/settle-logo-v2.png"
             alt="Settle"
             className="h-8 w-8 rounded-lg"
           />
-          <span className="hidden md:inline text-2xl font-semibold text-white font-[family-name:var(--font-bodoni)]">
+          <span className="text-2xl font-semibold text-white" style={{ fontFamily: 'var(--font-serif)' }}>
             Settle
           </span>
         </Link>

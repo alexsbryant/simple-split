@@ -5,7 +5,7 @@ export default function LandingPage() {
     <div className="min-h-screen flex items-center justify-center px-4">
       <div className="flex flex-col items-center max-w-md">
         <img
-          src="/logos/settle-logo.png"
+          src="/logos/settle-logo-v2-title.png"
           alt="Settle - expense splitting simplified"
           className="mb-10 h-32 md:h-40 w-auto rounded-[16px]"
         />

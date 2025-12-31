@@ -1,6 +1,9 @@
 @import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Droid+Serif:wght@400;700&display=swap');
 
 :root {
+  /* Fonts */
+  --font-serif: 'Droid Serif', Georgia, serif;
   /* Glass surfaces */
   --glass-bg: rgba(255, 255, 255, 0.1);
   --glass-border: rgba(255, 255, 255, 0.15);
