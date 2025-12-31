@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { SimplifiedDebt } from '@/types'
 import { formatCurrency } from '@/lib/utils'
+import { getVenmoLink, getPayPalLink, openPaymentLink } from '@/lib/payment-links'
 import { createSettlement } from '@/app/actions/settlements'
 import { Button } from '@/components/ui/button'
 
@@ -142,27 +143,61 @@ export function SettleUpModal({
                     {userDebts.map((debt) => {
                       const debtId = `${debt.fromUserId}-${debt.toUserId}`
                       const isSettling = settlingDebtId === debtId
+                      const isUserPayer = debt.fromUserId === currentUserId
+                      const showVenmo = isUserPayer && currency === 'USD'
+                      const showPayPal = isUserPayer
+
                       return (
                         <div
                           key={debtId}
-                          className="p-3 flex items-center justify-between gap-3 rounded-xl bg-[rgba(255,255,255,0.08)] border border-[rgba(255,255,255,0.1)]"
+                          className="p-3 rounded-xl bg-[rgba(255,255,255,0.08)] border border-[rgba(255,255,255,0.1)]"
                         >
-                          <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium text-[var(--text-primary)] truncate">
-                              {getDebtMessage(debt)}
-                            </p>
-                            <p className="text-lg font-semibold text-[var(--accent)]">
-                              {formatCurrency(debt.amount, currency)}
-                            </p>
+                          <div className="flex items-center justify-between gap-3 mb-2">
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-medium text-[var(--text-primary)] truncate">
+                                {getDebtMessage(debt)}
+                              </p>
+                              <p className="text-lg font-semibold text-[var(--accent)]">
+                                {formatCurrency(debt.amount, currency)}
+                              </p>
+                            </div>
                           </div>
-                          <Button
-                            variant="secondary"
-                            onClick={() => handleSettleDebt(debt)}
-                            disabled={isSettling}
-                            className="shrink-0 px-3 py-2 text-xs"
-                          >
-                            {isSettling ? '...' : 'Mark Paid'}
-                          </Button>
+
+                          {/* Payment buttons row */}
+                          <div className="flex items-center gap-2 flex-wrap">
+                            {showVenmo && (
+                              <button
+                                onClick={() => openPaymentLink(getVenmoLink(debt.amount, `SimpleSplit: ${debt.toDisplayName}`))}
+                                className="px-3 py-1.5 text-xs font-medium rounded-full bg-[#008CFF] text-white hover:brightness-110 transition-all cursor-pointer"
+                              >
+                                Venmo
+                              </button>
+                            )}
+                            {showPayPal && (
+                              <button
+                                onClick={() => openPaymentLink(getPayPalLink(debt.amount, currency))}
+                                className="px-3 py-1.5 text-xs font-medium rounded-full bg-[#0070BA] text-white hover:brightness-110 transition-all cursor-pointer"
+                              >
+                                PayPal
+                              </button>
+                            )}
+                            <div className="flex-1" />
+                            <Button
+                              variant="secondary"
+                              onClick={() => handleSettleDebt(debt)}
+                              disabled={isSettling}
+                              className="shrink-0 px-3 py-2 text-xs"
+                            >
+                              {isSettling ? '...' : 'Mark as Paid'}
+                            </Button>
+                          </div>
+
+                          {/* Helper text for payers */}
+                          {isUserPayer && (
+                            <p className="text-xs text-[var(--text-muted)] mt-2">
+                              Pay via app, then mark as paid
+                            </p>
+                          )}
                         </div>
                       )
                     })}
