@@ -269,8 +269,7 @@ Goal: Show red dot next to groups with unseen activity.
 ⸻
 
 Future Ideas
-	- Generate a share URL that doesn't require my friends to already have an email or account
-	- POSSIBLY allow anonymous user participation without an account, using alphanumeric ID's in the URL
+
 	- Allow an added expense to not be split evenly
 	- User default currency change in settings
 	- Currency choice on 'create new group', defaults to user's chosen prefrence currency

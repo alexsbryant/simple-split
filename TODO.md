@@ -559,8 +559,80 @@ Requirements:
 - No backend changes
 - No schema or RLS changes
 - Reuse the existing generated invite URL
-
 Apply this only to the invite UI.
+
+## Phase 13C - Group currency symbols - COMPLETE
+
+- Add ability to choose currency of new group upon creation.
+- Just simply changes currency symbol at the moment, no conversion yet.
+
+
+## Phase 14A: Settle Up (Core) - COMPLETE
+
+Goal:
+Allow users to settle balances within a group without deleting expense history.
+
+Rules:
+- Never delete or modify past expenses
+- Settlement should bring balances back to zero
+- Settlement should be represented as a new expense
+
+Scope:
+- Add "Settle Up" button on group page
+- Modal shows "Pay {user} ${amount}"
+- "Mark as settled" creates settlement expense(s)
+- Reuse existing balance calculation logic
+
+Constraints:
+- No external payments
+- No Venmo / PayPal yet
+- No partial settlements
+- Keep schema changes minimal
+
+Please propose:
+- Data model (prefer reusing expenses)
+- Server actions
+- UI flow
+- Edge cases
+- Implementation order
+
+## Phase 14B: Settlements
+
+Design how settlement expenses should be stored and displayed.
+
+Requirements:
+- Settlement expenses must not affect historical visibility
+- They must reset balances cleanly
+- They should be clearly identifiable in the UI
+
+Questions to answer:
+- Should settlement be one expense per pair or a single group expense?
+- How should paid_by and splits be set?
+- How should they be labeled and styled?
+
+## Phase 14C: External Payment Links (No Payment Processing)
+
+Goal:
+Allow users to launch Venmo, or PayPal with prefilled payment details, from the settle up screen.
+
+Constraints:
+- No API keys
+- No webhooks
+- No backend payment processing
+- Fallback to "Mark as settled" always available
+
+Please propose:
+- Deep link formats for Venmo and PayPal
+- How to detect mobile vs desktop
+- UI placement and copy
+- Failure handling
+
+For this phase:
+- Do NOT store Venmo or PayPal usernames
+- Generate payment links with amount only
+- User selects recipient inside the payment app
+- Always provide a "Mark as settled" fallback
+- No schema changes required
 
 ## Architecture
 
@@ -630,12 +702,7 @@ npx tsc --noEmit # Type check
 
 Today's tasks:
 
-- Group creator's name on list of 'your groups'
-- Unread expense on groups page when group updated - red dot next to group name or alert icon.
-    Minimal v1.1 approach
-    •	Track last activity timestamp per group
-    •	Track last seen timestamp per user per group
-    •	Compare the two to show a dot
-- Choose currrency when creating a group.  Simple for now, just changes currency icon within payments.  No link to conversion rates or anything in this version. 
+- hover feedback on groups list
+
 
 *NON-CLAUDE BRAINSTORMING SECTION ENDS*
