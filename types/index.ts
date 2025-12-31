@@ -19,6 +19,7 @@ export type Expense = {
 export type Group = {
   id: string
   name: string
+  currency: string
   createdAt: string
 }
 

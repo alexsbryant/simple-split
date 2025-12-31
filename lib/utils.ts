@@ -1,10 +1,12 @@
 /**
- * Format a number as currency (USD)
+ * Format a number as currency
+ * @param amount - The numeric amount to format
+ * @param currency - ISO 4217 currency code (default: 'USD')
  */
-export function formatCurrency(amount: number): string {
+export function formatCurrency(amount: number, currency: string = 'USD'): string {
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
-    currency: 'USD',
+    currency: currency,
   }).format(amount)
 }
 

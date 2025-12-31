@@ -8,6 +8,7 @@ interface ExpenseListProps {
   onEdit: (expense: Expense) => void
   onDelete: (id: string) => void
   loading?: boolean
+  currency: string
 }
 
 export function ExpenseList({
@@ -17,6 +18,7 @@ export function ExpenseList({
   onEdit,
   onDelete,
   loading = false,
+  currency,
 }: ExpenseListProps) {
   // Sort by createdAt (newest first)
   const sortedExpenses = [...expenses].sort(
@@ -50,6 +52,7 @@ export function ExpenseList({
               onEdit={onEdit}
               onDelete={onDelete}
               disabled={loading}
+              currency={currency}
             />
           ))}
         </div>

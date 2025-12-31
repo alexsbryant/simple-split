@@ -6,6 +6,19 @@ import { createClient } from '@/lib/supabase'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 
+const CURRENCIES = [
+  { code: 'USD', name: 'US Dollar', symbol: '$' },
+  { code: 'GBP', name: 'British Pound', symbol: '£' },
+  { code: 'EUR', name: 'Euro', symbol: '€' },
+  { code: 'JPY', name: 'Japanese Yen', symbol: '¥' },
+  { code: 'CAD', name: 'Canadian Dollar', symbol: '$' },
+  { code: 'AUD', name: 'Australian Dollar', symbol: '$' },
+  { code: 'CHF', name: 'Swiss Franc', symbol: 'Fr.' },
+  { code: 'CNY', name: 'Chinese Yuan', symbol: '¥' },
+  { code: 'INR', name: 'Indian Rupee', symbol: '₹' },
+  { code: 'MXN', name: 'Mexican Peso', symbol: '$' },
+]
+
 interface GroupCreateFormProps {
   userId: string
   onCancel: () => void
@@ -13,6 +26,7 @@ interface GroupCreateFormProps {
 
 export function GroupCreateForm({ userId, onCancel }: GroupCreateFormProps) {
   const [groupName, setGroupName] = useState('')
+  const [currency, setCurrency] = useState('USD')
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const router = useRouter()
@@ -34,7 +48,7 @@ export function GroupCreateForm({ userId, onCancel }: GroupCreateFormProps) {
       // 1. Insert new group
       const { data: newGroup, error: groupError } = await supabase
         .from('groups')
-        .insert({ name: groupName.trim(), created_by: userId })
+        .insert({ name: groupName.trim(), currency, created_by: userId })
         .select('id')
         .single()
 
@@ -69,6 +83,23 @@ export function GroupCreateForm({ userId, onCancel }: GroupCreateFormProps) {
           placeholder="e.g., Roommates, Trip to Paris"
           required
         />
+
+        <div>
+          <label className="block text-sm font-medium text-[var(--text-secondary)] mb-2">
+            Currency
+          </label>
+          <select
+            value={currency}
+            onChange={(e) => setCurrency(e.target.value)}
+            className="w-full px-4 py-3 glass-input text-[var(--text-primary)] bg-transparent"
+          >
+            {CURRENCIES.map((c) => (
+              <option key={c.code} value={c.code} className="bg-[#1a1a2e] text-white">
+                {c.symbol} {c.code} - {c.name}
+              </option>
+            ))}
+          </select>
+        </div>
 
         {error && (
           <p className="text-sm text-[var(--negative)] text-center">{error}</p>

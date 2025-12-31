@@ -17,6 +17,7 @@ export const MOCK_USERS: User[] = [
 export const MOCK_GROUP: Group = {
   id: 'group-1',
   name: 'Household',
+  currency: 'USD',
   createdAt: new Date().toISOString(),
 }
 

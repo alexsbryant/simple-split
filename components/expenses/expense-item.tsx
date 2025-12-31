@@ -9,6 +9,7 @@ interface ExpenseItemProps {
   onEdit: (expense: Expense) => void
   onDelete: (id: string) => void
   disabled?: boolean
+  currency: string
 }
 
 export function ExpenseItem({
@@ -18,6 +19,7 @@ export function ExpenseItem({
   onEdit,
   onDelete,
   disabled = false,
+  currency,
 }: ExpenseItemProps) {
   return (
     <div className="glass-sm p-3 md:p-4 transition-all duration-150 hover:bg-[rgba(255,255,255,0.08)]">
@@ -29,7 +31,7 @@ export function ExpenseItem({
           {expense.description}
         </span>
         <span className="font-semibold text-[var(--text-primary)] shrink-0">
-          {formatCurrency(expense.amount)}
+          {formatCurrency(expense.amount, currency)}
         </span>
       </div>
 

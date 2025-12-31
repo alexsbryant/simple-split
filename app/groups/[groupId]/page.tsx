@@ -77,6 +77,7 @@ export default async function GroupPage({ params }: { params: { groupId: string 
   const group: Group = {
     id: groupData.id,
     name: groupData.name,
+    currency: groupData.currency ?? 'USD',
     createdAt: groupData.created_at,
   }
 

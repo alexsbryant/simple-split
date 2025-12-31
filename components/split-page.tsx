@@ -291,7 +291,7 @@ export function SimpleSplitPage({
 
         {/* Balance Summary */}
         <div className="mb-6">
-          <BalanceSummary balances={balances} currentUserId={currentUser.id} />
+          <BalanceSummary balances={balances} currentUserId={currentUser.id} currency={group.currency} />
         </div>
 
         {/* Error Display */}
@@ -321,6 +321,7 @@ export function SimpleSplitPage({
           onEdit={handleEditClick}
           onDelete={handleDeleteExpense}
           loading={loading}
+          currency={group.currency}
         />
 
         {/* Danger Zone - Only visible to creator */}

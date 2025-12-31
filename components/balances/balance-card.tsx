@@ -3,9 +3,10 @@ import { formatCurrency } from '@/lib/utils'
 
 interface BalanceCardProps {
   balance: UserBalance
+  currency: string
 }
 
-export function BalanceCard({ balance }: BalanceCardProps) {
+export function BalanceCard({ balance, currency }: BalanceCardProps) {
   const isPositive = balance.balance > 0
   const isNegative = balance.balance < 0
 
@@ -16,8 +17,8 @@ export function BalanceCard({ balance }: BalanceCardProps) {
       : 'var(--settled)'
 
   const formattedBalance = isPositive
-    ? `+${formatCurrency(balance.balance)}`
-    : formatCurrency(balance.balance)
+    ? `+${formatCurrency(balance.balance, currency)}`
+    : formatCurrency(balance.balance, currency)
 
   return (
     <div className="glass-sm p-4 transition-all duration-150 hover:bg-[rgba(255,255,255,0.08)]">
@@ -33,7 +34,7 @@ export function BalanceCard({ balance }: BalanceCardProps) {
         </span>
       </div>
       <p className="text-xs text-[var(--text-muted)] mt-1">
-        Paid {formatCurrency(balance.totalPaid)}
+        Paid {formatCurrency(balance.totalPaid, currency)}
       </p>
     </div>
   )
