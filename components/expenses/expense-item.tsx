@@ -21,16 +21,42 @@ export function ExpenseItem({
   disabled = false,
   currency,
 }: ExpenseItemProps) {
+  const isSettlement = expense.isSettlement
+
   return (
-    <div className="glass-sm p-3 md:p-4 transition-all duration-150 hover:bg-[rgba(255,255,255,0.08)]">
+    <div
+      className={`glass-sm p-3 md:p-4 transition-all duration-150 hover:bg-[rgba(255,255,255,0.08)] ${
+        isSettlement ? 'border-l-2 border-l-[var(--positive)]' : ''
+      }`}
+    >
       {/* Mobile: 2-line compact layout, Desktop: horizontal layout */}
 
       {/* Line 1: Description + Amount */}
       <div className="flex items-start justify-between gap-2">
-        <span className="flex-1 font-medium text-[var(--text-primary)] text-sm md:text-base leading-tight">
+        <span className="flex-1 font-medium text-[var(--text-primary)] text-sm md:text-base leading-tight flex items-center gap-2">
+          {isSettlement && (
+            <svg
+              className="w-4 h-4 text-[var(--positive)] shrink-0"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              aria-label="Settlement"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+          )}
           {expense.description}
         </span>
-        <span className="font-semibold text-[var(--text-primary)] shrink-0">
+        <span
+          className={`font-semibold shrink-0 ${
+            isSettlement ? 'text-[var(--positive)]' : 'text-[var(--text-primary)]'
+          }`}
+        >
           {formatCurrency(expense.amount, currency)}
         </span>
       </div>
@@ -41,8 +67,8 @@ export function ExpenseItem({
           {payerName} · {formatDate(expense.createdAt)}
         </span>
 
-        {/* Actions - only for owner */}
-        {isOwner && (
+        {/* Actions - only for owner, and settlements are not editable */}
+        {isOwner && !isSettlement && (
           <div className="flex gap-1">
             <Button
               variant="secondary"

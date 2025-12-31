@@ -102,6 +102,8 @@ export default async function GroupPage({ params }: { params: { groupId: string 
     description: string
     created_at: string
     updated_at: string
+    is_settlement: boolean
+    settled_with_user_id: string | null
   }) => ({
     id: e.id,
     groupId: e.group_id,
@@ -110,6 +112,8 @@ export default async function GroupPage({ params }: { params: { groupId: string 
     description: e.description ?? '',
     createdAt: e.created_at,
     updatedAt: e.updated_at,
+    isSettlement: e.is_settlement ?? false,
+    settledWithUserId: e.settled_with_user_id ?? null,
   })) ?? []
 
   const pendingInvitations = invitationsData?.map((inv: {

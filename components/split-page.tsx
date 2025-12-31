@@ -291,7 +291,13 @@ export function SimpleSplitPage({
 
         {/* Balance Summary */}
         <div className="mb-6">
-          <BalanceSummary balances={balances} currentUserId={currentUser.id} currency={group.currency} />
+          <BalanceSummary
+            balances={balances}
+            currentUserId={currentUser.id}
+            currency={group.currency}
+            groupId={group.id}
+            onSettlementSuccess={() => router.refresh()}
+          />
         </div>
 
         {/* Error Display */}

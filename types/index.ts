@@ -14,6 +14,8 @@ export type Expense = {
   description: string
   createdAt: string // ISO string
   updatedAt: string
+  isSettlement: boolean
+  settledWithUserId: string | null
 }
 
 export type Group = {
@@ -62,4 +64,13 @@ export type Invitation = {
 export type InvitationWithDetails = Invitation & {
   groupName: string
   inviterName: string
+}
+
+// Settlement types for Phase 14A
+export type SimplifiedDebt = {
+  fromUserId: string
+  fromDisplayName: string
+  toUserId: string
+  toDisplayName: string
+  amount: number
 }

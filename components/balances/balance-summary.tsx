@@ -1,14 +1,34 @@
+'use client'
+
+import { useState } from 'react'
 import { GroupBalances } from '@/types'
 import { formatCurrency } from '@/lib/utils'
+import { calculateSimplifiedDebts, isFullySettled } from '@/lib/balance'
 import { BalanceCard } from './balance-card'
+import { SettleUpButton } from '@/components/settlements/settle-up-button'
+import { SettleUpModal } from '@/components/settlements/settle-up-modal'
 
 interface BalanceSummaryProps {
   balances: GroupBalances
   currentUserId: string
   currency: string
+  groupId: string
+  onSettlementSuccess: () => void
 }
 
-export function BalanceSummary({ balances, currentUserId, currency }: BalanceSummaryProps) {
+export function BalanceSummary({
+  balances,
+  currentUserId,
+  currency,
+  groupId,
+  onSettlementSuccess,
+}: BalanceSummaryProps) {
+  const [isSettleModalOpen, setIsSettleModalOpen] = useState(false)
+
+  // Calculate simplified debts for settlement
+  const simplifiedDebts = calculateSimplifiedDebts(balances.balances)
+  const allSettled = isFullySettled(balances.balances)
+
   // Find current user's balance
   const currentUserBalance = balances.balances.find(b => b.userId === currentUserId)
 
@@ -81,6 +101,12 @@ export function BalanceSummary({ balances, currentUserId, currency }: BalanceSum
           >
             {oweSummary.message}
           </p>
+          {/* Settle Up button - only show when there are outstanding debts */}
+          {!allSettled && (
+            <div className="mt-4">
+              <SettleUpButton onClick={() => setIsSettleModalOpen(true)} />
+            </div>
+          )}
         </div>
       )}
 
@@ -108,6 +134,20 @@ export function BalanceSummary({ balances, currentUserId, currency }: BalanceSum
           <BalanceCard key={balance.userId} balance={balance} currency={currency} />
         ))}
       </div>
+
+      {/* Settle Up Modal */}
+      <SettleUpModal
+        isOpen={isSettleModalOpen}
+        onClose={() => setIsSettleModalOpen(false)}
+        debts={simplifiedDebts}
+        groupId={groupId}
+        currency={currency}
+        currentUserId={currentUserId}
+        onSuccess={() => {
+          onSettlementSuccess()
+          setIsSettleModalOpen(false)
+        }}
+      />
     </section>
   )
 }

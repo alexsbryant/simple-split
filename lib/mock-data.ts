@@ -31,6 +31,8 @@ export const INITIAL_EXPENSES: Expense[] = [
     description: 'Groceries',
     createdAt: new Date(Date.now() - 86400000).toISOString(), // 1 day ago
     updatedAt: new Date(Date.now() - 86400000).toISOString(),
+    isSettlement: false,
+    settledWithUserId: null,
   },
   {
     id: 'exp-2',
@@ -40,5 +42,7 @@ export const INITIAL_EXPENSES: Expense[] = [
     description: 'Dinner',
     createdAt: new Date(Date.now() - 172800000).toISOString(), // 2 days ago
     updatedAt: new Date(Date.now() - 172800000).toISOString(),
+    isSettlement: false,
+    settledWithUserId: null,
   },
 ]
