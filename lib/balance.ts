@@ -104,23 +104,27 @@ export function calculateBalances(
     .reduce((sum, exp) => sum + exp.amount, 0)
   const fairSharePerPerson = totalExpenses / memberCount
 
-  // Calculate how much each person paid
+  // Calculate how much each person paid (only after settlement period cutoff)
   const paidByUser: Record<string, number> = {}
-  expenses.forEach((exp) => {
-    if (exp.isSettlement && exp.settledWithUserId) {
-      // Settlement: payer gave money to recipient
-      // Payer's effective "paid" increases (they contributed toward their debt)
-      paidByUser[exp.paidByUserId] =
-        (paidByUser[exp.paidByUserId] || 0) + exp.amount
-      // Recipient's effective "paid" decreases (they received money back)
-      paidByUser[exp.settledWithUserId] =
-        (paidByUser[exp.settledWithUserId] || 0) - exp.amount
-    } else {
-      // Regular expense
-      paidByUser[exp.paidByUserId] =
-        (paidByUser[exp.paidByUserId] || 0) + exp.amount
-    }
-  })
+  expenses
+    .filter((exp) =>
+      !settlementPeriodCutoff || new Date(exp.createdAt) > settlementPeriodCutoff
+    )
+    .forEach((exp) => {
+      if (exp.isSettlement && exp.settledWithUserId) {
+        // Settlement: payer gave money to recipient
+        // Payer's effective "paid" increases (they contributed toward their debt)
+        paidByUser[exp.paidByUserId] =
+          (paidByUser[exp.paidByUserId] || 0) + exp.amount
+        // Recipient's effective "paid" decreases (they received money back)
+        paidByUser[exp.settledWithUserId] =
+          (paidByUser[exp.settledWithUserId] || 0) - exp.amount
+      } else {
+        // Regular expense
+        paidByUser[exp.paidByUserId] =
+          (paidByUser[exp.paidByUserId] || 0) + exp.amount
+      }
+    })
 
   // Build balance for each member
   const balances: UserBalance[] = members.map((member) => {

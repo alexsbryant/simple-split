@@ -129,7 +129,7 @@ export function BalanceSummary({
       </div>
 
       {/* Balance Cards */}
-      <div className="p-4 grid gap-3 sm:grid-cols-2">
+      <div className="p-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {balances.balances.map((balance) => (
           <BalanceCard key={balance.userId} balance={balance} currency={currency} />
         ))}

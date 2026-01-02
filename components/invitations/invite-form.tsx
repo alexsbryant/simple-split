@@ -239,21 +239,19 @@ export function InviteFormPanel({ groupId, onClose }: InviteFormPanelProps) {
                   readOnly
                   className="input flex-1 text-sm truncate"
                 />
-                {canShare ? (
+                <button
+                  onClick={handleCopyLink}
+                  className="btn-primary px-3 py-2 text-sm flex items-center gap-1 cursor-pointer shrink-0"
+                >
+                  {copied ? <CheckIcon /> : <CopyIcon />}
+                  {copied ? 'Copied' : 'Copy'}
+                </button>
+                {canShare && (
                   <button
                     onClick={handleShare}
-                    className="btn-primary px-3 py-2 text-sm flex items-center gap-1 cursor-pointer"
+                    className="btn-secondary px-3 py-2 text-sm flex items-center gap-1 cursor-pointer shrink-0"
                   >
                     <ShareIcon />
-                    Share
-                  </button>
-                ) : (
-                  <button
-                    onClick={handleCopyLink}
-                    className="btn-primary px-3 py-2 text-sm flex items-center gap-1 cursor-pointer"
-                  >
-                    {copied ? <CheckIcon /> : <CopyIcon />}
-                    {copied ? 'Copied' : 'Copy'}
                   </button>
                 )}
               </div>

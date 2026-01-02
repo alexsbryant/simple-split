@@ -12,6 +12,7 @@ export function Nav() {
   const [menuOpen, setMenuOpen] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
   const isOnSplitPage = pathname?.startsWith('/groups/') && pathname !== '/groups'
+  const isOnSettingsPage = pathname === '/settings'
 
   const handleLogout = async () => {
     setMenuOpen(false)
@@ -54,7 +55,7 @@ export function Nav() {
 
         {/* Desktop nav */}
         <div className="hidden md:flex items-center gap-4">
-          {isOnSplitPage && (
+          {(isOnSplitPage || isOnSettingsPage) && (
             <Link href="/groups">
               <Button variant="secondary" className="text-xs py-1.5 px-3">
                 Back to Groups
@@ -101,7 +102,7 @@ export function Nav() {
           {/* Dropdown menu */}
           {menuOpen && (
             <div className="absolute right-0 top-10.5 mt-2 w-48 bg-[rgba(20,20,30,0.95)] backdrop-blur-md border border-white/10 rounded-lg shadow-lg py-2 z-50">
-              {isOnSplitPage && (
+              {(isOnSplitPage || isOnSettingsPage) && (
                 <Link
                   href="/groups"
                   onClick={() => setMenuOpen(false)}

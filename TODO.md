@@ -786,5 +786,3 @@ Custom splitting
 
 
   - Check total reset after any settlement is made, does this work?
-
-*NON-CLAUDE BRAINSTORMING SECTION ENDS*
