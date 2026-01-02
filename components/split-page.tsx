@@ -128,9 +128,16 @@ export function SimpleSplitPage({
     } else {
       // Different expense or first time editing
       setEditingExpense(expense)
-      // Scroll to form after state update
+      // Scroll to form after state update with offset for breathing room
       setTimeout(() => {
-        formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        if (formRef.current) {
+          const elementPosition = formRef.current.getBoundingClientRect().top + window.scrollY
+          const offsetPosition = elementPosition - 20 // 20px breathing room above form
+          window.scrollTo({
+            top: offsetPosition,
+            behavior: 'smooth'
+          })
+        }
       }, 0)
     }
   }
