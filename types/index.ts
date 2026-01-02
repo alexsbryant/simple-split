@@ -45,6 +45,7 @@ export type GroupBalances = {
   memberCount: number
   fairSharePerPerson: number
   balances: UserBalance[]
+  settlementPeriodCutoff?: Date | null
 }
 
 // Invitation types for Phase 9A

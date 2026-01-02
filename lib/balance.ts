@@ -1,6 +1,62 @@
 import { Expense, User, GroupBalances, UserBalance, SimplifiedDebt } from '@/types'
 
 /**
+ * Finds the most recent settlement that completed a settlement period
+ * (i.e., all balances were within tolerance of $0 after it).
+ *
+ * Returns the settlement's createdAt date, or null if no complete period found.
+ */
+function findSettlementPeriodCutoff(
+  expenses: Expense[],
+  members: User[]
+): Date | null {
+  const TOLERANCE = 0.10 // $0.10 tolerance for "settled"
+
+  // Find all settlements, newest first
+  const settlements = expenses
+    .filter(exp => exp.isSettlement)
+    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+
+  // For each settlement, check if balances were near 0 after it
+  for (const settlement of settlements) {
+    // Get all expenses up to and including this settlement
+    const expensesUpToSettlement = expenses.filter(
+      exp => new Date(exp.createdAt) <= new Date(settlement.createdAt)
+    )
+
+    // Calculate balances at that point in time
+    const totalExpenses = expensesUpToSettlement
+      .filter(exp => !exp.isSettlement)
+      .reduce((sum, exp) => sum + exp.amount, 0)
+
+    const fairShare = members.length > 0 ? totalExpenses / members.length : 0
+
+    const paidByUser: Record<string, number> = {}
+    expensesUpToSettlement.forEach((exp) => {
+      if (exp.isSettlement && exp.settledWithUserId) {
+        paidByUser[exp.paidByUserId] = (paidByUser[exp.paidByUserId] || 0) + exp.amount
+        paidByUser[exp.settledWithUserId] = (paidByUser[exp.settledWithUserId] || 0) - exp.amount
+      } else {
+        paidByUser[exp.paidByUserId] = (paidByUser[exp.paidByUserId] || 0) + exp.amount
+      }
+    })
+
+    // Check if all members have balances within tolerance
+    const allNearZero = members.every((member) => {
+      const totalPaid = paidByUser[member.id] || 0
+      const balance = totalPaid - fairShare
+      return Math.abs(balance) <= TOLERANCE
+    })
+
+    if (allNearZero) {
+      return new Date(settlement.createdAt)
+    }
+  }
+
+  return null // No complete settlement period found
+}
+
+/**
  * Calculates balances for all members in a group based on expenses.
  * Pure function - no side effects.
  *
@@ -15,6 +71,10 @@ import { Expense, User, GroupBalances, UserBalance, SimplifiedDebt } from '@/typ
  * - Do NOT count toward totalExpenses (they're transfers, not shared costs)
  * - Increase payer's "paid" amount (they gave money)
  * - Decrease recipient's "paid" amount (they received money)
+ *
+ * Settlement Periods:
+ * - After a settlement brings all balances to ~$0, that marks the end of a period
+ * - Only expenses after that period count toward totalExpenses
  */
 export function calculateBalances(
   expenses: Expense[],
@@ -28,12 +88,19 @@ export function calculateBalances(
       memberCount: 0,
       fairSharePerPerson: 0,
       balances: [],
+      settlementPeriodCutoff: null,
     }
   }
 
-  // Sum only regular expenses (not settlements) for the total
+  // Find the most recent settlement that completed a period (all balances ~$0)
+  const settlementPeriodCutoff = findSettlementPeriodCutoff(expenses, members)
+
+  // Sum only regular expenses (not settlements) after the cutoff
   const totalExpenses = expenses
-    .filter((exp) => !exp.isSettlement)
+    .filter((exp) =>
+      !exp.isSettlement &&
+      (!settlementPeriodCutoff || new Date(exp.createdAt) > settlementPeriodCutoff)
+    )
     .reduce((sum, exp) => sum + exp.amount, 0)
   const fairSharePerPerson = totalExpenses / memberCount
 
@@ -77,6 +144,7 @@ export function calculateBalances(
     memberCount,
     fairSharePerPerson: Math.round(fairSharePerPerson * 100) / 100,
     balances,
+    settlementPeriodCutoff,
   }
 }
 

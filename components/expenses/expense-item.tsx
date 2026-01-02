@@ -10,6 +10,7 @@ interface ExpenseItemProps {
   onDelete: (id: string) => void
   disabled?: boolean
   currency: string
+  settledTotal?: number | null
 }
 
 export function ExpenseItem({
@@ -20,6 +21,7 @@ export function ExpenseItem({
   onDelete,
   disabled = false,
   currency,
+  settledTotal,
 }: ExpenseItemProps) {
   const isSettlement = expense.isSettlement
 
@@ -60,6 +62,13 @@ export function ExpenseItem({
           {formatCurrency(expense.amount, currency)}
         </span>
       </div>
+
+      {/* Settlement Period Total */}
+      {isSettlement && settledTotal !== null && settledTotal !== undefined && (
+        <div className="mt-1.5 text-xs text-[var(--text-muted)]">
+          Total settled: {formatCurrency(settledTotal, currency)}
+        </div>
+      )}
 
       {/* Line 2: Payer • Date + Actions */}
       <div className="flex items-center justify-between gap-2 mt-1">

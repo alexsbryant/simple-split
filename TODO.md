@@ -771,6 +771,9 @@ TODO:
 - Total resets after Settlement, settlement expense lists total that was settled that time.  
 - Reformat UI when on desktop to have balance-summary section and add expense on the left, and list of expenses on the right.  Mobile doesn't change. Reduce 
 - invite QR code
+- on invite, have a copy button to automatically copy the link generated
+- reduce size of balance cards on balance-summary to fit in one row when theres three users (more can go onto second row)
+- Add 'back to groups' nav button when on 'settings' page
 
 Custom splitting
 
@@ -780,5 +783,8 @@ Custom splitting
   Example for step 1: 4 housemates have a group.  One stays home, the other 3 get a taxi together.  The person who paid for the taxi can select 'customize split' button - to the bottom right of the add expense box.  This then gives them a list of everyone's display names that are in the group with check boxes, and they can select who should be included in this split. 
 
   Example for step 2: 4 housemates have a group and go out to dinner.  One did not get food at dinner, only $15 of drinks (we'll call them Martin).  The person paying the $250 bill adds $250 (can be done both on the main 'add expense' box before clicking customize -> advanced settings, or after clicking customize and advanced.).  The user paying then has every group members name with a box for amount under.  They input '$15' under Martin's name.  Settle then works out what the split would be for the rest of the group.  So 250 total, 15 for Martin, other three take the remaining $235 divided by 3.  
+
+
+  - Check total reset after any settlement is made, does this work?
 
 *NON-CLAUDE BRAINSTORMING SECTION ENDS*

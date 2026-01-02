@@ -43,18 +43,31 @@ export function ExpenseList({
         </div>
       ) : (
         <div className="flex flex-col gap-3">
-          {sortedExpenses.map((expense) => (
-            <ExpenseItem
-              key={expense.id}
-              expense={expense}
-              payerName={getPayerName(expense.paidByUserId)}
-              isOwner={expense.paidByUserId === currentUserId}
-              onEdit={onEdit}
-              onDelete={onDelete}
-              disabled={loading}
-              currency={currency}
-            />
-          ))}
+          {sortedExpenses.map((expense) => {
+            // Calculate total settled amount for settlement expenses
+            const settledTotal = expense.isSettlement
+              ? expenses
+                  .filter(exp =>
+                    !exp.isSettlement &&
+                    new Date(exp.createdAt) <= new Date(expense.createdAt)
+                  )
+                  .reduce((sum, exp) => sum + exp.amount, 0)
+              : null
+
+            return (
+              <ExpenseItem
+                key={expense.id}
+                expense={expense}
+                payerName={getPayerName(expense.paidByUserId)}
+                isOwner={expense.paidByUserId === currentUserId}
+                onEdit={onEdit}
+                onDelete={onDelete}
+                disabled={loading}
+                currency={currency}
+                settledTotal={settledTotal}
+              />
+            )
+          })}
         </div>
       )}
     </section>
