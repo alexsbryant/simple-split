@@ -45,8 +45,12 @@ export function BalanceSummary({
     const userBalance = currentUserBalance.balance
 
     if (userBalance < 0 && creditors.length > 0) {
-      // User owes money - show each creditor
-      const parts = creditors.map(c => `${c.displayName} ${formatCurrency(c.balance, currency)}`)
+      // User owes money - use simplified debts to find specific amounts
+      const userDebts = simplifiedDebts.filter(d => d.fromUserId === currentUserId)
+      if (userDebts.length === 0) {
+        return { message: 'All settled up!', isNegative: false, isSettled: true }
+      }
+      const parts = userDebts.map(d => `${d.toDisplayName} ${formatCurrency(d.amount, currency)}`)
       const message = parts.length === 1
         ? `You owe ${parts[0]}`
         : `You owe ${parts.join(' and ')}`
@@ -57,8 +61,12 @@ export function BalanceSummary({
         isSettled: false,
       }
     } else if (userBalance > 0 && debtors.length > 0) {
-      // User is owed money - show each debtor
-      const parts = debtors.map(d => `${d.displayName} owes you ${formatCurrency(Math.abs(d.balance), currency)}`)
+      // User is owed money - use simplified debts to find specific amounts
+      const owedToUser = simplifiedDebts.filter(d => d.toUserId === currentUserId)
+      if (owedToUser.length === 0) {
+        return { message: 'All settled up!', isNegative: false, isSettled: true }
+      }
+      const parts = owedToUser.map(d => `${d.fromDisplayName} owes you ${formatCurrency(d.amount, currency)}`)
       const message = parts.length === 1
         ? parts[0]
         : parts.join(' and ')
@@ -129,7 +137,11 @@ export function BalanceSummary({
       </div>
 
       {/* Balance Cards */}
-      <div className="p-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+      <div className={`p-4 grid gap-3 ${
+        balances.balances.length === 1 ? 'grid-cols-1' :
+        balances.balances.length === 2 ? 'sm:grid-cols-2' :
+        'sm:grid-cols-2 md:grid-cols-3'
+      }`}>
         {balances.balances.map((balance) => (
           <BalanceCard key={balance.userId} balance={balance} currency={currency} />
         ))}
