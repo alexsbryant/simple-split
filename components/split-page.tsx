@@ -219,9 +219,13 @@ export function SimpleSplitPage({
   return (
     <div className="min-h-screen">
       <Nav />
-      <main className="max-w-[640px] mx-auto px-4 py-8">
-        {/* Header */}
-        <header className="mb-6">
+      <main className="max-w-[640px] lg:max-w-[1200px] mx-auto px-4 py-8 lg:[zoom:0.9]">
+        {/* Desktop grid layout, mobile single column */}
+        <div className="lg:grid lg:grid-cols-[60%_35%] lg:gap-[5%]">
+          {/* Left column - main interactive content */}
+          <div className="space-y-6">
+            {/* Header */}
+            <header>
           <div className="flex items-start justify-between gap-4">
             <div className="flex-1">
               {!isEditingName ? (
@@ -298,56 +302,57 @@ export function SimpleSplitPage({
               <InviteFormPanel groupId={group.id} onClose={() => setIsInviteOpen(false)} />
             </div>
           )}
-        </header>
+            </header>
 
-        {/* Pending Invitations */}
-        <GroupInvitationsList
-          invitations={pendingInvitations}
-          groupId={group.id}
-          currentUserId={currentUser.id}
-        />
+            {/* Pending Invitations */}
+            <GroupInvitationsList
+              invitations={pendingInvitations}
+              groupId={group.id}
+              currentUserId={currentUser.id}
+            />
 
-        {/* Balance Summary */}
-        <div className="mb-6">
-          <BalanceSummary
-            balances={balances}
-            currentUserId={currentUser.id}
-            currency={group.currency}
-            groupId={group.id}
-            onSettlementSuccess={() => router.refresh()}
-          />
-        </div>
+            {/* Balance Summary */}
+            <BalanceSummary
+              balances={balances}
+              currentUserId={currentUser.id}
+              currency={group.currency}
+              groupId={group.id}
+              onSettlementSuccess={() => router.refresh()}
+            />
 
-        {/* Error Display */}
-        {error && (
-          <div className="mb-6 p-4 glass border border-[var(--negative)]">
-            <p className="text-[var(--negative)] text-sm">{error}</p>
+            {/* Error Display */}
+            {error && (
+              <div className="p-4 glass border border-[var(--negative)]">
+                <p className="text-[var(--negative)] text-sm">{error}</p>
+              </div>
+            )}
+
+            {/* Expense Form */}
+            <ExpenseForm
+              ref={formRef}
+              onSubmit={editingExpense ? handleUpdateExpense : handleAddExpense}
+              currentUserId={currentUser.id}
+              groupId={group.id}
+              editingExpense={editingExpense}
+              onCancelEdit={handleCancelEdit}
+              loading={loading}
+            />
           </div>
-        )}
 
-        {/* Expense Form */}
-        <div className="mb-6">
-          <ExpenseForm
-            ref={formRef}
-            onSubmit={editingExpense ? handleUpdateExpense : handleAddExpense}
-            currentUserId={currentUser.id}
-            groupId={group.id}
-            editingExpense={editingExpense}
-            onCancelEdit={handleCancelEdit}
-            loading={loading}
-          />
+          {/* Right column - expense list */}
+          <div className="mt-5 lg:mt-14.5">
+            {/* Expense List */}
+            <ExpenseList
+              expenses={initialExpenses}
+              currentUserId={currentUser.id}
+              users={users}
+              onEdit={handleEditClick}
+              onDelete={handleDeleteExpense}
+              loading={loading}
+              currency={group.currency}
+            />
+          </div>
         </div>
-
-        {/* Expense List */}
-        <ExpenseList
-          expenses={initialExpenses}
-          currentUserId={currentUser.id}
-          users={users}
-          onEdit={handleEditClick}
-          onDelete={handleDeleteExpense}
-          loading={loading}
-          currency={group.currency}
-        />
 
         {/* Danger Zone - Only visible to creator */}
         {isCreator && (
