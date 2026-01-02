@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { User, Group, Expense } from '@/types'
 import { calculateBalances } from '@/lib/balance'
@@ -41,6 +41,7 @@ export function SimpleSplitPage({
   creatorName,
 }: SimpleSplitPageProps) {
   const router = useRouter()
+  const formRef = useRef<HTMLElement>(null)
   const [editingExpense, setEditingExpense] = useState<Expense | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -121,7 +122,17 @@ export function SimpleSplitPage({
 
   // Start editing
   const handleEditClick = (expense: Expense) => {
-    setEditingExpense(expense)
+    // If clicking the same expense, toggle off
+    if (editingExpense?.id === expense.id) {
+      setEditingExpense(null)
+    } else {
+      // Different expense or first time editing
+      setEditingExpense(expense)
+      // Scroll to form after state update
+      setTimeout(() => {
+        formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      }, 0)
+    }
   }
 
   // Cancel editing
@@ -310,6 +321,7 @@ export function SimpleSplitPage({
         {/* Expense Form */}
         <div className="mb-6">
           <ExpenseForm
+            ref={formRef}
             onSubmit={editingExpense ? handleUpdateExpense : handleAddExpense}
             currentUserId={currentUser.id}
             groupId={group.id}

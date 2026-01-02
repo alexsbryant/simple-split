@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, FormEvent } from 'react'
+import { useState, useEffect, FormEvent, forwardRef } from 'react'
 import { Expense } from '@/types'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -22,14 +22,14 @@ interface ExpenseFormProps {
   loading?: boolean
 }
 
-export function ExpenseForm({
+export const ExpenseForm = forwardRef<HTMLElement, ExpenseFormProps>(function ExpenseForm({
   onSubmit,
   currentUserId,
   groupId,
   editingExpense,
   onCancelEdit,
   loading = false,
-}: ExpenseFormProps) {
+}, ref) {
   const [description, setDescription] = useState('')
   const [amount, setAmount] = useState('')
   const [amountError, setAmountError] = useState('')
@@ -84,7 +84,7 @@ export function ExpenseForm({
   }
 
   return (
-    <section className="glass overflow-hidden">
+    <section ref={ref} className="glass overflow-hidden">
       <div className="p-4 border-b border-[var(--glass-border)]">
         <h2 className="section-label">
           {isEditing ? 'Edit Expense' : 'Add Expense'}
@@ -129,4 +129,4 @@ export function ExpenseForm({
       </form>
     </section>
   )
-}
+})
