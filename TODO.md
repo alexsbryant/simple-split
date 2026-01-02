@@ -634,6 +634,70 @@ For this phase:
 - Always provide a "Mark as settled" fallback
 - No schema changes required
 
+## Phase 15 - Customize Expense / Uneven Splits
+
+Phase 15: Advanced Expense Splitting (Power User Feature)
+
+Goal:
+Add optional advanced expense splitting while keeping the default “quick add” flow unchanged.
+
+Principles:
+- Default expense creation must remain fast and simple
+- Advanced splitting is opt-in via a “Customize split” button
+- No breaking changes to existing expenses
+- Balance logic must remain correct and extensible
+
+Functional Requirements:
+
+1. Default Behavior (unchanged)
+- Expense amount + optional description
+- Split equally among all group members
+
+2. Customize Split (Step 1)
+- Add a “Customize split” button to the Add Expense form
+- When enabled:
+  - Show list of group members with checkboxes
+  - Checked members are included in the split
+  - Unchecked members are excluded
+- If no advanced amounts are provided, split equally among selected members
+
+3. Advanced Split (Step 2)
+- Inside Customize Split, add an “Advanced” toggle
+- For each selected member:
+  - Show an amount input (optional)
+- User may enter exact amounts for some members
+- Remaining amount is auto-distributed evenly among others
+- Total of all splits must equal expense amount
+- Validate and block submission if totals don’t match
+
+Data Model:
+- Introduce a new expense_splits table:
+  - expense_id
+  - user_id
+  - amount
+- If an expense has splits, use them
+- If not, fall back to equal split logic
+
+Implementation Scope:
+- Schema migration for expense_splits
+- RLS policies consistent with existing group access rules
+- Update balance calculation to support optional splits
+- Update Add Expense UI with progressive disclosure
+- No UI changes to expense list display (for now)
+
+Constraints:
+- No refactor of existing expense schema beyond what’s necessary
+- No performance regressions
+- No new dependencies
+- Keep logic readable and incremental
+
+Please propose:
+- Migration SQL
+- RLS impact
+- Balance calculation changes
+- UI component changes
+- Incremental implementation order
+
 ## Architecture
 
 ### Current Data Flow
@@ -702,7 +766,19 @@ npx tsc --noEmit # Type check
 
 Today's tasks:
 
-- hover feedback on groups list
+TODO:
 
+- Total resets after Settlement, settlement expense lists total that was settled that time.  
+- Reformat UI when on desktop to have balance-summary section and add expense on the left, and list of expenses on the right.  Mobile doesn't change. Reduce 
+- invite QR code
+
+Custom splitting
+
+- Step 1: Customize split - Choose which group members this expense applies to.
+- Step 2: 'Advanced' button or similar, within customize split section, dial in exact amounts each person owes for this expense. 
+
+  Example for step 1: 4 housemates have a group.  One stays home, the other 3 get a taxi together.  The person who paid for the taxi can select 'customize split' button - to the bottom right of the add expense box.  This then gives them a list of everyone's display names that are in the group with check boxes, and they can select who should be included in this split. 
+
+  Example for step 2: 4 housemates have a group and go out to dinner.  One did not get food at dinner, only $15 of drinks (we'll call them Martin).  The person paying the $250 bill adds $250 (can be done both on the main 'add expense' box before clicking customize -> advanced settings, or after clicking customize and advanced.).  The user paying then has every group members name with a box for amount under.  They input '$15' under Martin's name.  Settle then works out what the split would be for the rest of the group.  So 250 total, 15 for Martin, other three take the remaining $235 divided by 3.  
 
 *NON-CLAUDE BRAINSTORMING SECTION ENDS*
