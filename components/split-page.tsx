@@ -230,7 +230,7 @@ export function SimpleSplitPage({
             <div className="flex-1">
               {!isEditingName ? (
                 <div className="flex items-center gap-2">
-                  <h1 className="text-3xl md:text-4xl font-semibold text-white">{group.name}</h1>
+                  <h1 className="text-3xl md:text-4xl font-semibold" style={{ color: 'var(--text-title)' }}>{group.name}</h1>
                   {isCreator && (
                     <button
                       onClick={handleStartEditName}
@@ -357,7 +357,7 @@ export function SimpleSplitPage({
         {/* Danger Zone - Only visible to creator */}
         {isCreator && (
           <section className="glass p-6 mt-8">
-            <h2 className="text-lg font-semibold text-white mb-3">Danger Zone</h2>
+            <h2 className="text-lg font-semibold mb-3" style={{ color: 'var(--text-title)' }}>Danger Zone</h2>
             <p className="text-sm text-[var(--text-secondary)] mb-4">
               Once you delete a group, there is no going back. All expenses and data will be permanently deleted.
             </p>

@@ -74,14 +74,14 @@ export default async function GroupsPage() {
       <Nav />
       <main className="max-w-[640px] mx-auto px-4 py-8">
         <header className="mb-8">
-          <h1 className="text-4xl font-semibold text-white">
+          <h1 className="text-4xl font-semibold" style={{ color: 'var(--text-title)' }}>
             Your Groups
           </h1>
         </header>
 
         {pendingInvitations.length > 0 && (
           <section className="mb-8">
-            <h2 className="text-lg font-semibold text-white mb-4">
+            <h2 className="text-lg font-semibold mb-4" style={{ color: 'var(--text-title)' }}>
               Pending Invitations ({pendingInvitations.length})
             </h2>
             <div className="space-y-3">
@@ -111,7 +111,7 @@ export default async function GroupsPage() {
                 href={`/groups/${group.id}`}
                 className="glass p-4 block transition-all duration-150 hover:bg-[rgba(255,255,255,0.12)] hover:border-[rgba(255,255,255,0.25)] hover:scale-[1.01]"
               >
-                <h3 className="font-semibold text-white text-lg flex items-center gap-2">
+                <h3 className="font-semibold text-lg flex items-center gap-2" style={{ color: 'var(--text-title)' }}>
                   {group.name}
                   {group.hasUnread && (
                     <span className="w-2 h-2 bg-red-500 rounded-full" aria-label="New activity" />

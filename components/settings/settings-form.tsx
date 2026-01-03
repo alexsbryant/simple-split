@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { User } from '@/types'
 import { Button } from '@/components/ui/button'
 import { updateDisplayName } from '@/app/actions/user'
+import { ThemeToggle } from './theme-toggle'
 
 interface SettingsFormProps {
   currentUser: User
@@ -53,10 +54,11 @@ export function SettingsForm({ currentUser }: SettingsFormProps) {
   const hasChanges = displayName.trim() !== currentUser.displayName
 
   return (
-    <section className="glass p-6">
-      <h2 className="text-lg font-semibold text-white mb-4">Profile</h2>
+    <>
+      <section className="glass p-6">
+        <h2 className="text-lg font-semibold mb-4" style={{ color: 'var(--text-title)' }}>Profile</h2>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label className="block text-sm text-[var(--text-secondary)] mb-1">
             Email
@@ -122,7 +124,13 @@ export function SettingsForm({ currentUser }: SettingsFormProps) {
             </>
           )}
         </div>
-      </form>
-    </section>
+        </form>
+      </section>
+
+      <section className="glass p-6 mt-4">
+        <h2 className="text-lg font-semibold mb-4" style={{ color: 'var(--text-title)' }}>Appearance</h2>
+        <ThemeToggle />
+      </section>
+    </>
   )
 }

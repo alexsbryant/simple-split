@@ -34,7 +34,7 @@ export default async function SettingsPage() {
       <Nav />
       <main className="max-w-[640px] mx-auto px-4 py-8">
         <header className="mb-8">
-          <h1 className="text-4xl font-semibold text-white">
+          <h1 className="text-4xl font-semibold" style={{ color: 'var(--text-title)' }}>
             Settings
           </h1>
         </header>
