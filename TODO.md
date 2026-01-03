@@ -768,8 +768,6 @@ Today's tasks:
 
 TODO:
 
-- Light grey button hover
-
 Custom splitting
 
 - Step 1: Customize split - Choose which group members this expense applies to.

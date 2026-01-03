@@ -28,7 +28,7 @@ export function ExpenseItem({
   return (
     <div
       className={`glass-sm p-3 md:p-4 transition-all duration-150 hover:bg-[rgba(255,255,255,0.08)] ${
-        isSettlement ? 'border-l-2 border-l-[var(--positive)]' : ''
+        isSettlement ? 'border-l-[var(--positive)]' : ''
       }`}
     >
       {/* Mobile: 2-line compact layout, Desktop: horizontal layout */}
