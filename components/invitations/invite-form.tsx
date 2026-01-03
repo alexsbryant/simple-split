@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { QRCodeSVG } from 'qrcode.react'
 import { getOrCreateInviteLink } from '@/app/actions/invitations'
 
 const UserPlusIcon = () => (
@@ -70,6 +71,17 @@ const ShareIcon = () => (
   </svg>
 )
 
+const QRIcon = () => (
+  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={2}
+      d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h2M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"
+    />
+  </svg>
+)
+
 type InviteFormProps = {
   groupId: string
 }
@@ -98,7 +110,7 @@ export function InviteButton({ onClick }: InviteButtonProps) {
 
 // Separate form panel component with tabbed interface
 export function InviteFormPanel({ groupId, onClose }: InviteFormPanelProps) {
-  const [activeTab, setActiveTab] = useState<'link' | 'email'>('link')
+  const [activeTab, setActiveTab] = useState<'link' | 'email' | 'qr'>('link')
 
   // Link tab state
   const [inviteLink, setInviteLink] = useState<string | null>(null)
@@ -221,6 +233,17 @@ export function InviteFormPanel({ groupId, onClose }: InviteFormPanelProps) {
           <MailIcon />
           Email
         </button>
+        <button
+          onClick={() => setActiveTab('qr')}
+          className={`flex-1 px-3 py-1.5 text-sm rounded-md transition-colors flex items-center justify-center gap-1.5 cursor-pointer ${
+            activeTab === 'qr'
+              ? 'bg-[var(--accent)] text-white'
+              : 'text-[var(--text-secondary)] hover:text-white'
+          }`}
+        >
+          <QRIcon />
+          QR
+        </button>
       </div>
 
       {error && <p className="text-sm text-red-400 mb-3">{error}</p>}
@@ -292,6 +315,33 @@ export function InviteFormPanel({ groupId, onClose }: InviteFormPanelProps) {
             Opens your email app with a pre-filled invite message
           </p>
         </form>
+      )}
+
+      {/* QR Code Tab */}
+      {activeTab === 'qr' && (
+        <div className="space-y-3">
+          {linkLoading ? (
+            <p className="text-sm text-[var(--text-secondary)]">Generating QR code...</p>
+          ) : inviteLink ? (
+            <div className="flex flex-col items-center gap-3">
+              <div className="bg-white p-3 rounded-lg">
+                <QRCodeSVG value={inviteLink} size={180} level="M" />
+              </div>
+              <p className="text-xs text-[var(--text-muted)] text-center">
+                Scan to join the group
+              </p>
+              {linkExpiresAt && (
+                <p className="text-xs text-[var(--text-muted)]">
+                  Expires {formatExpiryDate(linkExpiresAt)}
+                </p>
+              )}
+            </div>
+          ) : (
+            <button onClick={handleGenerateLink} className="btn-primary w-full py-2 text-sm">
+              Generate QR Code
+            </button>
+          )}
+        </div>
       )}
     </div>
   )

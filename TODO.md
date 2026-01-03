@@ -768,13 +768,6 @@ Today's tasks:
 
 TODO:
 
-- Total resets after Settlement, settlement expense lists total that was settled that time.  
-- Reformat UI when on desktop to have balance-summary section and add expense on the left, and list of expenses on the right.  Mobile doesn't change. Reduce 
-- invite QR code
-- on invite, have a copy button to automatically copy the link generated
-- reduce size of balance cards on balance-summary to fit in one row when theres three users (more can go onto second row)
-- Add 'back to groups' nav button when on 'settings' page
-
 Custom splitting
 
 - Step 1: Customize split - Choose which group members this expense applies to.
