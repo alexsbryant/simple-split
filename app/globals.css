@@ -61,14 +61,14 @@ body {
 /* Card effect - solid dark grey */
 .glass {
   background: var(--bg-card);
-  border: 1px solid var(--border-default);
+  border: 0.5px solid var(--border-default);
   border-radius: 24px;
 }
 
 /* Card - smaller radius variant (elevated for nested cards) */
 .glass-sm {
   background: var(--bg-card-elevated);
-  border: 1px solid var(--border-subtle);
+  border: 0.5px solid var(--border-subtle);
   border-radius: 16px;
 }
 
