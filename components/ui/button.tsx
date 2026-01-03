@@ -32,7 +32,7 @@ export function Button({
     secondary: `
       bg-transparent text-[var(--text-primary)]
       border border-[var(--glass-border)]
-      hover:bg-[var(--glass-bg)] hover:border-[rgba(255,255,255,0.2)]
+      hover:bg-white/10 hover:border-[rgba(255,255,255,0.2)]
       active:scale-[0.98]
     `,
     danger: `

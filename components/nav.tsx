@@ -36,7 +36,7 @@ export function Nav() {
   }, [menuOpen])
 
   return (
-    <nav className="border-b border-[var(--border-default)] bg-[var(--bg-card)]">
+    <nav className="border-b-[0.5px] border-[var(--border-default)] bg-[var(--bg-card)]">
       <div className="max-w-full mx-auto px-4 py-2 flex items-center justify-between">
         {/* Logo */}
         <Link
