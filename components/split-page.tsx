@@ -230,7 +230,7 @@ export function SimpleSplitPage({
             <div className="flex-1">
               {!isEditingName ? (
                 <div className="flex items-center gap-2">
-                  <h1 className="text-3xl md:text-4xl font-semibold" style={{ color: 'var(--text-title)' }}>{group.name}</h1>
+                  <h1 className="text-3xl md:text-4xl font-semibold" style={{ fontFamily: 'var(--font-serif)', color: 'var(--text-title)' }}>{group.name}</h1>
                   {isCreator && (
                     <button
                       onClick={handleStartEditName}

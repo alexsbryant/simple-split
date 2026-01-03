@@ -26,7 +26,13 @@
     --text-primary: rgba(13, 13, 13, 0.92);
     --text-secondary: rgba(40, 35, 30, 0.68);
     --text-muted: rgba(70, 60, 50, 0.48);
-    --text-title: #1a1a1a; /* Very dark grey, almost black for titles */
+    --text-title: #591a1a; /* Very dark grey, almost black for titles */
+
+        /* Text
+    --text-primary: rgba(13, 13, 13, 0.92);
+    --text-secondary: rgba(40, 35, 30, 0.68);
+    --text-muted: rgba(70, 60, 50, 0.48);
+    --text-title: #1e1e1e; /* Very dark grey, almost black for titles */
 
     /* Navigation */
     --nav-button-hover: #F0EBE5; /* Slightly darker on hover */
