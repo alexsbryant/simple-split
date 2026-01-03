@@ -3,16 +3,28 @@
 :root {
   /* Fonts */
   --font-serif: 'Droid Serif', Georgia, serif;
-  /* Glass surfaces */
-  --glass-bg: rgba(255, 255, 255, 0.1);
-  --glass-border: rgba(255, 255, 255, 0.15);
+
+  /* Background colors */
+  --bg-base: #171717;
+  --bg-card: #1E1E1E;                                
+  --bg-card-elevated: #262626;                       
+  --bg-card-hover: #2a2a2a;                          
+  --bg-input: #181818;   
+
+  /* Borders */
+  --border-default: #3A3A3A;
+  --border-subtle: #333333;
+
+  /* Legacy glass variables (for compatibility) */  
+  --glass-bg: var(--bg-card);
+  --glass-border: var(--border-default);
 
   /* Text */
   --text-primary: rgba(255, 255, 255, 0.95);
   --text-secondary: rgba(255, 255, 255, 0.7);
-  --text-muted: rgba(255, 255, 255, 0.5);
+  --text-muted: rgba(255, 255, 255, 0.45);
 
-  /* Status (muted) */
+  /* Status */
   --positive: #4ADE80;
   --negative: #F87171;
   --settled: #FBBF24;
@@ -23,6 +35,8 @@
 }
 
 @theme inline {
+  --color-bg-card-elevated: var(--bg-card-elevated);
+  --color-border-subtle: var(--border-subtle);
   --color-glass-bg: var(--glass-bg);
   --color-glass-border: var(--glass-border);
   --color-text-primary: var(--text-primary);
@@ -38,37 +52,30 @@
 }
 
 body {
-  /* Gradient applied directly */
-  background: linear-gradient(135deg, #2D1B4E 0%, #1A3A4A 50%, #4A3728 100%);
-  background-attachment: fixed;
+  background: var(--bg-base);
   color: var(--text-primary);
   font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
   min-height: 100vh;
 }
 
-/* Glass card effect */
+/* Card effect - solid dark grey */
 .glass {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: var(--bg-card);
+  border: 1.5px solid var(--border-default);
   border-radius: 24px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
 }
 
-/* Glass card - smaller radius variant */
+/* Card - smaller radius variant (elevated for nested cards) */
 .glass-sm {
-  background: rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: var(--bg-card-elevated);
+  border: 1.5px solid var(--border-subtle);
   border-radius: 16px;
 }
 
-/* Glass input styling */
+/* Input styling */
 .glass-input {
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: var(--bg-input);
+  border: 1px solid var(--border-default);
   border-radius: 9999px;
   color: var(--text-primary);
 }
@@ -80,8 +87,8 @@ body {
 .glass-input:focus {
   outline: none !important;
   box-shadow: none !important;
-  border-color: rgba(255, 255, 255, 0.35);
-  background: rgba(255, 255, 255, 0.12);
+  border-color: var(--accent);
+  background: var(--bg-input);
 }
 
 /* Remove default focus ring on all inputs */

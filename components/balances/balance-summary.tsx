@@ -119,14 +119,14 @@ export function BalanceSummary({
       )}
 
       {/* Totals - Smaller, subdued */}
-      <div className="px-4 py-3 border-b border-[var(--glass-border)] flex justify-center gap-8 bg-[rgba(255,255,255,0.03)]">
+      <div className="px-4 py-3 border-b border-[var(--border-subtle)] flex justify-center gap-8 bg-[var(--bg-card-elevated)]">
         <div className="text-center">
           <p className="text-xs font-medium uppercase tracking-wider text-[var(--text-muted)]">Total</p>
           <p className="text-base font-medium text-[var(--text-primary)]">
             {formatCurrency(balances.totalExpenses, currency)}
           </p>
         </div>
-        <div className="w-px bg-[var(--glass-border)]" />
+        <div className="w-px bg-[var(--border-subtle)]" />
         <div className="text-center">
           <p className="text-xs font-medium uppercase tracking-wider text-[var(--text-muted)]">Fair Share</p>
           <p className="text-base font-medium text-[var(--text-primary)]">

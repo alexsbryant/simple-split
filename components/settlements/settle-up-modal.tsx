@@ -74,9 +74,9 @@ export function SettleUpModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70">
-      <div className="w-full max-w-md max-h-[80vh] overflow-hidden flex flex-col rounded-3xl border border-[rgba(255,255,255,0.15)] shadow-2xl" style={{ background: 'linear-gradient(135deg, #3D2B5E 0%, #2A4A5A 50%, #5A4738 100%)' }}>
+      <div className="w-full max-w-md max-h-[80vh] overflow-hidden flex flex-col rounded-3xl border-[1.5px] border-[var(--border-default)] shadow-2xl bg-[var(--bg-card)]">
         {/* Header */}
-        <div className="p-4 border-b border-[var(--glass-border)] flex justify-between items-center">
+        <div className="p-4 border-b border-[var(--border-subtle)] flex justify-between items-center">
           <h2 className="text-lg font-semibold text-white">Settle Up</h2>
           <button
             onClick={onClose}
@@ -102,7 +102,7 @@ export function SettleUpModal({
         {/* Content */}
         <div className="p-4 overflow-y-auto flex-1">
           {error && (
-            <div className="mb-4 p-3 rounded-xl bg-[rgba(248,113,113,0.15)] border border-[var(--negative)] text-sm text-[var(--negative)]">
+            <div className="mb-4 p-3 rounded-xl bg-[var(--bg-card-elevated)] border border-[var(--negative)] text-sm text-[var(--negative)]">
               {error}
             </div>
           )}
@@ -150,7 +150,7 @@ export function SettleUpModal({
                       return (
                         <div
                           key={debtId}
-                          className="p-3 rounded-xl bg-[rgba(255,255,255,0.08)] border border-[rgba(255,255,255,0.1)]"
+                          className="p-3 rounded-xl bg-[var(--bg-card-elevated)] border border-[var(--border-subtle)]"
                         >
                           <div className="flex items-center justify-between gap-3 mb-2">
                             <div className="flex-1 min-w-0">
@@ -218,7 +218,7 @@ export function SettleUpModal({
                       return (
                         <div
                           key={debtId}
-                          className="p-3 flex items-center justify-between gap-3 rounded-xl bg-[rgba(255,255,255,0.08)] border border-[rgba(255,255,255,0.1)]"
+                          className="p-3 flex items-center justify-between gap-3 rounded-xl bg-[var(--bg-card-elevated)] border border-[var(--border-subtle)]"
                         >
                           <div className="flex-1 min-w-0">
                             <p className="text-sm font-medium text-[var(--text-primary)] truncate">
@@ -248,7 +248,7 @@ export function SettleUpModal({
 
         {/* Footer */}
         {!isAllSettled && (
-          <div className="p-4 border-t border-[var(--glass-border)]">
+          <div className="p-4 border-t border-[var(--border-subtle)]">
             <p className="text-xs text-[var(--text-muted)] text-center">
               Settling records payments between members
             </p>

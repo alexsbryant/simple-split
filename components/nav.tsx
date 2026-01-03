@@ -36,7 +36,7 @@ export function Nav() {
   }, [menuOpen])
 
   return (
-    <nav className="border-b border-[var(--glass-border)] bg-[rgba(0,0,0,0.2)] backdrop-blur-sm">
+    <nav className="border-b border-[var(--border-default)] bg-[var(--bg-card)]">
       <div className="max-w-full mx-auto px-4 py-2 flex items-center justify-between">
         {/* Logo */}
         <Link
@@ -101,7 +101,7 @@ export function Nav() {
 
           {/* Dropdown menu */}
           {menuOpen && (
-            <div className="absolute right-0 top-10.5 mt-2 w-48 bg-[rgba(20,20,30,0.95)] backdrop-blur-md border border-white/10 rounded-lg shadow-lg py-2 z-50">
+            <div className="absolute right-0 top-10.5 mt-2 w-48 bg-[var(--bg-card)] border border-[var(--border-default)] rounded-lg py-2 z-50">
               {(isOnSplitPage || isOnSettingsPage) && (
                 <Link
                   href="/groups"
