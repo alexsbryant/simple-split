@@ -52,6 +52,9 @@ export default function RootLayout({
       >
         <ThemeProvider>
           {children}
+          <footer className="py-8 px-4 text-right">
+            <p className="text-xs text-[var(--text-muted)]">© 2026</p>
+          </footer>
         </ThemeProvider>
       </body>
     </html>
