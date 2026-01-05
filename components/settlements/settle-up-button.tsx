@@ -16,7 +16,7 @@ export function SettleUpButton({ onClick, disabled }: SettleUpButtonProps) {
         text-sm font-semibold
         rounded-full
         bg-[var(--positive)] text-black
-        hover:brightness-110 hover:shadow-lg
+        hover:brightness-110 hover:shadow-sm
         active:scale-[0.98]
         transition-all duration-150
         cursor-pointer

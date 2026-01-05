@@ -46,6 +46,6 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 
 ## Status
 
-**Version:** 1.2
+**Version:** 1.3
 
-Settle is feature-complete and stable. Future work may include currency selection, uneven expense splits, and mobile-native builds.
+Settle is feature-complete and stable. Future work may include more advanced currency selection, uneven expense splits, and mobile-native builds.

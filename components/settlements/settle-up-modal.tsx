@@ -42,6 +42,15 @@ export function SettleUpModal({
   const isAllSettled = debts.length === 0
 
   const handleSettleDebt = async (debt: SimplifiedDebt) => {
+    // Warn if marking someone else's debt as paid
+    if (debt.fromUserId !== currentUserId) {
+      const recipient = debt.toUserId === currentUserId ? 'you' : debt.toDisplayName
+      const confirmed = window.confirm(
+        `This is not your debt. Are you sure you want to mark ${debt.fromDisplayName}'s payment to ${recipient} as settled?`
+      )
+      if (!confirmed) return
+    }
+
     const debtId = `${debt.fromUserId}-${debt.toUserId}`
     setSettlingDebtId(debtId)
     setError(null)
