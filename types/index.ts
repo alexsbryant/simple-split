@@ -6,6 +6,13 @@ export type User = {
   displayName: string
 }
 
+export type ExpenseSplit = {
+  id: string
+  expenseId: string
+  userId: string
+  amount: number
+}
+
 export type Expense = {
   id: string
   groupId: string
@@ -16,6 +23,7 @@ export type Expense = {
   updatedAt: string
   isSettlement: boolean
   settledWithUserId: string | null
+  splits?: ExpenseSplit[] // Optional - only present for custom splits
 }
 
 export type Group = {

@@ -55,10 +55,10 @@ export default async function GroupPage({ params }: { params: { groupId: string 
     .select('user_id, users(id, email, display_name)')
     .eq('group_id', groupId)
 
-  // Fetch expenses for this group
+  // Fetch expenses for this group with splits
   const { data: expensesData } = await supabase
     .from('expenses')
-    .select('*')
+    .select('*, expense_splits(id, user_id, amount)')
     .eq('group_id', groupId)
     .order('created_at', { ascending: false })
 
@@ -104,6 +104,7 @@ export default async function GroupPage({ params }: { params: { groupId: string 
     updated_at: string
     is_settlement: boolean
     settled_with_user_id: string | null
+    expense_splits?: Array<{ id: string; user_id: string; amount: number }>
   }) => ({
     id: e.id,
     groupId: e.group_id,
@@ -114,6 +115,14 @@ export default async function GroupPage({ params }: { params: { groupId: string 
     updatedAt: e.updated_at,
     isSettlement: e.is_settlement ?? false,
     settledWithUserId: e.settled_with_user_id ?? null,
+    splits: e.expense_splits && e.expense_splits.length > 0
+      ? e.expense_splits.map((s) => ({
+          id: s.id,
+          expenseId: e.id,
+          userId: s.user_id,
+          amount: Number(s.amount),
+        }))
+      : undefined,
   })) ?? []
 
   const pendingInvitations = invitationsData?.map((inv: {

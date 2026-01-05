@@ -24,27 +24,41 @@ function findSettlementPeriodCutoff(
       exp => new Date(exp.createdAt) <= new Date(settlement.createdAt)
     )
 
-    // Calculate balances at that point in time
-    const totalExpenses = expensesUpToSettlement
-      .filter(exp => !exp.isSettlement)
-      .reduce((sum, exp) => sum + exp.amount, 0)
-
-    const fairShare = members.length > 0 ? totalExpenses / members.length : 0
-
+    // Calculate how much each person paid AND what they owe
     const paidByUser: Record<string, number> = {}
+    const owedByUser: Record<string, number> = {}
+
+    members.forEach((m) => {
+      paidByUser[m.id] = 0
+      owedByUser[m.id] = 0
+    })
+
     expensesUpToSettlement.forEach((exp) => {
       if (exp.isSettlement && exp.settledWithUserId) {
         paidByUser[exp.paidByUserId] = (paidByUser[exp.paidByUserId] || 0) + exp.amount
         paidByUser[exp.settledWithUserId] = (paidByUser[exp.settledWithUserId] || 0) - exp.amount
       } else {
         paidByUser[exp.paidByUserId] = (paidByUser[exp.paidByUserId] || 0) + exp.amount
+
+        // Determine what each member owes for this expense
+        if (exp.splits && exp.splits.length > 0) {
+          exp.splits.forEach((split) => {
+            owedByUser[split.userId] = (owedByUser[split.userId] || 0) + split.amount
+          })
+        } else {
+          const perPersonShare = exp.amount / members.length
+          members.forEach((m) => {
+            owedByUser[m.id] = (owedByUser[m.id] || 0) + perPersonShare
+          })
+        }
       }
     })
 
     // Check if all members have balances within tolerance
     const allNearZero = members.every((member) => {
       const totalPaid = paidByUser[member.id] || 0
-      const balance = totalPaid - fairShare
+      const totalOwed = owedByUser[member.id] || 0
+      const balance = totalPaid - totalOwed
       return Math.abs(balance) <= TOLERANCE
     })
 
@@ -62,8 +76,10 @@ function findSettlementPeriodCutoff(
  *
  * Balance calculation:
  * - totalExpenses = sum of regular expenses only (excludes settlements)
- * - fairShare = totalExpenses / memberCount
- * - userBalance = userTotalPaid - fairShare
+ * - For each expense:
+ *   - If custom splits exist: use them to determine each user's share
+ *   - Otherwise: split equally among all members
+ * - userBalance = userTotalPaid - userTotalOwed
  *   - positive = user is owed money
  *   - negative = user owes money
  *
@@ -104,8 +120,16 @@ export function calculateBalances(
     .reduce((sum, exp) => sum + exp.amount, 0)
   const fairSharePerPerson = totalExpenses / memberCount
 
-  // Calculate how much each person paid (only after settlement period cutoff)
+  // Calculate how much each person paid AND what they owe
   const paidByUser: Record<string, number> = {}
+  const owedByUser: Record<string, number> = {}
+
+  // Initialize all members
+  members.forEach((m) => {
+    paidByUser[m.id] = 0
+    owedByUser[m.id] = 0
+  })
+
   expenses
     .filter((exp) =>
       !settlementPeriodCutoff || new Date(exp.createdAt) > settlementPeriodCutoff
@@ -120,22 +144,38 @@ export function calculateBalances(
         paidByUser[exp.settledWithUserId] =
           (paidByUser[exp.settledWithUserId] || 0) - exp.amount
       } else {
-        // Regular expense
+        // Regular expense - payer paid the amount
         paidByUser[exp.paidByUserId] =
           (paidByUser[exp.paidByUserId] || 0) + exp.amount
+
+        // Determine what each member owes for this expense
+        if (exp.splits && exp.splits.length > 0) {
+          // Custom splits: use specified amounts
+          exp.splits.forEach((split) => {
+            owedByUser[split.userId] = (owedByUser[split.userId] || 0) + split.amount
+          })
+        } else {
+          // Equal split: everyone owes equal share
+          const perPersonShare = exp.amount / memberCount
+          members.forEach((m) => {
+            owedByUser[m.id] = (owedByUser[m.id] || 0) + perPersonShare
+          })
+        }
       }
     })
 
   // Build balance for each member
+  // Balance = totalPaid - totalOwed
   const balances: UserBalance[] = members.map((member) => {
     const totalPaid = paidByUser[member.id] || 0
-    const balance = totalPaid - fairSharePerPerson
+    const totalOwed = owedByUser[member.id] || 0
+    const balance = totalPaid - totalOwed
 
     return {
       userId: member.id,
       displayName: member.displayName,
       totalPaid: Math.round(totalPaid * 100) / 100,
-      fairShare: Math.round(fairSharePerPerson * 100) / 100,
+      fairShare: Math.round(totalOwed * 100) / 100, // Now represents actual owed amount
       balance: Math.round(balance * 100) / 100,
     }
   })

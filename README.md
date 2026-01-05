@@ -10,8 +10,9 @@ Designed for trips, shared households, and small groups who want to split costs 
 
 - Create and manage expense groups
 - Add, edit, and delete expenses
+- Settle up all debts owed
 - Real-time balance calculations per member
-- Invite others by email
+- Invite others by email, link or QR code
 - Accept or decline group invitations
 - Rename groups (creator only)
 - Delete groups (creator only)

@@ -62,6 +62,7 @@ export function SimpleSplitPage({
     paidByUserId: string
     amount: number
     description: string
+    splits?: { userId: string; amount: number }[]
   }) => {
     setLoading(true)
     setError(null)
@@ -83,6 +84,7 @@ export function SimpleSplitPage({
     paidByUserId: string
     amount: number
     description: string
+    splits?: { userId: string; amount: number }[]
   }) => {
     if (!editingExpense) return
 
@@ -333,6 +335,8 @@ export function SimpleSplitPage({
               onSubmit={editingExpense ? handleUpdateExpense : handleAddExpense}
               currentUserId={currentUser.id}
               groupId={group.id}
+              members={users}
+              currency={group.currency}
               editingExpense={editingExpense}
               onCancelEdit={handleCancelEdit}
               loading={loading}
