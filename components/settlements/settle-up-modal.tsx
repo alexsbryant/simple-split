@@ -83,7 +83,7 @@ export function SettleUpModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70">
-      <div className="w-full max-w-md max-h-[80vh] overflow-hidden flex flex-col rounded-3xl border-[1.5px] border-[var(--border-default)] shadow-2xl bg-[var(--bg-card)]">
+      <div className="w-full max-w-md max-h-[80vh] overflow-hidden flex flex-col rounded-3xl border-[1.5px] border-[var(--border-default)] shadow-2xl bg-[var(--bg-base)]">
         {/* Header */}
         <div className="p-4 border-b border-[var(--border-subtle)] flex justify-between items-center">
           <h2 className="text-lg font-semibold" style={{ color: 'var(--text-title)' }}>Settle Up</h2>

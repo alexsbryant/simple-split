@@ -55,6 +55,11 @@ export function SplitCustomizer({
     }))
   )
 
+  // Track which users should receive the remainder (for custom mode)
+  const [remainderRecipients, setRemainderRecipients] = useState<Set<string>>(
+    () => new Set(sortedMembers.map((m) => m.id))
+  )
+
   // Initialize from existing splits when editing
   useEffect(() => {
     if (initialSplits && initialSplits.length > 0) {
@@ -155,6 +160,57 @@ export function SplitCustomizer({
         included: true,
         amount: round2(expenseAmount / members.length),
       }))
+    )
+    setRemainderRecipients(new Set(sortedMembers.map((m) => m.id)))
+  }
+
+  const handleToggleRemainderRecipient = (userId: string) => {
+    setRemainderRecipients((prev) => {
+      const next = new Set(prev)
+      if (next.has(userId)) {
+        next.delete(userId)
+      } else {
+        next.add(userId)
+      }
+      return next
+    })
+  }
+
+  const handleSplitRemainder = () => {
+    const currentTotal = splits.reduce((sum, s) => sum + s.amount, 0)
+    const currentRemainder = round2(expenseAmount - currentTotal)
+
+    if (currentRemainder <= 0) return
+
+    // Get selected recipients
+    const selectedRecipientIds = Array.from(remainderRecipients)
+    if (selectedRecipientIds.length === 0) return
+
+    // Calculate per-person share
+    const perPersonShare = round2(currentRemainder / selectedRecipientIds.length)
+
+    // Calculate rounding error (to give to first recipient)
+    const totalDistributed = round2(perPersonShare * selectedRecipientIds.length)
+    const roundingError = round2(currentRemainder - totalDistributed)
+
+    // Find first recipient (for rounding adjustment)
+    const firstRecipientId = splits.find((s) =>
+      remainderRecipients.has(s.userId)
+    )?.userId
+
+    setSplits((prev) =>
+      prev.map((s) => {
+        if (!remainderRecipients.has(s.userId)) return s
+
+        let newAmount = round2(s.amount + perPersonShare)
+
+        // First recipient gets any rounding error
+        if (s.userId === firstRecipientId && roundingError !== 0) {
+          newAmount = round2(newAmount + roundingError)
+        }
+
+        return { ...s, amount: newAmount, included: newAmount > 0 }
+      })
     )
   }
 
@@ -282,14 +338,53 @@ export function SplitCustomizer({
 
       {/* Validation feedback */}
       {mode === 'custom' && expenseAmount > 0 && (
-        <div
-          className={`mt-3 text-sm ${
-            isValid ? 'text-[var(--positive)]' : 'text-[var(--negative)]'
-          }`}
-        >
-          {isValid
-            ? 'Splits add up correctly'
-            : `Remaining: ${formatCurrency(remainder, currency)}`}
+        <div className="mt-4">
+          {isValid ? (
+            <div className="text-sm text-[var(--positive)]">
+              Splits add up correctly
+            </div>
+          ) : remainder > 0 ? (
+            // Positive remainder - show split helper
+            <div className="p-3 rounded-lg bg-[var(--bg-card)] border border-[var(--glass-border)]">
+              <div className="text-sm text-[var(--text-primary)] mb-2">
+                Remaining: <span className="font-medium">{formatCurrency(remainder, currency)}</span>
+              </div>
+              <div className="text-xs text-[var(--text-secondary)] mb-2">
+                Split between:
+              </div>
+              <div className="flex flex-wrap gap-2 mb-3">
+                {splits.map((split) => (
+                  <label
+                    key={split.userId}
+                    className="flex items-center gap-1.5 cursor-pointer"
+                  >
+                    <input
+                      type="checkbox"
+                      checked={remainderRecipients.has(split.userId)}
+                      onChange={() => handleToggleRemainderRecipient(split.userId)}
+                      className="w-3.5 h-3.5 rounded accent-[var(--accent)]"
+                    />
+                    <span className="text-sm text-[var(--text-primary)]">
+                      {split.userId === currentUserId ? 'You' : split.displayName}
+                    </span>
+                  </label>
+                ))}
+              </div>
+              <button
+                type="button"
+                onClick={handleSplitRemainder}
+                disabled={remainderRecipients.size === 0}
+                className="text-sm px-3 py-1.5 rounded-lg bg-[var(--accent)] text-white hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Split remainder
+              </button>
+            </div>
+          ) : (
+            // Negative remainder - over-allocated
+            <div className="text-sm text-[var(--negative)]">
+              Over by: {formatCurrency(Math.abs(remainder), currency)}
+            </div>
+          )}
         </div>
       )}
     </div>
