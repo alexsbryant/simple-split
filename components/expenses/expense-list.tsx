@@ -5,6 +5,7 @@ interface ExpenseListProps {
   expenses: Expense[]
   currentUserId: string
   users: User[]
+  groupId: string
   onEdit: (expense: Expense) => void
   onDelete: (id: string) => void
   loading?: boolean
@@ -15,6 +16,7 @@ export function ExpenseList({
   expenses,
   currentUserId,
   users,
+  groupId,
   onEdit,
   onDelete,
   loading = false,
@@ -60,6 +62,9 @@ export function ExpenseList({
                 expense={expense}
                 payerName={getPayerName(expense.paidByUserId)}
                 isOwner={expense.paidByUserId === currentUserId}
+                currentUserId={currentUserId}
+                groupId={groupId}
+                users={users}
                 onEdit={onEdit}
                 onDelete={onDelete}
                 disabled={loading}

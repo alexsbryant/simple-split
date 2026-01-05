@@ -13,6 +13,22 @@ export type ExpenseSplit = {
   amount: number
 }
 
+export type ExpenseReaction = {
+  id: string
+  expenseId: string
+  userId: string
+  emoji: string
+  createdAt: string
+}
+
+export type ExpenseComment = {
+  id: string
+  expenseId: string
+  userId: string
+  content: string
+  createdAt: string
+}
+
 export type Expense = {
   id: string
   groupId: string
@@ -24,6 +40,8 @@ export type Expense = {
   isSettlement: boolean
   settledWithUserId: string | null
   splits?: ExpenseSplit[] // Optional - only present for custom splits
+  reactions?: ExpenseReaction[] // Emoji reactions on this expense
+  commentCount?: number // Number of comments (fetched as aggregate)
 }
 
 export type Group = {

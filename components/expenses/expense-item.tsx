@@ -1,11 +1,19 @@
-import { Expense } from '@/types'
+'use client'
+
+import { useState } from 'react'
+import { Expense, User } from '@/types'
 import { formatCurrency, formatDate } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
+import { ExpenseReactions } from './expense-reactions'
+import { ExpenseComments } from './expense-comments'
 
 interface ExpenseItemProps {
   expense: Expense
   payerName: string
   isOwner: boolean
+  currentUserId: string
+  groupId: string
+  users: User[]
   onEdit: (expense: Expense) => void
   onDelete: (id: string) => void
   disabled?: boolean
@@ -17,6 +25,9 @@ export function ExpenseItem({
   expense,
   payerName,
   isOwner,
+  currentUserId,
+  groupId,
+  users,
   onEdit,
   onDelete,
   disabled = false,
@@ -24,6 +35,7 @@ export function ExpenseItem({
   settledTotal,
 }: ExpenseItemProps) {
   const isSettlement = expense.isSettlement
+  const [commentsExpanded, setCommentsExpanded] = useState(false)
 
   return (
     <div
@@ -33,7 +45,7 @@ export function ExpenseItem({
     >
       {/* Mobile: 2-line compact layout, Desktop: horizontal layout */}
 
-      {/* Line 1: Description + Amount */}
+      {/* Line 1: Description + Reactions + Amount */}
       <div className="flex items-start justify-between gap-2">
         <span className="flex-1 font-medium text-[var(--text-primary)] text-sm md:text-base leading-tight flex items-center gap-2">
           {isSettlement && (
@@ -54,13 +66,23 @@ export function ExpenseItem({
           )}
           {expense.description}
         </span>
-        <span
-          className={`font-semibold shrink-0 ${
-            isSettlement ? 'text-[var(--positive)]' : 'text-[var(--text-primary)]'
-          }`}
-        >
-          {formatCurrency(expense.amount, currency)}
-        </span>
+
+        {/* Reactions + Amount */}
+        <div className="flex items-center gap-2 shrink-0">
+          <ExpenseReactions
+            expenseId={expense.id}
+            groupId={groupId}
+            currentUserId={currentUserId}
+            reactions={expense.reactions ?? []}
+          />
+          <span
+            className={`font-semibold ${
+              isSettlement ? 'text-[var(--positive)]' : 'text-[var(--text-primary)]'
+            }`}
+          >
+            {formatCurrency(expense.amount, currency)}
+          </span>
+        </div>
       </div>
 
       {/* Settlement Period Total */}
@@ -70,11 +92,21 @@ export function ExpenseItem({
         </div>
       )}
 
-      {/* Line 2: Payer • Date + Actions */}
+      {/* Line 2: Payer • Date • Comments + Actions */}
       <div className="flex items-center justify-between gap-2 mt-1">
-        <span className="text-xs md:text-sm text-[var(--text-muted)]">
-          {payerName} · {formatDate(expense.createdAt)}
-        </span>
+        <div className="flex items-center gap-2 text-xs md:text-sm text-[var(--text-muted)]">
+          <span>{payerName} · {formatDate(expense.createdAt)}</span>
+          <span className="text-[var(--glass-border)]">·</span>
+          <ExpenseComments
+            expenseId={expense.id}
+            groupId={groupId}
+            currentUserId={currentUserId}
+            commentCount={expense.commentCount ?? 0}
+            users={users}
+            isExpanded={commentsExpanded}
+            onToggleExpand={() => setCommentsExpanded(!commentsExpanded)}
+          />
+        </div>
 
         {/* Actions - only for owner, and settlements are not editable */}
         {isOwner && !isSettlement && (

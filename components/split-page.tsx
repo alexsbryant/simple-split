@@ -350,6 +350,7 @@ export function SimpleSplitPage({
               expenses={initialExpenses}
               currentUserId={currentUser.id}
               users={users}
+              groupId={group.id}
               onEdit={handleEditClick}
               onDelete={handleDeleteExpense}
               loading={loading}

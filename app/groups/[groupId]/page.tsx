@@ -1,6 +1,6 @@
 import { createClient } from '@/lib/supabase-server'
 import { SimpleSplitPage } from '@/components/split-page'
-import { User, Group, Expense } from '@/types'
+import { User, Group, Expense, ExpenseReaction } from '@/types'
 import { redirect } from 'next/navigation'
 import { updateLastSeen } from '@/app/actions/groups'
 
@@ -55,10 +55,15 @@ export default async function GroupPage({ params }: { params: { groupId: string 
     .select('user_id, users(id, email, display_name)')
     .eq('group_id', groupId)
 
-  // Fetch expenses for this group with splits
+  // Fetch expenses for this group with splits, reactions, and comment counts
   const { data: expensesData } = await supabase
     .from('expenses')
-    .select('*, expense_splits(id, user_id, amount)')
+    .select(`
+      *,
+      expense_splits(id, user_id, amount),
+      expense_reactions(id, user_id, emoji, created_at),
+      expense_comments(count)
+    `)
     .eq('group_id', groupId)
     .order('created_at', { ascending: false })
 
@@ -105,6 +110,8 @@ export default async function GroupPage({ params }: { params: { groupId: string 
     is_settlement: boolean
     settled_with_user_id: string | null
     expense_splits?: Array<{ id: string; user_id: string; amount: number }>
+    expense_reactions?: Array<{ id: string; user_id: string; emoji: string; created_at: string }>
+    expense_comments?: Array<{ count: number }>
   }) => ({
     id: e.id,
     groupId: e.group_id,
@@ -123,6 +130,14 @@ export default async function GroupPage({ params }: { params: { groupId: string 
           amount: Number(s.amount),
         }))
       : undefined,
+    reactions: e.expense_reactions?.map((r) => ({
+      id: r.id,
+      expenseId: e.id,
+      userId: r.user_id,
+      emoji: r.emoji,
+      createdAt: r.created_at,
+    })),
+    commentCount: e.expense_comments?.[0]?.count ?? 0,
   })) ?? []
 
   const pendingInvitations = invitationsData?.map((inv: {
