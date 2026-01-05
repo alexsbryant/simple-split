@@ -32,7 +32,9 @@
     /* Navigation */
     --nav-button-hover: #F0EBE5; /* Slightly darker on hover */
     --nav-button-active: #E8E0D8; /* Darker still when active/on page */
-    --group-hover: #FDFBF8;
+
+    /* Hover effects */
+    --item-hover: rgba(255, 245, 237, 0.6); /* Warm beige for light mode */
 
     /* Status */
     --positive: #15b04e;
@@ -67,6 +69,9 @@
     /* Navigation */
     --nav-button-hover: #2a2a2a; /* Slightly lighter on hover */
     --nav-button-active: #333333; /* Lighter still when active/on page */
+
+    /* Hover effects */
+    --item-hover: rgba(255, 255, 255, 0.08); /* Subtle white overlay for dark mode */
 
     /* Status */
     --positive: #4ADE80;

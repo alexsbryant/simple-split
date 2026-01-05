@@ -21,7 +21,7 @@ export function BalanceCard({ balance, currency }: BalanceCardProps) {
     : formatCurrency(balance.balance, currency)
 
   return (
-    <div className="balance-cards p-4 transition-all duration-150 hover:bg-[rgba(255,255,255,0.08)]">
+    <div className="balance-cards p-4 transition-all duration-150 hover:bg-[var(--item-hover)]">
       <div className="flex justify-between items-start">
         <span className="text-sm font-medium text-[var(--text-secondary)]">
           {balance.displayName}

@@ -27,7 +27,7 @@ export function ExpenseItem({
 
   return (
     <div
-      className={`glass-sm p-3 md:p-4 transition-all duration-300 hover:bg-[rgba(255,245,237,0.6)] ${
+      className={`glass-sm p-3 md:p-4 transition-all duration-300 hover:bg-[var(--item-hover)] ${
         isSettlement ? 'border-l-[var(--positive)]' : ''
       }`}
     >

@@ -109,7 +109,7 @@ export default async function GroupsPage() {
               <Link
                 key={group.id}
                 href={`/groups/${group.id}`}
-                className="glass p-4 block transition-all duration-300 hover:bg-[rgba(255,245,237,0.4)] hover:border[var(---border-subtle)]"
+                className="glass p-4 block transition-all duration-300 hover:bg-[var(--item-hover)]"
               >
                 <h3 className="font-semibold text-lg flex items-center gap-2" style={{ color: 'var(--text-title)' }}>
                   {group.name}
