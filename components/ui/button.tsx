@@ -15,7 +15,7 @@ export function Button({
   ...props
 }: ButtonProps) {
   const baseStyles = `
-    px-6 py-3
+    px-5 py-2.5
     text-sm font-semibold uppercase tracking-wider
     rounded-full
     cursor-pointer
@@ -25,8 +25,8 @@ export function Button({
 
   const variantStyles: Record<ButtonVariant, string> = {
     primary: `
-      bg-[var(--accent)] text-black
-      hover:bg-[var(--accent-hover)] hover:shadow-lg
+      bg-[var(--accent)] text-white opacity-95
+      hover:opacity-100 hover:bg-[var(--accent-hover)]
       active:scale-[0.98]
     `,
     secondary: `

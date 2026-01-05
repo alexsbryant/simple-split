@@ -119,7 +119,7 @@ export function BalanceSummary({
       )}
 
       {/* Totals - Smaller, subdued */}
-      <div className="px-4 py-3 border-b border-[var(--border-subtle)] flex justify-center gap-8 bg-[var(--bg-card-elevated)]">
+      <div className="px-4 py-3 border-b border-[var(--border-subtle)] flex justify-center gap-8 bg-[var(--bg-input)]">
         <div className="text-center">
           <p className="text-xs font-medium uppercase tracking-wider text-[var(--text-muted)]">Total</p>
           <p className="text-base font-medium text-[var(--text-primary)]">
