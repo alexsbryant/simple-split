@@ -31,8 +31,8 @@ export function Button({
     `,
     secondary: `
       bg-transparent text-[var(--text-primary)]
-      border border-[var(--glass-border)]
-      hover:bg-white/10 hover:border-[rgba(255,255,255,0.2)]
+      border border-[var(--border-default)]
+      hover:bg-[var(--nav-button-hover)]
       active:scale-[0.98]
     `,
     danger: `

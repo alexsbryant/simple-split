@@ -77,10 +77,10 @@ export function SettleUpModal({
       <div className="w-full max-w-md max-h-[80vh] overflow-hidden flex flex-col rounded-3xl border-[1.5px] border-[var(--border-default)] shadow-2xl bg-[var(--bg-card)]">
         {/* Header */}
         <div className="p-4 border-b border-[var(--border-subtle)] flex justify-between items-center">
-          <h2 className="text-lg font-semibold text-white">Settle Up</h2>
+          <h2 className="text-lg font-semibold" style={{ color: 'var(--text-title)' }}>Settle Up</h2>
           <button
             onClick={onClose}
-            className="text-[var(--text-secondary)] hover:text-white cursor-pointer p-1"
+            className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] cursor-pointer p-1"
             aria-label="Close"
           >
             <svg
