@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useTransition, useOptimistic } from 'react'
+import { useState, useEffect, useTransition, useOptimistic } from 'react'
 import { ExpenseComment, User } from '@/types'
 import { addComment, deleteComment, getExpenseComments } from '@/app/actions/comments'
 import { formatDate } from '@/lib/utils'
@@ -78,8 +78,8 @@ export function ExpenseComments({
   }
 
   return (
-    <div>
-      {/* Comment count trigger */}
+    <>
+      {/* Comment count trigger - inline element */}
       <button
         onClick={handleToggle}
         className="text-xs text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors"
@@ -89,10 +89,66 @@ export function ExpenseComments({
           : `${optimisticCount} comment${optimisticCount === 1 ? '' : 's'}`
         }
       </button>
+    </>
+  )
+}
 
-      {/* Expanded comment section */}
-      {isExpanded && (
-        <div className="mt-3 pt-3 border-t border-[var(--glass-border)]">
+// Separate component for the expanded panel - rendered outside the flex row
+export function ExpenseCommentsPanel({
+  expenseId,
+  groupId,
+  currentUserId,
+  commentCount,
+  users,
+}: Omit<ExpenseCommentsProps, 'isExpanded' | 'onToggleExpand'>) {
+  const [comments, setComments] = useState<ExpenseComment[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [newComment, setNewComment] = useState('')
+  const [isPending, startTransition] = useTransition()
+
+  // Load comments on mount
+  useEffect(() => {
+    if (commentCount > 0) {
+      getExpenseComments(expenseId).then(({ comments: fetched }) => {
+        setComments(fetched)
+        setIsLoading(false)
+      })
+    } else {
+      setIsLoading(false)
+    }
+  }, [expenseId, commentCount])
+
+  const handleAddComment = () => {
+    if (!newComment.trim()) return
+
+    const content = newComment.trim()
+    setNewComment('')
+
+    startTransition(async () => {
+      const result = await addComment(expenseId, content, groupId)
+      if (result.success && result.comment) {
+        setComments(prev => [...prev, result.comment!])
+      }
+    })
+  }
+
+  const handleDeleteComment = (commentId: string) => {
+    startTransition(async () => {
+      const result = await deleteComment(commentId, groupId)
+      if (result.success) {
+        setComments(prev => prev.filter(c => c.id !== commentId))
+      }
+    })
+  }
+
+  const getUserName = (userId: string): string => {
+    if (userId === currentUserId) return 'You'
+    const user = users.find(u => u.id === userId)
+    return user?.displayName ?? 'Unknown'
+  }
+
+  return (
+    <div className="mt-3 pt-3 border-t border-[var(--glass-border)]">
           {/* Loading state */}
           {isLoading && (
             <div className="text-sm text-[var(--text-muted)] py-2">Loading...</div>
@@ -164,8 +220,6 @@ export function ExpenseComments({
               Post
             </button>
           </div>
-        </div>
-      )}
     </div>
   )
 }

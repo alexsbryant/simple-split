@@ -5,7 +5,7 @@ import { Expense, User } from '@/types'
 import { formatCurrency, formatDate } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { ExpenseReactions } from './expense-reactions'
-import { ExpenseComments } from './expense-comments'
+import { ExpenseComments, ExpenseCommentsPanel } from './expense-comments'
 
 interface ExpenseItemProps {
   expense: Expense
@@ -140,6 +140,17 @@ export function ExpenseItem({
           </div>
         )}
       </div>
+
+      {/* Expanded comments section - rendered outside the flex row */}
+      {commentsExpanded && (
+        <ExpenseCommentsPanel
+          expenseId={expense.id}
+          groupId={groupId}
+          currentUserId={currentUserId}
+          commentCount={expense.commentCount ?? 0}
+          users={users}
+        />
+      )}
     </div>
   )
 }
