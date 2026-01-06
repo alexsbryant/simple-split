@@ -236,7 +236,7 @@ export function SimpleSplitPage({
                   {isCreator && (
                     <button
                       onClick={handleStartEditName}
-                      className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors p-1"
+                      className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors p-1 cursor-pointer"
                       aria-label="Edit group name"
                     >
                       <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">

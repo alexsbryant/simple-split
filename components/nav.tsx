@@ -151,7 +151,7 @@ export function Nav() {
             <button
               className={`
                 text-xs py-1.5 px-3 rounded-full font-semibold uppercase tracking-wider
-                flex items-center gap-1.5 transition-all duration-150
+                flex items-center gap-1.5 transition-all duration-150 cursor-pointer
                 ${isOnGroupsPage
                   ? 'bg-[var(--nav-button-active)] text-[var(--text-primary)]'
                   : 'bg-transparent text-[var(--text-primary)] hover:bg-[var(--nav-button-hover)]'

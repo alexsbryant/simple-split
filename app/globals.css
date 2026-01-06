@@ -34,7 +34,8 @@
     --nav-button-active: #E8E0D8; /* Darker still when active/on page */
 
     /* Hover effects */
-    --item-hover: rgba(246, 216, 191, 0.592); /* Warm beige for light mode */
+    --item-hover: rgba(235, 204, 179, 0.387); /* Warm beige for light mode */
+    --card-hover: #f8f2e9a5; /* Slightly darker change for balance cards */
 
     /* Status */
     --positive: #15b04e;
