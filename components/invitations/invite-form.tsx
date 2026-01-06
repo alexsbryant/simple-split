@@ -200,10 +200,10 @@ export function InviteFormPanel({ groupId, onClose }: InviteFormPanelProps) {
   return (
     <div className="glass p-4 mb-4 w-full max-w-sm">
       <div className="flex items-center justify-between mb-3">
-        <h3 className="text-sm font-semibold text-white">Invite to Group</h3>
+        <h3 className="text-sm font-semibold" style={{ color: 'var(--text-title)' }}>Invite to Group</h3>
         <button
           onClick={handleClose}
-          className="text-[var(--text-secondary)] hover:text-white cursor-pointer"
+          className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] cursor-pointer"
         >
           <XIcon />
         </button>
@@ -216,7 +216,7 @@ export function InviteFormPanel({ groupId, onClose }: InviteFormPanelProps) {
           className={`flex-1 px-3 py-1.5 text-sm rounded-md transition-colors flex items-center justify-center gap-1.5 cursor-pointer ${
             activeTab === 'link'
               ? 'bg-[var(--accent)] text-white'
-              : 'text-[var(--text-secondary)] hover:text-white'
+              : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
           }`}
         >
           <LinkIcon />
@@ -227,7 +227,7 @@ export function InviteFormPanel({ groupId, onClose }: InviteFormPanelProps) {
           className={`flex-1 px-3 py-1.5 text-sm rounded-md transition-colors flex items-center justify-center gap-1.5 cursor-pointer ${
             activeTab === 'email'
               ? 'bg-[var(--accent)] text-white'
-              : 'text-[var(--text-secondary)] hover:text-white'
+              : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
           }`}
         >
           <MailIcon />
@@ -238,7 +238,7 @@ export function InviteFormPanel({ groupId, onClose }: InviteFormPanelProps) {
           className={`flex-1 px-3 py-1.5 text-sm rounded-md transition-colors flex items-center justify-center gap-1.5 cursor-pointer ${
             activeTab === 'qr'
               ? 'bg-[var(--accent)] text-white'
-              : 'text-[var(--text-secondary)] hover:text-white'
+              : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
           }`}
         >
           <QRIcon />

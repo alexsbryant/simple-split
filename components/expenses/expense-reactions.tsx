@@ -116,7 +116,7 @@ export function ExpenseReactions({
         className="
           w-6 h-6 rounded-full flex items-center justify-center
           text-[var(--text-muted)] hover:text-[var(--text-primary)]
-          hover:bg-[var(--item-hover)] transition-colors
+          hover:bg-[var(--item-hover)] transition-colors cursor-pointer
         "
         aria-label="Add reaction"
       >
