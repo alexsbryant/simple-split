@@ -129,7 +129,7 @@ export function Nav() {
 
   return (
     <nav className="border-b-[0.5px] border-[var(--border-default)] bg-[var(--bg-nav)]">
-      <div className="max-w-full mx-auto px-4 py-2 flex items-center justify-between">
+      <div className="max-w-full mx-auto px-4 py-1 flex items-center justify-between">
         {/* Logo */}
         <Link
           href="/groups"
