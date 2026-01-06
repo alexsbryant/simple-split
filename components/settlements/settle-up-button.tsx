@@ -12,7 +12,7 @@ export function SettleUpButton({ onClick, disabled }: SettleUpButtonProps) {
       disabled={disabled}
       className="
         inline-flex items-center gap-2
-        px-4 py-2
+        px-3 py-1.5
         text-sm font-semibold
         rounded-full
         bg-[var(--positive)] text-black
@@ -20,6 +20,7 @@ export function SettleUpButton({ onClick, disabled }: SettleUpButtonProps) {
         active:scale-[0.98]
         transition-all duration-150
         cursor-pointer
+        opacity-80
         disabled:opacity-50 disabled:cursor-not-allowed
       "
     >

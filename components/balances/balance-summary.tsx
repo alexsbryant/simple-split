@@ -98,16 +98,67 @@ export function BalanceSummary({
 
   const statusColor = getStatusColor()
 
+  const getStatusIcon = () => {
+    if (!oweSummary) return null
+
+    if (oweSummary.isSettled) {
+      // Checkmark icon for "All settled up!"
+      return (
+        <svg
+          className="w-5 h-5 shrink-0"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          style={{ color: 'var(--settled)', opacity: 0.9 }}
+          aria-hidden="true"
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      )
+    }
+
+    if (oweSummary.isNegative) {
+      // Down arrow for "You owe"
+      return (
+        <svg
+          className="w-5 h-5 shrink-0"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          style={{ color: 'var(--negative)', opacity: 0.9 }}
+          aria-hidden="true"
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+            d="M17 13l-5 5m0 0l-5-5m5 5V6" />
+        </svg>
+      )
+    }
+
+    // Up arrow for "owes you"
+    return (
+      <svg
+        className="w-5 h-5 shrink-0"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+        style={{ color: 'var(--positive)', opacity: 0.9 }}
+        aria-hidden="true"
+      >
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+          d="M7 11l5-5m0 0l5 5m-5-5v12" />
+      </svg>
+    )
+  }
+
   return (
     <section className="glass overflow-hidden">
       {/* "You Owe" Hero Section - Large & Centered */}
       {oweSummary && (
         <div className="py-8 px-6 text-center border-b border-[var(--glass-border)]">
-          <p
-            className="text-2xl sm:text-3xl font-semibold"
-            style={{ color: statusColor }}
-          >
-            {oweSummary.message}
+          <p className="text-lg sm:text-xl font-medium text-[var(--text-primary)] flex items-center justify-center gap-2">
+            {getStatusIcon()}
+            <span>{oweSummary.message}</span>
           </p>
           {/* Settle Up button - only show when there are outstanding debts */}
           {!allSettled && (
