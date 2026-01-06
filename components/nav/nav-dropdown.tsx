@@ -49,7 +49,7 @@ export function NavDropdown({ trigger, children, align = 'right', className = ''
       {isOpen && (
         <div
           className={`
-            absolute top-full mt-2 w-72
+            absolute top-full mt-1 w-72
             bg-[var(--bg-card)]
             border border-[var(--border-default)]
             rounded-lg
