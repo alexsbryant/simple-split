@@ -96,7 +96,7 @@ export function ExpenseReactions({
           disabled={isPending}
           className={`
             flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-xs
-            transition-all duration-150
+            transition-all duration-150 cursor-pointer
             ${hasCurrentUser
               ? 'bg-[var(--accent)]/20 border border-[var(--accent)]'
               : 'bg-[var(--bg-card)] border border-[var(--glass-border)] hover:bg-[var(--item-hover)]'
@@ -146,7 +146,7 @@ export function ExpenseReactions({
                 onClick={() => handleReaction(emoji)}
                 className="
                   w-8 h-8 flex items-center justify-center
-                  rounded hover:bg-[var(--item-hover)] transition-colors text-lg
+                  rounded hover:bg-[var(--item-hover)] transition-colors text-lg cursor-pointer
                 "
               >
                 {emoji}

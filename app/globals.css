@@ -34,7 +34,7 @@
     --nav-button-active: #E8E0D8; /* Darker still when active/on page */
 
     /* Hover effects */
-    --item-hover: rgba(255, 245, 237, 0.6); /* Warm beige for light mode */
+    --item-hover: rgba(246, 216, 191, 0.592); /* Warm beige for light mode */
 
     /* Status */
     --positive: #15b04e;

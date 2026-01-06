@@ -82,7 +82,7 @@ export function ExpenseComments({
       {/* Comment count trigger - inline element */}
       <button
         onClick={handleToggle}
-        className="text-xs text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors"
+        className="text-xs text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors cursor-pointer"
       >
         {optimisticCount === 0
           ? 'Add comment'
