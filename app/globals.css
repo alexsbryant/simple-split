@@ -73,6 +73,7 @@
 
     /* Hover effects */
     --item-hover: rgba(255, 255, 255, 0.08); /* Subtle white overlay for dark mode */
+    --card-hover: rgba(255, 255, 255, 0.08); 
 
     /* Status */
     --positive: #4ADE80;
@@ -86,7 +87,7 @@
 
   /* Smooth theme transitions */
   html {
-    transition: background-color 0.2s ease;
+    transition: background-color 0.3s ease;
   }
 }
 
