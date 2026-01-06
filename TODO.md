@@ -698,6 +698,41 @@ Please propose:
 - UI component changes
 - Incremental implementation order
 
+## Phase 16 – Expense Reactions & Comments
+
+I’d like to add lightweight social interactions to expenses and settlement entries.
+
+Features:
+	•	Emoji reactions on expense cards
+	•	Simple text comments per expense
+
+Requirements:
+	•	Emoji reactions appear in the top-right corner of the expense card
+	•	Multiple users can react; show emoji + count
+	•	Users can toggle their own reactions
+	•	Comments show as “N comments” near the name/date
+	•	Clicking expands the expense card to reveal comments
+	•	Flat comment list only (no threads)
+	•	No notifications or edits in v1
+
+Data model:
+	•	expense_reactions table (expense_id, user_id, emoji)
+	•	expense_comments table (expense_id, user_id, content)
+
+Technical constraints:
+	•	Supabase + RLS
+	•	Server actions for add/remove
+	•	Optimistic UI updates
+	•	No impact on balances or settlements
+
+Please provide:
+	•	Schema + RLS
+	•	Server actions
+	•	Expense fetch updates
+	•	UI component structure
+	•	State model for expanded cards
+	•	Suggested emoji picker approach (minimal)
+
 ## Architecture
 
 ### Current Data Flow
@@ -776,6 +811,7 @@ Custom splitting
   Example for step 1: 4 housemates have a group.  One stays home, the other 3 get a taxi together.  The person who paid for the taxi can select 'customize split' button - to the bottom right of the add expense box.  This then gives them a list of everyone's display names that are in the group with check boxes, and they can select who should be included in this split. 
 
   Example for step 2: 4 housemates have a group and go out to dinner.  One did not get food at dinner, only $15 of drinks (we'll call them Martin).  The person paying the $250 bill adds $250 (can be done both on the main 'add expense' box before clicking customize -> advanced settings, or after clicking customize and advanced.).  The user paying then has every group members name with a box for amount under.  They input '$15' under Martin's name.  Settle then works out what the split would be for the rest of the group.  So 250 total, 15 for Martin, other three take the remaining $235 divided by 3.  
+
 
 
   - Check total reset after any settlement is made, does this work?

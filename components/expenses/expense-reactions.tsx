@@ -5,7 +5,7 @@ import { ExpenseReaction } from '@/types'
 import { toggleReaction } from '@/app/actions/reactions'
 
 // Common emojis for expense reactions
-const QUICK_EMOJIS = ['👍', '❤️', '😂', '🎉', '👏', '💸']
+const QUICK_EMOJIS = ['👍', '❤️', '😂', '👎', '👏', '🔥', '💀']
 
 // Aggregated reaction for UI display
 type AggregatedReaction = {
@@ -101,7 +101,7 @@ export function ExpenseReactions({
               ? 'bg-[var(--accent)]/20 border border-[var(--accent)]'
               : 'bg-[var(--bg-card)] border border-[var(--glass-border)] hover:bg-[var(--item-hover)]'
             }
-            disabled:opacity-50
+            disabled:opacity-60
           `}
           aria-label={`${emoji} reaction, ${count} ${count === 1 ? 'person' : 'people'}`}
         >
