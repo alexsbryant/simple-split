@@ -5,7 +5,7 @@ import { ExpenseReaction } from '@/types'
 import { toggleReaction } from '@/app/actions/reactions'
 
 // Common emojis for expense reactions
-const QUICK_EMOJIS = ['👍', '❤️', '😂', '👎', '👏', '🔥', '💀']
+const QUICK_EMOJIS = ['👍', '❤️', '🙏', '😂', '👎', '🔥', '💀']
 
 // Aggregated reaction for UI display
 type AggregatedReaction = {
