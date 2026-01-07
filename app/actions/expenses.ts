@@ -2,6 +2,7 @@
 
 import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase-server'
+import { notifyExpenseAdded } from './notifications'
 
 type SplitInput = {
   userId: string
@@ -23,6 +24,14 @@ type ActionResult = {
 
 export async function createExpense(data: ExpenseInput): Promise<ActionResult> {
   const supabase = await createClient()
+
+  // Get current user (the person creating the expense entry)
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+  if (!user) {
+    return { success: false, error: 'Not authenticated' }
+  }
 
   // Validate splits if provided
   if (data.splits && data.splits.length > 0) {
@@ -50,6 +59,9 @@ export async function createExpense(data: ExpenseInput): Promise<ActionResult> {
   if (error) {
     return { success: false, error: error.message }
   }
+
+  // Notify group members (except the creator)
+  await notifyExpenseAdded(expense.id, data.groupId, user.id)
 
   // Create splits if provided
   if (data.splits && data.splits.length > 0) {

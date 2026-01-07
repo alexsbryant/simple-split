@@ -2,6 +2,7 @@
 
 import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase-server'
+import { notifyDebtSettled } from './notifications'
 
 type SettlementInput = {
   groupId: string
@@ -84,6 +85,11 @@ export async function createSettlement(
   if (error) {
     return { success: false, error: error.message }
   }
+
+  // Notify the other party (the one who didn't initiate)
+  const otherPartyId =
+    authUser.id === data.payerUserId ? data.recipientUserId : data.payerUserId
+  await notifyDebtSettled(data.groupId, authUser.id, otherPartyId, data.amount)
 
   revalidatePath(`/groups/${data.groupId}`)
   return { success: true }

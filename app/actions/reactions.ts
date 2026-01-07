@@ -2,6 +2,7 @@
 
 import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase-server'
+import { notifyExpenseReacted } from './notifications'
 
 type ActionResult = {
   success: boolean
@@ -62,6 +63,9 @@ export async function toggleReaction(
     if (error) {
       return { success: false, error: error.message }
     }
+
+    // Notify expense owner of the reaction
+    await notifyExpenseReacted(expenseId, user.id, emoji)
 
     revalidatePath(`/groups/${groupId}`)
     return { success: true, added: true }

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase'
@@ -9,6 +9,7 @@ import { SettingsDropdown } from './nav/settings-dropdown'
 import { NotificationsDropdown } from './nav/notifications-dropdown'
 import { useTheme } from '@/lib/theme-provider'
 import { updateDisplayName } from '@/app/actions/user'
+import { getNotifications } from '@/app/actions/notifications'
 
 export function Nav() {
   const pathname = usePathname()
@@ -25,6 +26,23 @@ export function Nav() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
+  const [unreadNotifications, setUnreadNotifications] = useState(0)
+
+  // Callback for notifications dropdown to update unread count
+  const handleUnreadCountChange = useCallback((count: number) => {
+    setUnreadNotifications(count)
+  }, [])
+
+  // Fetch unread count on mount to show indicator before dropdown is opened
+  useEffect(() => {
+    async function fetchUnreadCount() {
+      const result = await getNotifications()
+      if (result.success && result.unreadCount !== undefined) {
+        setUnreadNotifications(result.unreadCount)
+      }
+    }
+    fetchUnreadCount()
+  }, [])
 
   // Determine active page
   const isOnGroupsPage = pathname === '/groups'
@@ -169,16 +187,19 @@ export function Nav() {
           <NavDropdown
             trigger={
               <button
-                className="p-2 rounded-full transition-all duration-150 text-[var(--text-primary)] hover:bg-[var(--nav-button-hover)] cursor-pointer"
+                className="relative p-2 rounded-full transition-all duration-150 text-[var(--text-primary)] hover:bg-[var(--nav-button-hover)] cursor-pointer"
                 aria-label="Notifications"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                 </svg>
+                {unreadNotifications > 0 && (
+                  <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full" />
+                )}
               </button>
             }
           >
-            <NotificationsDropdown />
+            <NotificationsDropdown onUnreadCountChange={handleUnreadCountChange} />
           </NavDropdown>
 
           {/* Settings dropdown */}
@@ -203,7 +224,7 @@ export function Nav() {
         <div className="md:hidden relative" ref={menuRef}>
           <button
             onClick={() => setMenuOpen(!menuOpen)}
-            className="p-2 opacity-80 hover:opacity-100 transition-opacity"
+            className="relative p-2 opacity-80 hover:opacity-100 transition-opacity cursor-pointer"
             style={{ color: 'var(--text-primary)' }}
             aria-label="Menu"
           >
@@ -215,6 +236,9 @@ export function Nav() {
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
               </svg>
+            )}
+            {unreadNotifications > 0 && (
+              <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full" />
             )}
           </button>
 
@@ -242,9 +266,14 @@ export function Nav() {
                 className="w-full flex items-center justify-between px-4 py-2.5 text-sm text-[var(--text-primary)] hover:bg-[var(--nav-button-hover)] transition-colors cursor-pointer"
               >
                 <div className="flex items-center gap-3">
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-                  </svg>
+                  <div className="relative">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                    </svg>
+                    {unreadNotifications > 0 && (
+                      <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-red-500 rounded-full" />
+                    )}
+                  </div>
                   Notifications
                 </div>
                 <svg
@@ -258,8 +287,8 @@ export function Nav() {
               </button>
 
               {expandedSections.has('notifications') && (
-                <div className="px-4 py-3 bg-[var(--bg-card-elevated)]">
-                  <p className="text-xs text-[var(--text-secondary)]">No notifications yet</p>
+                <div className="bg-[var(--bg-card-elevated)]">
+                  <NotificationsDropdown onUnreadCountChange={handleUnreadCountChange} />
                 </div>
               )}
 

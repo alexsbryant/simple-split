@@ -101,3 +101,23 @@ export type SimplifiedDebt = {
   toDisplayName: string
   amount: number
 }
+
+// Notification types for Phase 17B
+export type NotificationType =
+  | 'expense_added'
+  | 'expense_reacted'
+  | 'expense_commented'
+  | 'debt_settled'
+
+export type Notification = {
+  id: string
+  type: NotificationType
+  read: boolean
+  createdAt: string
+  actorDisplayName: string
+  groupId: string | null
+  groupName: string | null
+  expenseId: string | null
+  expenseDescription: string | null
+  metadata: { emoji?: string; amount?: number }
+}

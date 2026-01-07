@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase-server'
 import { ExpenseComment } from '@/types'
+import { notifyExpenseCommented } from './notifications'
 
 type ActionResult = {
   success: boolean
@@ -48,6 +49,9 @@ export async function addComment(
   if (error) {
     return { success: false, error: error.message }
   }
+
+  // Notify expense owner of the comment
+  await notifyExpenseCommented(expenseId, user.id)
 
   revalidatePath(`/groups/${groupId}`)
   return {
