@@ -3,6 +3,7 @@
 import { useState, useOptimistic, useTransition } from 'react'
 import { ExpenseReaction } from '@/types'
 import { toggleReaction } from '@/app/actions/reactions'
+import { ActivityCountPill } from '@/components/ui/activity-count-pill'
 
 // Common emojis for expense reactions
 const QUICK_EMOJIS = ['👍', '❤️', '🙏', '😂', '👎', '🔥', '💀']
@@ -94,19 +95,16 @@ export function ExpenseReactions({
           key={emoji}
           onClick={() => handleReaction(emoji)}
           disabled={isPending}
-          className={`
-            flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-xs
-            transition-all duration-150 cursor-pointer
-            ${hasCurrentUser
-              ? 'bg-[var(--accent)]/20 border border-[var(--accent)]'
-              : 'bg-[var(--bg-card)] border border-[var(--glass-border)] hover:bg-[var(--item-hover)]'
-            }
-            disabled:opacity-60
-          `}
-          aria-label={`${emoji} reaction, ${count} ${count === 1 ? 'person' : 'people'}`}
+          className={`cursor-pointer transition-all duration-150 disabled:opacity-60 ${
+            !hasCurrentUser ? 'hover:opacity-80' : ''
+          }`}
         >
-          <span>{emoji}</span>
-          <span className="text-[var(--text-secondary)]">{count}</span>
+          <ActivityCountPill
+            count={count}
+            variant="reaction"
+            emoji={emoji}
+            highlighted={hasCurrentUser}
+          />
         </button>
       ))}
 

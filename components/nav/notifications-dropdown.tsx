@@ -8,6 +8,7 @@ import {
   markAllNotificationsRead,
   type Notification,
 } from '@/app/actions/notifications'
+import { ActivityCountPill } from '@/components/ui/activity-count-pill'
 
 function formatTimeAgo(dateString: string): string {
   const date = new Date(dateString)
@@ -192,7 +193,11 @@ export function NotificationsDropdown({
   return (
     <div className="max-h-80 overflow-y-auto">
       {hasUnread && (
-        <div className="px-3 py-1.5 border-b border-[var(--border-primary)]">
+        <div className="px-3 py-1.5 border-b border-[var(--border-primary)] flex items-center justify-between gap-2">
+          <ActivityCountPill
+            count={notifications.filter((n) => !n.read).length}
+            variant="notification"
+          />
           <button
             onClick={handleMarkAllRead}
             disabled={isPending}

@@ -1,8 +1,8 @@
-import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { Nav } from '@/components/nav'
 import { CreateGroupSection } from '@/components/groups/create-group-section'
 import { PendingInvitationCard } from '@/components/invitations/pending-invitation-card'
+import { GroupsList } from '@/components/groups/groups-list'
 import { createClient } from '@/lib/supabase-server'
 
 export default async function GroupsPage() {
@@ -56,18 +56,14 @@ export default async function GroupsPage() {
     last_seen_at: string | null
   }
 
-  const groups = (groupsData as GroupRow[] | null)?.map((g) => {
-    const lastActivity = new Date(g.last_activity).getTime()
-    const lastSeenAt = g.last_seen_at ? new Date(g.last_seen_at).getTime() : 0
-    return {
+  const groups =
+    (groupsData as GroupRow[] | null)?.map((g) => ({
       id: g.id,
       name: g.name,
       createdBy: g.created_by,
       creatorName: g.creator_display_name || g.creator_email || 'Unknown',
       memberCount: g.member_count,
-      hasUnread: lastActivity > lastSeenAt,
-    }
-  }) ?? []
+    })) ?? []
 
   return (
     <div className="min-h-screen">
@@ -104,26 +100,7 @@ export default async function GroupsPage() {
             </p>
           </div>
         ) : (
-          <div className="space-y-4">
-            {groups.map(group => (
-              <Link
-                key={group.id}
-                href={`/groups/${group.id}`}
-                className="glass p-4 block transition-all duration-300 hover:bg-[var(--item-hover)]"
-              >
-                <h3 className="font-semibold text-lg flex items-center gap-2" style={{ color: 'var(--text-title)' }}>
-                  {group.name}
-                  {group.hasUnread && (
-                    <span className="w-2 h-2 bg-red-500 rounded-full" aria-label="New activity" />
-                  )}
-                </h3>
-                <p className="text-sm text-[var(--text-secondary)] mt-1">
-                  {group.createdBy !== user.id && `Created by ${group.creatorName} · `}
-                  {group.memberCount} {group.memberCount === 1 ? 'member' : 'members'}
-                </p>
-              </Link>
-            ))}
-          </div>
+          <GroupsList groups={groups} userId={user.id} />
         )}
       </main>
     </div>
