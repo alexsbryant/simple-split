@@ -1,3 +1,4 @@
+import { useState, useMemo } from 'react'
 import { Expense, User } from '@/types'
 import { ExpenseItem } from './expense-item'
 
@@ -22,10 +23,26 @@ export function ExpenseList({
   loading = false,
   currency,
 }: ExpenseListProps) {
-  // Sort by createdAt (newest first)
-  const sortedExpenses = [...expenses].sort(
-    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+  // Pagination state
+  const [visibleCount, setVisibleCount] = useState(10)
+  const ITEMS_PER_PAGE = 10
+
+  // Sort by createdAt (newest first) - memoized for performance
+  const sortedExpenses = useMemo(
+    () => [...expenses].sort(
+      (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    ),
+    [expenses]
   )
+
+  // Slice for pagination
+  const displayedExpenses = sortedExpenses.slice(0, visibleCount)
+  const hasMore = visibleCount < sortedExpenses.length
+
+  // Handle show more
+  const handleShowMore = () => {
+    setVisibleCount(prev => prev + ITEMS_PER_PAGE)
+  }
 
   // Helper to get payer name
   const getPayerName = (userId: string): string => {
@@ -44,8 +61,9 @@ export function ExpenseList({
           No expenses yet. Add one above.
         </div>
       ) : (
-        <div className="flex flex-col gap-3">
-          {sortedExpenses.map((expense) => {
+        <>
+          <div className="flex flex-col gap-3">
+            {displayedExpenses.map((expense) => {
             // Calculate total settled amount for settlement expenses
             const settledTotal = expense.isSettlement
               ? expenses
@@ -73,7 +91,29 @@ export function ExpenseList({
               />
             )
           })}
-        </div>
+          </div>
+
+          {/* Show More Button */}
+          {hasMore && (
+            <div className="flex justify-center mt-6">
+              <button
+                onClick={handleShowMore}
+                className="
+                  px-3 py-1.5
+                  text-sm font-semibold
+                  rounded-full
+                  bg-[var(--accent)] text-white
+                  hover:brightness-110 hover:shadow-sm
+                  active:scale-[0.98]
+                  transition-all duration-150
+                  cursor-pointer
+                "
+              >
+                Show More
+              </button>
+            </div>
+          )}
+        </>
       )}
     </section>
   )
