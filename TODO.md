@@ -757,6 +757,252 @@ Phase 17C (Sonnet again):
 	•	Badge count
 	•	Navigation on click
 
+## Phase 17B - Introduce Notification System
+
+You are working on a Next.js + Supabase app called “Settle”.
+
+This phase introduces a notification system. Prioritize correctness, RLS safety, and future extensibility. Avoid overengineering and keep v1 intentionally minimal.
+
+————————————————————————
+GOAL
+
+Implement a notification system that supports:
+- New expense added to a group
+- Someone reacted to your expense
+- Someone commented on your expense
+
+Notifications will appear in the existing notifications dropdown UI (already scaffolded).
+
+————————————————————————
+DESIGN PRINCIPLES
+
+- Notifications are append-only records
+- No real-time subscriptions yet
+- No push notifications
+- No email notifications
+- Read/unread tracked per user
+- One notification per event (no batching yet)
+- Simple, predictable schema
+
+————————————————————————
+SCHEMA
+
+Create a new table:
+
+supabase/migrations/XX_notifications.sql
+
+These are examples I generated in a seperate context chat, please look through and plan accordingly.  Feel free to design how you think works best, as long as it follows our goals. 
+
+Examples:
+
+notifications
+- id (uuid, PK)
+- user_id (uuid, recipient)
+- actor_user_id (uuid, who caused the event)
+- group_id (uuid, nullable)
+- expense_id (uuid, nullable)
+- type (text enum)
+- read_at (timestamptz, nullable)
+- created_at (timestamptz, default now)
+
+Notification types:
+- 'expense_added'
+- 'expense_reacted'
+- 'expense_commented'
+
+Rules:
+- actor_user_id ≠ user_id (no self-notifications)
+- expense_id required for reaction/comment notifications
+- group_id required for expense_added
+
+Indexes:
+- (user_id, created_at DESC)
+- (user_id, read_at)
+
+————————————————————————
+RLS POLICIES
+
+Enable RLS on notifications.
+
+Policies:
+- SELECT: users can read only their own notifications
+- UPDATE: users can update only their own notifications (mark read)
+- INSERT: only allowed via SECURITY DEFINER functions
+- DELETE: optional (can omit for now)
+
+No direct client inserts allowed.
+
+————————————————————————
+SERVER-SIDE NOTIFICATION CREATION
+
+Create SECURITY DEFINER functions to generate notifications.
+
+1. notify_expense_added(expense_id)
+- Triggered when a new expense is created
+- Notify all group members EXCEPT the actor
+- One notification per recipient
+
+2. notify_expense_reacted(expense_id, emoji)
+- Triggered when someone reacts
+- Notify only the expense owner
+- Do nothing if actor == owner
+
+3. notify_expense_commented(expense_id)
+- Triggered when someone comments
+- Notify only the expense owner
+- Do nothing if actor == owner
+
+You may:
+- Call these from server actions
+- OR attach them via database triggers
+Choose the approach that best fits the existing codebase and explain why.
+
+————————————————————————
+SERVER ACTIONS
+
+Create app/actions/notifications.ts
+
+Functions:
+- getNotifications()
+  - Returns latest 20 notifications for current user
+  - Ordered by created_at DESC
+- markNotificationRead(notificationId)
+- markAllNotificationsRead()
+
+Return shapes should be UI-friendly and typed.
+
+————————————————————————
+DATA SHAPE (FRONTEND)
+
+Each notification returned should include:
+- id
+- type
+- read (boolean)
+- created_at
+- actor_display_name
+- group_name (if applicable)
+- expense_description (if applicable)
+
+You may JOIN users/groups/expenses as needed.
+
+————————————————————————
+UI INTEGRATION (MINIMAL)
+
+Do NOT redesign UI.
+
+- Wire notification dropdown to real data
+- Show unread dot if any unread notifications exist
+- Clicking a notification:
+  - Marks it read
+  - Navigates to the relevant group/expense if applicable
+
+————————————————————————
+NON-GOALS (IMPORTANT)
+
+Do NOT:
+- Add real-time subscriptions
+- Add push notifications
+- Add email notifications
+- Add background jobs
+- Add notification preferences
+- Add pagination beyond latest 20
+
+————————————————————————
+DELIVERABLES
+
+- Notifications table + RLS
+- Notification creation logic
+- Server actions for reading/updating
+- Minimal UI wiring
+- Clean, documented SQL and TypeScript
+- No breaking changes
+
+Proceed step-by-step. Explain key decisions briefly where tradeoffs exist.
+
+
+## 17C - Notifications UI
+
+Goal
+
+Polish the notification and group activity UI to feel cohesive, modern, and consistent with existing reaction count patterns.
+
+This phase is UI-only (no database migrations, no new notification types).
+
+⸻
+
+Scope
+
+1. Notification Dropdown UI Improvements
+	•	Replace the plain unread red dot indicator inside the notifications dropdown with a small count pill, visually identical to the reaction-count pill used on expense items.
+	•	The pill should:
+	•	Be compact
+	•	Use the same shape, font size, and spacing as reaction counts
+	•	Contain:
+	•	A small red dot icon
+	•	The unread count number
+	•	This pill appears:
+	•	In the top-left corner of the notifications dropdown panel, where 'mark all as read' currently sits.  Mark all as read to move to the right side of that same section of the dropdown menu, in live with the count pill.  
+	•	Only when unread notifications > 0
+	•	The nav bell icon itself does not need a numeric badge (keep it clean).
+
+⸻
+
+2. Group List Activity Counters
+	•	Replace any existing red dot indicators on group list items with the same count pill component.
+	•	The number represents:
+	•	Count of unread notifications belonging to that group
+	•	Visual requirements:
+	•	Identical styling to:
+	•	Notification dropdown unread pill
+	•	Expense reaction count pill
+	•	Small, unobtrusive, aligned to the right of the group row
+	•	Groups with zero unread activity show no pill.
+
+
+3. Shared UI Component
+Create a reusable component:
+<ActivityCountPill />
+
+	•	Behavior:
+	•	If count === 0, render nothing
+	•	For notifications:
+	•	Show red dot + number
+	•	For reactions:
+	•	Preserve existing emoji + number behavior
+	•	This component should be used for:
+	•	Expense reactions
+	•	Notification unread count
+	•	Group unread activity count
+
+⸻
+
+4. Notification List Copy & Micro-Polish
+	•	Ensure notification copy is short, calm, and readable:
+	•	“Alex added an expense to Trip to NYC”
+	•	“Sam reacted to your expense 👍”
+	•	“Jamie commented on your expense”
+	•	Use subtle separators and spacing
+	•	Add:
+	•	Empty state: “No notifications yet”
+	•	Optional “Mark all as read” link styled as secondary action
+
+⸻
+
+Constraints
+	•	Do not add new tables or server actions
+	•	Do not change notification creation logic
+	•	Reuse existing data already fetched where possible
+	•	Prefer derived counts in UI over new queries
+	•	Keep styles subtle and consistent with existing design system
+
+⸻
+
+Deliverables
+	•	New shared <ActivityCountPill /> component
+	•	Updated notifications dropdown UI
+	•	Updated group list activity indicators
+	•	Clean, consistent visual language across reactions, notifications, and groups
+
 
 ## Architecture
 
@@ -828,15 +1074,6 @@ Today's tasks:
 
 TODO:
 
-Custom splitting
+- Add scheduled expenses (weekly, monthly etc)
+- Export expense list as text doc / excel table (don’t include reactions and  comments)
 
-- Step 1: Customize split - Choose which group members this expense applies to.
-- Step 2: 'Advanced' button or similar, within customize split section, dial in exact amounts each person owes for this expense. 
-
-  Example for step 1: 4 housemates have a group.  One stays home, the other 3 get a taxi together.  The person who paid for the taxi can select 'customize split' button - to the bottom right of the add expense box.  This then gives them a list of everyone's display names that are in the group with check boxes, and they can select who should be included in this split. 
-
-  Example for step 2: 4 housemates have a group and go out to dinner.  One did not get food at dinner, only $15 of drinks (we'll call them Martin).  The person paying the $250 bill adds $250 (can be done both on the main 'add expense' box before clicking customize -> advanced settings, or after clicking customize and advanced.).  The user paying then has every group members name with a box for amount under.  They input '$15' under Martin's name.  Settle then works out what the split would be for the rest of the group.  So 250 total, 15 for Martin, other three take the remaining $235 divided by 3.  
-
-
-
-  - Check total reset after any settlement is made, does this work?
