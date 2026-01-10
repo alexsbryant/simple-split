@@ -139,14 +139,6 @@ export const ExpenseForm = forwardRef<HTMLElement, ExpenseFormProps>(function Ex
       <form onSubmit={handleSubmit} className="p-4">
         <div className="flex flex-col gap-4">
           <Input
-            label="Description (optional)"
-            type="text"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            placeholder="What was it for?"
-          />
-
-          <Input
             label="Amount"
             type="number"
             value={amount}
@@ -158,6 +150,14 @@ export const ExpenseForm = forwardRef<HTMLElement, ExpenseFormProps>(function Ex
             min="0.01"
             step="0.01"
             error={amountError}
+          />
+
+          <Input
+            label="Description (optional)"
+            type="text"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            placeholder="What was it for?"
           />
 
           {/* Don't show split customizer for settlements */}
