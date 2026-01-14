@@ -1,7 +1,7 @@
 'use client'
 
-import { useState, useRef } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState, useRef, useEffect, useCallback } from 'react'
+import { useRouter, useSearchParams, usePathname } from 'next/navigation'
 import { User, Group, Expense } from '@/types'
 import { calculateBalances } from '@/lib/balance'
 import { BalanceSummary } from '@/components/balances/balance-summary'
@@ -41,6 +41,8 @@ export function SimpleSplitPage({
   creatorName,
 }: SimpleSplitPageProps) {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const pathname = usePathname()
   const formRef = useRef<HTMLElement>(null)
   const [editingExpense, setEditingExpense] = useState<Expense | null>(null)
   const [loading, setLoading] = useState(false)
@@ -52,9 +54,32 @@ export function SimpleSplitPage({
   const [editedName, setEditedName] = useState(group.name)
   const [nameError, setNameError] = useState<string | null>(null)
   const [updatingName, setUpdatingName] = useState(false)
+  const [scrollTarget, setScrollTarget] = useState<{
+    expenseId: string
+    highlight?: string
+    showComments?: boolean
+  } | null>(null)
 
   // Calculate balances from server data
   const balances = calculateBalances(initialExpenses, users)
+
+  // Parse query parameters for scroll target
+  useEffect(() => {
+    const scrollTo = searchParams.get('scrollTo')
+    if (scrollTo) {
+      setScrollTarget({
+        expenseId: scrollTo,
+        highlight: searchParams.get('highlight') || undefined,
+        showComments: searchParams.get('showComments') === 'true',
+      })
+    }
+  }, [searchParams])
+
+  // Callback to clear scroll target and clean URL
+  const handleScrollComplete = useCallback(() => {
+    setScrollTarget(null)
+    router.replace(pathname, { scroll: false })
+  }, [router, pathname])
 
   // Add new expense
   const handleAddExpense = async (data: {
@@ -355,6 +380,8 @@ export function SimpleSplitPage({
               onDelete={handleDeleteExpense}
               loading={loading}
               currency={group.currency}
+              scrollTarget={scrollTarget}
+              onScrollComplete={handleScrollComplete}
             />
           </div>
         </div>

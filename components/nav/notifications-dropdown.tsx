@@ -117,6 +117,33 @@ function NotificationIcon({ type }: { type: Notification['type'] }) {
   }
 }
 
+function buildNotificationUrl(notification: Notification): string {
+  const baseUrl = `/groups/${notification.groupId}`
+
+  // debt_settled or missing expenseId: no scroll params needed
+  if (notification.type === 'debt_settled' || !notification.expenseId) {
+    return baseUrl
+  }
+
+  // expense_added: scroll to expense only
+  if (notification.type === 'expense_added') {
+    return `${baseUrl}?scrollTo=${notification.expenseId}`
+  }
+
+  // expense_reacted: scroll to expense and highlight emoji
+  if (notification.type === 'expense_reacted') {
+    const emoji = notification.metadata.emoji
+    return `${baseUrl}?scrollTo=${notification.expenseId}&highlight=${encodeURIComponent(emoji || '')}`
+  }
+
+  // expense_commented: scroll to expense and expand comments
+  if (notification.type === 'expense_commented') {
+    return `${baseUrl}?scrollTo=${notification.expenseId}&showComments=true`
+  }
+
+  return baseUrl
+}
+
 type NotificationsDropdownProps = {
   onUnreadCountChange?: (count: number) => void
 }
@@ -155,9 +182,10 @@ export function NotificationsDropdown({
         onUnreadCountChange?.(newUnread)
       }
 
-      // Navigate to group if available
+      // Navigate to group with appropriate query params
       if (notification.groupId) {
-        router.push(`/groups/${notification.groupId}`)
+        const url = buildNotificationUrl(notification)
+        router.push(url)
       }
     })
   }

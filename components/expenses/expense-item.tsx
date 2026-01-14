@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, forwardRef } from 'react'
 import { Expense, User } from '@/types'
 import { formatCurrency, formatDate } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
@@ -19,30 +19,60 @@ interface ExpenseItemProps {
   disabled?: boolean
   currency: string
   settledTotal?: number | null
+  scrollTarget?: {
+    expenseId: string
+    highlight?: string
+    showComments?: boolean
+  } | null
 }
 
-export function ExpenseItem({
-  expense,
-  payerName,
-  isOwner,
-  currentUserId,
-  groupId,
-  users,
-  onEdit,
-  onDelete,
-  disabled = false,
-  currency,
-  settledTotal,
-}: ExpenseItemProps) {
-  const isSettlement = expense.isSettlement
-  const [commentsExpanded, setCommentsExpanded] = useState(false)
+export const ExpenseItem = forwardRef<HTMLDivElement, ExpenseItemProps>(
+  function ExpenseItem({
+    expense,
+    payerName,
+    isOwner,
+    currentUserId,
+    groupId,
+    users,
+    onEdit,
+    onDelete,
+    disabled = false,
+    currency,
+    settledTotal,
+    scrollTarget,
+  }, ref) {
+    const isSettlement = expense.isSettlement
+    const [commentsExpanded, setCommentsExpanded] = useState(false)
+    const [highlightEmoji, setHighlightEmoji] = useState<string | null>(null)
 
-  return (
-    <div
-      className={`glass-sm p-3 md:p-4 transition-all duration-300 hover:bg-[var(--item-hover)] ${
-        isSettlement ? 'border-l-[var(--positive)]' : ''
-      }`}
-    >
+    // Trigger highlight when scroll target includes highlight
+    useEffect(() => {
+      if (scrollTarget?.highlight) {
+        setHighlightEmoji(scrollTarget.highlight)
+
+        // Clear highlight after 3 seconds
+        const timer = setTimeout(() => {
+          setHighlightEmoji(null)
+        }, 3000)
+
+        return () => clearTimeout(timer)
+      }
+    }, [scrollTarget])
+
+    // Auto-expand comments if scroll target requests it
+    useEffect(() => {
+      if (scrollTarget?.showComments) {
+        setCommentsExpanded(true)
+      }
+    }, [scrollTarget])
+
+    return (
+      <div
+        ref={ref}
+        className={`glass-sm p-3 md:p-4 transition-all duration-300 hover:bg-[var(--item-hover)] ${
+          isSettlement ? 'border-l-[var(--positive)]' : ''
+        }`}
+      >
       {/* Mobile: 2-line compact layout, Desktop: horizontal layout */}
 
       {/* Line 1: Description + Reactions + Amount */}
@@ -74,6 +104,7 @@ export function ExpenseItem({
             groupId={groupId}
             currentUserId={currentUserId}
             reactions={expense.reactions ?? []}
+            highlightEmoji={highlightEmoji}
           />
           <span
             className={`font-semibold ${
@@ -151,6 +182,7 @@ export function ExpenseItem({
           users={users}
         />
       )}
-    </div>
-  )
-}
+      </div>
+    )
+  }
+)

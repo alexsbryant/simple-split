@@ -172,3 +172,13 @@
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
+
+/* Animation for highlighting reactions when scrolling to them */
+@keyframes highlight-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+}
+
+.highlight-pulse {
+  animation: highlight-pulse 0.6s ease-in-out 5;
+}

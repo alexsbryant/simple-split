@@ -21,6 +21,7 @@ interface ExpenseReactionsProps {
   groupId: string
   currentUserId: string
   reactions: ExpenseReaction[]
+  highlightEmoji?: string | null
 }
 
 function aggregateReactions(
@@ -52,6 +53,7 @@ export function ExpenseReactions({
   groupId,
   currentUserId,
   reactions,
+  highlightEmoji,
 }: ExpenseReactionsProps) {
   const [showPicker, setShowPicker] = useState(false)
   const [isPending, startTransition] = useTransition()
@@ -97,13 +99,13 @@ export function ExpenseReactions({
           disabled={isPending}
           className={`cursor-pointer transition-all duration-150 disabled:opacity-60 ${
             !hasCurrentUser ? 'hover:opacity-80' : ''
-          }`}
+          } ${highlightEmoji === emoji ? 'highlight-pulse' : ''}`}
         >
           <ActivityCountPill
             count={count}
             variant="reaction"
             emoji={emoji}
-            highlighted={hasCurrentUser}
+            highlighted={hasCurrentUser || highlightEmoji === emoji}
           />
         </button>
       ))}
