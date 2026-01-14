@@ -190,9 +190,9 @@ export function NotificationsDropdown({
       createdAt: data.created_at,
       actorDisplayName: data.actor?.[0]?.display_name || 'Unknown',
       groupId: data.group_id,
-      groupName: data.group?.name || null,
+      groupName: data.group?.[0]?.name || null,
       expenseId: data.expense_id,
-      expenseDescription: data.expense?.description || null,
+      expenseDescription: data.expense?.[0]?.description || null,
       metadata: data.metadata || {},
     }
 
