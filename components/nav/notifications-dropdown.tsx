@@ -188,11 +188,11 @@ export function NotificationsDropdown({
       type: data.type,
       read: data.read_at !== null,
       createdAt: data.created_at,
-      actorDisplayName: data.actor?.[0]?.display_name || 'Unknown',
+      actorDisplayName: data.actor?.display_name || 'Unknown',
       groupId: data.group_id,
-      groupName: data.group?.[0]?.name || null,
+      groupName: data.group?.name || null,
       expenseId: data.expense_id,
-      expenseDescription: data.expense?.[0]?.description || null,
+      expenseDescription: data.expense?.description || null,
       metadata: data.metadata || {},
     }
 

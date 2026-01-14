@@ -1080,6 +1080,7 @@ Today's tasks:
 
 TODO:
 
+- BUG FIX: Notifications now coming through as 'unknown' rather than screen name.
 - Add scheduled expenses (weekly, monthly etc)
 - Export expense list as text doc / excel table (don’t include reactions and  comments)
 
