@@ -44,6 +44,61 @@ export function Nav() {
     fetchUnreadCount()
   }, [])
 
+  // Setup Realtime subscription for notification count updates
+  useEffect(() => {
+    let channel: ReturnType<ReturnType<typeof createClient>['channel']> | null = null
+
+    async function setupRealtimeSubscription() {
+      const supabase = createClient()
+
+      // Get current user for filtering
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return
+
+      // Create channel for notification count updates
+      channel = supabase
+        .channel(`nav-notifications:${user.id}`)
+        .on(
+          'postgres_changes',
+          {
+            event: 'INSERT',
+            schema: 'public',
+            table: 'notifications',
+            filter: `user_id=eq.${user.id}`
+          },
+          () => {
+            setUnreadNotifications(prev => prev + 1)
+          }
+        )
+        .on(
+          'postgres_changes',
+          {
+            event: 'UPDATE',
+            schema: 'public',
+            table: 'notifications',
+            filter: `user_id=eq.${user.id}`
+          },
+          (payload) => {
+            // Check if it was marked as read (read_at changed from null to timestamp)
+            const oldReadAt = payload.old?.read_at
+            const newReadAt = payload.new?.read_at
+            if (oldReadAt === null && newReadAt !== null) {
+              setUnreadNotifications(prev => Math.max(0, prev - 1))
+            }
+          }
+        )
+        .subscribe()
+    }
+
+    setupRealtimeSubscription()
+
+    return () => {
+      if (channel) {
+        channel.unsubscribe()
+      }
+    }
+  }, [])
+
   // Determine active page
   const isOnGroupsPage = pathname === '/groups'
 

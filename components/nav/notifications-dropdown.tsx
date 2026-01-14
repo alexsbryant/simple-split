@@ -9,6 +9,7 @@ import {
   type Notification,
 } from '@/app/actions/notifications'
 import { ActivityCountPill } from '@/components/ui/activity-count-pill'
+import { createClient } from '@/lib/supabase'
 
 function formatTimeAgo(dateString: string): string {
   const date = new Date(dateString)
@@ -156,6 +157,83 @@ export function NotificationsDropdown({
   const [loading, setLoading] = useState(true)
   const [isPending, startTransition] = useTransition()
 
+  // Handle INSERT events from Realtime
+  const handleInsert = async (payload: any) => {
+    const newNotificationId = payload.new.id
+
+    // Fetch single notification with joins
+    const supabase = createClient()
+    const { data } = await supabase
+      .from('notifications')
+      .select(`
+        id,
+        type,
+        read_at,
+        created_at,
+        metadata,
+        group_id,
+        expense_id,
+        actor:users!actor_user_id(display_name),
+        group:groups(name),
+        expense:expenses(description)
+      `)
+      .eq('id', newNotificationId)
+      .single()
+
+    if (!data) return
+
+    // Transform to Notification type
+    const notification: Notification = {
+      id: data.id,
+      type: data.type,
+      read: data.read_at !== null,
+      createdAt: data.created_at,
+      actorDisplayName: data.actor?.display_name || 'Unknown',
+      groupId: data.group_id,
+      groupName: data.group?.name || null,
+      expenseId: data.expense_id,
+      expenseDescription: data.expense?.description || null,
+      metadata: data.metadata || {},
+    }
+
+    // Update state and unread count
+    setNotifications((prev) => {
+      // Avoid duplicates
+      if (prev.some((n) => n.id === notification.id)) {
+        return prev
+      }
+
+      // Prepend and keep only latest 20
+      const updated = [notification, ...prev].slice(0, 20)
+
+      // Calculate unread count from updated array (not stale closure)
+      const unreadCount = updated.filter((n) => !n.read).length
+      onUnreadCountChange?.(unreadCount)
+
+      return updated
+    })
+  }
+
+  // Handle UPDATE events from Realtime
+  const handleUpdate = (payload: any) => {
+    const updatedId = payload.new.id
+    const newReadAt = payload.new.read_at
+
+    setNotifications((prev) => {
+      const updated = prev.map((n) =>
+        n.id === updatedId
+          ? { ...n, read: newReadAt !== null }
+          : n
+      )
+
+      // Recalculate unread count
+      const unreadCount = updated.filter((n) => !n.read).length
+      onUnreadCountChange?.(unreadCount)
+
+      return updated
+    })
+  }
+
   useEffect(() => {
     async function load() {
       const result = await getNotifications()
@@ -167,6 +245,52 @@ export function NotificationsDropdown({
     }
     load()
   }, [onUnreadCountChange])
+
+  // Setup Realtime subscription for dropdown content updates
+  useEffect(() => {
+    let channel: ReturnType<ReturnType<typeof createClient>['channel']> | null = null
+
+    async function setupRealtimeSubscription() {
+      const supabase = createClient()
+
+      // Get current user for filtering
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return
+
+      // Create channel
+      channel = supabase
+        .channel(`notifications:${user.id}`)
+        .on(
+          'postgres_changes',
+          {
+            event: 'INSERT',
+            schema: 'public',
+            table: 'notifications',
+            filter: `user_id=eq.${user.id}`
+          },
+          handleInsert
+        )
+        .on(
+          'postgres_changes',
+          {
+            event: 'UPDATE',
+            schema: 'public',
+            table: 'notifications',
+            filter: `user_id=eq.${user.id}`
+          },
+          handleUpdate
+        )
+        .subscribe()
+    }
+
+    setupRealtimeSubscription()
+
+    return () => {
+      if (channel) {
+        channel.unsubscribe()
+      }
+    }
+  }, [])
 
   const handleNotificationClick = (notification: Notification) => {
     startTransition(async () => {
