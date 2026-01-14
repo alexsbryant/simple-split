@@ -182,17 +182,22 @@ export function NotificationsDropdown({
 
     if (!data) return
 
+    // Type assertions for Supabase join results (returns single objects, not arrays)
+    const actor = data.actor as unknown as { display_name: string } | null
+    const group = data.group as unknown as { name: string } | null
+    const expense = data.expense as unknown as { description: string } | null
+
     // Transform to Notification type
     const notification: Notification = {
       id: data.id,
       type: data.type,
       read: data.read_at !== null,
       createdAt: data.created_at,
-      actorDisplayName: data.actor?.[0]?.display_name || 'Unknown',
+      actorDisplayName: actor?.display_name || 'Unknown',
       groupId: data.group_id,
-      groupName: data.group?.[0]?.name || null,
+      groupName: group?.name || null,
       expenseId: data.expense_id,
-      expenseDescription: data.expense?.[0]?.description || null,
+      expenseDescription: expense?.description || null,
       metadata: data.metadata || {},
     }
 
