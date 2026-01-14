@@ -76,10 +76,9 @@ export async function getNotifications(): Promise<NotificationsResult> {
   }
 
   const notifications: Notification[] = data.map((n) => {
-    // Type helpers for Supabase join results
-    const actor = n.actor as unknown as { display_name: string } | null
-    const group = n.group as unknown as { name: string } | null
-    const expense = n.expense as unknown as { description: string } | null
+    const actor = n.actor?.[0] ?? null
+    const group = n.group?.[0] ?? null
+    const expense = n.expense?.[0] ?? null
 
     return {
       id: n.id,
