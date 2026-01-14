@@ -22,6 +22,8 @@ Designed for trips, shared households, and small groups who want to split costs 
 - Reactions and comments on expenses
 - Settings in-line in drop down menu
 - Customizable splitting (choose who in the group expense relates to / how much each person gets charged)
+- Notifications as a drop down, on click takes user to appropriate update
+- Real-time notification updates, red dot appears without refresh or page change
 
 ## Tech Stack
 
@@ -51,6 +53,6 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 
 ## Status
 
-**Version:** 1.4
+**Version:** 1.6
 
 Settle is feature-complete and stable. Future work may include more advanced currency selection, scheduling expenses, and mobile-native builds.

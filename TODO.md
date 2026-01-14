@@ -763,6 +763,12 @@ You are working on a Next.js + Supabase app called “Settle”.
 
 This phase introduces a notification system. Prioritize correctness, RLS safety, and future extensibility. Avoid overengineering and keep v1 intentionally minimal.
 
+## Phase 17C - Notifications push live + move to notification
+
+Users can see new notifications coming in via the red dot by the notification icon, live, without refreshing or changing page.
+
+When a user clicks a notification, the page scrolls to the appropriate updated or added item.  
+
 ————————————————————————
 GOAL
 
