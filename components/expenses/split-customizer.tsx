@@ -37,8 +37,6 @@ export function SplitCustomizer({
   isOpen,
   onOpenChange,
 }: SplitCustomizerProps) {
-  const [mode, setMode] = useState<SplitMode>('select')
-
   // Sort members with current user first
   const sortedMembers = [...members].sort((a, b) => {
     if (a.id === currentUserId) return -1
@@ -46,19 +44,43 @@ export function SplitCustomizer({
     return 0
   })
 
-  const [splits, setSplits] = useState<SplitData[]>(() =>
-    sortedMembers.map((m) => ({
+  const [mode, setMode] = useState<SplitMode>(() => {
+    if (initialSplits && initialSplits.length > 0) {
+      const amounts = initialSplits.map((s) => s.amount)
+      const allSame = amounts.every((a) => Math.abs(a - amounts[0]) < 0.01)
+      return allSame ? 'select' : 'custom'
+    }
+    return 'select'
+  })
+
+  const [splits, setSplits] = useState<SplitData[]>(() => {
+    if (initialSplits && initialSplits.length > 0) {
+      const splitUserIds = new Set(initialSplits.map((s) => s.userId))
+      return sortedMembers.map((m) => {
+        const existingSplit = initialSplits.find((s) => s.userId === m.id)
+        return {
+          userId: m.id,
+          displayName: m.displayName,
+          included: splitUserIds.has(m.id),
+          amount: round2(existingSplit?.amount ?? 0),
+        }
+      })
+    }
+    return sortedMembers.map((m) => ({
       userId: m.id,
       displayName: m.displayName,
       included: true,
       amount: round2(expenseAmount / members.length),
     }))
-  )
+  })
 
   // Track which users should receive the remainder (for custom mode)
   const [remainderRecipients, setRemainderRecipients] = useState<Set<string>>(
     () => new Set(sortedMembers.map((m) => m.id))
   )
+
+  // Track which splits the user has manually edited (for auto-adjust)
+  const [lockedSplits, setLockedSplits] = useState<Set<string>>(new Set())
 
   // Initialize from existing splits when editing
   useEffect(() => {
@@ -81,6 +103,7 @@ export function SplitCustomizer({
           }
         })
       )
+      setLockedSplits(new Set())
     }
   }, [initialSplits, members, currentUserId, onOpenChange])
 
@@ -141,6 +164,7 @@ export function SplitCustomizer({
 
   const handleAmountChange = (userId: string, amountStr: string) => {
     const parsed = parseFloat(amountStr) || 0
+    setLockedSplits((prev) => new Set(prev).add(userId))
     setSplits((prev) =>
       prev.map((s) =>
         s.userId === userId
@@ -162,6 +186,7 @@ export function SplitCustomizer({
       }))
     )
     setRemainderRecipients(new Set(sortedMembers.map((m) => m.id)))
+    setLockedSplits(new Set())
   }
 
   const handleToggleRemainderRecipient = (userId: string) => {
@@ -174,6 +199,56 @@ export function SplitCustomizer({
       }
       return next
     })
+  }
+
+  const handleAutoAdjust = () => {
+    const includedSplits = splits.filter((s) => s.included)
+    const locked = includedSplits.filter((s) => lockedSplits.has(s.userId))
+    const unlocked = includedSplits.filter((s) => !lockedSplits.has(s.userId))
+    const lockedTotal = locked.reduce((sum, s) => sum + s.amount, 0)
+    const remaining = round2(expenseAmount - lockedTotal)
+
+    // Fallback: locked amounts alone exceed total, or nothing unlocked — scale all proportionally
+    if (remaining <= 0 || unlocked.length === 0) {
+      const currentTotal = includedSplits.reduce((sum, s) => sum + s.amount, 0)
+      if (currentTotal <= 0) return
+      const scale = expenseAmount / currentTotal
+      const adjusted = splits.map((s) => ({
+        ...s,
+        amount: s.included ? round2(s.amount * scale) : 0,
+      }))
+      const diff = round2(expenseAmount - adjusted.reduce((sum, s) => sum + s.amount, 0))
+      if (diff !== 0) {
+        const last = [...adjusted].reverse().find((s) => s.included)
+        if (last) {
+          const idx = adjusted.findIndex((s) => s.userId === last.userId)
+          adjusted[idx] = { ...adjusted[idx], amount: round2(adjusted[idx].amount + diff) }
+        }
+      }
+      setSplits(adjusted)
+      return
+    }
+
+    // Distribute remaining among unlocked splits proportionally (equally if all zero)
+    const unlockedTotal = unlocked.reduce((sum, s) => sum + s.amount, 0)
+    const adjusted = splits.map((s) => {
+      if (!s.included || lockedSplits.has(s.userId)) return s
+      const share = unlockedTotal > 0
+        ? round2(remaining * (s.amount / unlockedTotal))
+        : round2(remaining / unlocked.length)
+      return { ...s, amount: share }
+    })
+    // Fix rounding on last unlocked split
+    const total = adjusted.reduce((sum, s) => sum + (s.included ? s.amount : 0), 0)
+    const diff = round2(expenseAmount - total)
+    if (diff !== 0) {
+      const lastUnlocked = [...adjusted].reverse().find((s) => s.included && !lockedSplits.has(s.userId))
+      if (lastUnlocked) {
+        const idx = adjusted.findIndex((s) => s.userId === lastUnlocked.userId)
+        adjusted[idx] = { ...adjusted[idx], amount: round2(adjusted[idx].amount + diff) }
+      }
+    }
+    setSplits(adjusted)
   }
 
   const handleSplitRemainder = () => {
@@ -255,6 +330,7 @@ export function SplitCustomizer({
           type="button"
           onClick={() => {
             setMode('select')
+            setLockedSplits(new Set())
             // Recalculate equal splits when switching to select mode
             const includedCount = splits.filter((s) => s.included).length
             if (includedCount > 0) {
@@ -381,8 +457,17 @@ export function SplitCustomizer({
             </div>
           ) : (
             // Negative remainder - over-allocated
-            <div className="text-sm text-[var(--negative)]">
-              Over by: {formatCurrency(Math.abs(remainder), currency)}
+            <div className="p-3 rounded-lg bg-[var(--bg-card)] border border-[var(--negative)]/30">
+              <div className="text-sm text-[var(--negative)] mb-2">
+                Over by {formatCurrency(Math.abs(remainder), currency)}
+              </div>
+              <button
+                type="button"
+                onClick={handleAutoAdjust}
+                className="text-sm px-3 py-1.5 rounded-lg bg-[var(--negative)]/10 text-[var(--negative)] hover:bg-[var(--negative)]/20 transition-colors"
+              >
+                Auto-adjust shares
+              </button>
             </div>
           )}
         </div>

@@ -44,6 +44,7 @@ export const ExpenseItem = forwardRef<HTMLDivElement, ExpenseItemProps>(
     const isSettlement = expense.isSettlement
     const [commentsExpanded, setCommentsExpanded] = useState(false)
     const [highlightEmoji, setHighlightEmoji] = useState<string | null>(null)
+    const [splitsExpanded, setSplitsExpanded] = useState(false)
 
     // Trigger highlight when scroll target includes highlight
     useEffect(() => {
@@ -120,6 +121,32 @@ export const ExpenseItem = forwardRef<HTMLDivElement, ExpenseItemProps>(
       {isSettlement && settledTotal !== null && settledTotal !== undefined && (
         <div className="mt-1.5 text-xs text-[var(--text-muted)]">
           Total settled: {formatCurrency(settledTotal, currency)}
+        </div>
+      )}
+
+      {/* Custom split indicator */}
+      {expense.splits && expense.splits.length > 0 && !isSettlement && (
+        <div className="mt-1.5">
+          <button
+            onClick={() => setSplitsExpanded(!splitsExpanded)}
+            className="text-xs text-[var(--text-muted)] hover:text-[var(--text-secondary)] transition-colors flex items-center gap-1"
+          >
+            Split customized {splitsExpanded ? '▲' : '▼'}
+          </button>
+          {splitsExpanded && (
+            <div className="mt-1.5 pl-1 space-y-0.5">
+              {expense.splits.map((split) => {
+                const user = users.find((u) => u.id === split.userId)
+                const name = split.userId === currentUserId ? 'You' : (user?.displayName ?? 'Unknown')
+                return (
+                  <div key={split.userId} className="text-xs text-[var(--text-secondary)] flex gap-2">
+                    <span>{name}:</span>
+                    <span>{formatCurrency(split.amount, currency)}</span>
+                  </div>
+                )
+              })}
+            </div>
+          )}
         </div>
       )}
 

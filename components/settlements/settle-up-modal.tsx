@@ -28,6 +28,10 @@ export function SettleUpModal({
 }: SettleUpModalProps) {
   const [settlingDebtId, setSettlingDebtId] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [paymentGuard, setPaymentGuard] = useState<{
+    url: string
+    debt: SimplifiedDebt
+  } | null>(null)
 
   if (!isOpen) return null
 
@@ -83,7 +87,7 @@ export function SettleUpModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70">
-      <div className="w-full max-w-md max-h-[80vh] overflow-hidden flex flex-col rounded-3xl border-[1.5px] border-[var(--border-default)] shadow-2xl bg-[var(--bg-base)]">
+      <div className="relative w-full max-w-md max-h-[80vh] overflow-hidden flex flex-col rounded-3xl border-[1.5px] border-[var(--border-default)] shadow-2xl bg-[var(--bg-base)]">
         {/* Header */}
         <div className="p-4 border-b border-[var(--border-subtle)] flex justify-between items-center">
           <h2 className="text-lg font-semibold" style={{ color: 'var(--text-title)' }}>Settle Up</h2>
@@ -176,7 +180,7 @@ export function SettleUpModal({
                           <div className="flex items-center gap-2 flex-wrap">
                             {showVenmo && (
                               <button
-                                onClick={() => openPaymentLink(getVenmoLink(debt.amount, `SimpleSplit: ${debt.toDisplayName}`))}
+                                onClick={() => setPaymentGuard({ url: getVenmoLink(debt.amount, `SimpleSplit: ${debt.toDisplayName}`), debt })}
                                 className="px-3 py-1.5 text-xs font-medium rounded-full bg-[#008CFF] text-white hover:brightness-110 transition-all cursor-pointer"
                               >
                                 Venmo
@@ -184,7 +188,7 @@ export function SettleUpModal({
                             )}
                             {showPayPal && (
                               <button
-                                onClick={() => openPaymentLink(getPayPalLink(debt.amount, currency))}
+                                onClick={() => setPaymentGuard({ url: getPayPalLink(debt.amount, currency), debt })}
                                 className="px-3 py-1.5 text-xs font-medium rounded-full bg-[#0070BA] text-white hover:brightness-110 transition-all cursor-pointer"
                               >
                                 PayPal
@@ -254,6 +258,45 @@ export function SettleUpModal({
             </>
           )}
         </div>
+
+        {/* Payment guard overlay */}
+        {paymentGuard && (
+          <div className="absolute inset-0 z-10 flex items-center justify-center p-6 bg-[var(--bg-base)] rounded-3xl">
+            <div className="w-full max-w-sm">
+              <h3 className="text-base font-semibold text-[var(--text-primary)] mb-2">Leave Settle?</h3>
+              <p className="text-sm text-[var(--text-secondary)] mb-4">
+                You&apos;re about to open Venmo/PayPal. Would you like to mark this as settled first?
+              </p>
+              <div className="flex flex-col gap-2">
+                <Button
+                  variant="primary"
+                  onClick={async () => {
+                    await handleSettleDebt(paymentGuard.debt)
+                    openPaymentLink(paymentGuard.url)
+                    setPaymentGuard(null)
+                  }}
+                >
+                  Mark as settled &amp; continue
+                </Button>
+                <Button
+                  variant="secondary"
+                  onClick={() => {
+                    openPaymentLink(paymentGuard.url)
+                    setPaymentGuard(null)
+                  }}
+                >
+                  Continue without settling
+                </Button>
+                <button
+                  onClick={() => setPaymentGuard(null)}
+                  className="text-sm text-[var(--text-muted)] hover:text-[var(--text-secondary)] py-1"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Footer */}
         {!isAllSettled && (

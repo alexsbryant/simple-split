@@ -1010,6 +1010,37 @@ Deliverables
 	•	Clean, consistent visual language across reactions, notifications, and groups
 
 
+## Phase 18 – Split & Settlement UX Polish — Complete ✓
+
+Four targeted UX improvements to the custom split and settlement flow, plus a hydration bug fix.
+
+### Custom Split Visibility on Expense Card
+`components/expenses/expense-item.tsx`
+
+Expense cards now show a collapsible "Split customized ▼" indicator when an expense has non-equal splits. Clicking it expands an inline breakdown showing each member's name and amount. Collapses on second click. Expenses with equal splits show nothing.
+
+### Edit Expense — Preserve Custom Split Input
+`components/expenses/split-customizer.tsx`
+
+Fixed a flash-of-equal-splits bug when opening the edit modal for a custom-split expense. Moved `initialSplits` logic from a `useEffect` into lazy `useState` initialisers for both `mode` and `splits`, so the correct mode and values are shown immediately on first render.
+
+### "Over by" Auto-Adjust — Honour Manually-Entered Amounts
+`components/expenses/split-customizer.tsx`
+
+Replaced the plain "Over by $X" error message with an **Auto-adjust shares** button. The button tracks which amounts the user manually typed (`lockedSplits` Set) and only redistributes the excess among the auto-filled splits, leaving manually-entered values unchanged. Falls back to proportional scaling of all splits if locked amounts alone exceed the total.
+
+### Venmo / PayPal Exit Guard
+`components/settlements/settle-up-modal.tsx`
+
+Clicking Venmo or PayPal in the Settle Up modal now shows an in-modal overlay instead of immediately opening the payment app. The overlay offers three options: mark as settled and continue, continue without settling, or cancel. Background is solid `var(--bg-base)` matching the modal.
+
+### Hydration Error Fix
+`app/layout.tsx`
+
+Added `suppressHydrationWarning` to the `<html>` element to silence the React hydration mismatch caused by the FOUC-prevention theme script adding `class="dark"` before React hydrates.
+
+---
+
 ## Architecture
 
 ### Current Data Flow
@@ -1076,11 +1107,9 @@ npx tsc --noEmit # Type check
 
 *DO NOT DELETE WHEN UPDATING TODO.md - CLAUDE CAN RESPOND TO IDEAS IN THIS SECTION DURING PLAN MODE AND DISCUSS ITEMS WITH ME, BUT DO NOT EDIT OR DELETE*
 
-Today's tasks:
-
 TODO:
 
-- BUG FIX: Notifications now coming through as 'unknown' rather than screen name.
+Future
 - Add scheduled expenses (weekly, monthly etc)
 - Export expense list as text doc / excel table (don’t include reactions and  comments)
 
