@@ -1,5 +1,5 @@
-Current Phase: v1.1 Complete
-Last Updated: 2025-12-29
+Current Phase: v1.2 Complete
+Last Updated: 2026-04-15
 
 
 ######################################################
@@ -265,6 +265,57 @@ Goal: Show red dot next to groups with unseen activity.
 - `updateLastSeen()` server action called on group page load
 - Red dot shows when `last_activity > last_seen_at`
 - Dot clears after visiting the group
+
+⸻
+
+
+✅ Phase 13A: Forgot Password (COMPLETE)
+
+Goal: Allow users to recover access via a password reset email.
+
+**What was implemented:**
+- "Forgot password?" link on the login form (low-emphasis, below password field)
+- `/forgot-password` page with email input and neutral confirmation message
+- Supabase `resetPasswordForEmail()` with dynamic `redirectTo` (uses `window.location.origin` so local and production both work correctly)
+- No email enumeration — same success message regardless of whether the account exists
+- "Back to login" link on both default and success states
+
+**Key files:**
+| File | Purpose |
+|------|---------|
+| `app/forgot-password/page.tsx` | Forgot password page |
+| `components/auth/auth-form.tsx` | "Forgot password?" link added to login mode |
+
+**Supabase configuration required:**
+- Authentication → URL Configuration → Redirect URLs:
+  - `http://localhost:3000/reset-password`
+  - `https://settleit.xyz/reset-password`
+
+⸻
+
+✅ Phase 13B: Reset & Change Password (COMPLETE)
+
+Goal: Allow users to set a new password via email link, and change their password from within settings.
+
+**What was implemented:**
+- `/reset-password` page handles Supabase PKCE flow (`?code=` query param via `exchangeCodeForSession`)
+- React StrictMode double-invocation handled: if code exchange fails, falls back to `getSession()` to check if first invocation already succeeded
+- Four render states: verifying → invalid/expired link → form → success
+- After successful update, user is signed out and redirected to login (prevents bypassing login via active session)
+- Inline change password section added to all three settings locations:
+  - `components/settings/settings-form.tsx` (settings page card)
+  - `components/nav/settings-dropdown.tsx` (desktop profile dropdown)
+  - `components/nav.tsx` (mobile hamburger menu)
+- Matches existing display name inline edit pattern exactly: `••••••••` + pencil icon → two password inputs → Save/Cancel
+- Validation: min 6 characters, passwords must match
+
+**Key files:**
+| File | Purpose |
+|------|---------|
+| `app/reset-password/page.tsx` | Reset password page (email link flow) |
+| `components/settings/settings-form.tsx` | Inline change password (settings page) |
+| `components/nav/settings-dropdown.tsx` | Inline change password (desktop dropdown) |
+| `components/nav.tsx` | Inline change password (mobile nav) |
 
 ⸻
 
