@@ -26,6 +26,12 @@ export function Nav() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
+  const [isEditingPassword, setIsEditingPassword] = useState(false)
+  const [newPassword, setNewPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
+  const [passwordError, setPasswordError] = useState<string | null>(null)
+  const [passwordSuccess, setPasswordSuccess] = useState(false)
+  const [passwordLoading, setPasswordLoading] = useState(false)
   const [unreadNotifications, setUnreadNotifications] = useState(0)
 
   // Callback for notifications dropdown to update unread count
@@ -198,6 +204,30 @@ export function Nav() {
     setIsEditingName(false)
     setError(null)
     setSuccess(false)
+  }
+
+  // Handle password change (mobile menu)
+  const handlePasswordSave = async () => {
+    setPasswordError(null)
+    if (newPassword.length < 6) { setPasswordError('At least 6 characters'); return }
+    if (newPassword !== confirmPassword) { setPasswordError('Passwords do not match'); return }
+    setPasswordLoading(true)
+    const supabase = createClient()
+    const { error } = await supabase.auth.updateUser({ password: newPassword })
+    setPasswordLoading(false)
+    if (error) { setPasswordError(error.message); return }
+    setPasswordSuccess(true)
+    setIsEditingPassword(false)
+    setNewPassword('')
+    setConfirmPassword('')
+    setTimeout(() => setPasswordSuccess(false), 3000)
+  }
+
+  const handlePasswordCancel = () => {
+    setIsEditingPassword(false)
+    setNewPassword('')
+    setConfirmPassword('')
+    setPasswordError(null)
   }
 
   return (
@@ -415,6 +445,60 @@ export function Nav() {
                           <button
                             onClick={handleCancelEdit}
                             disabled={loading}
+                            className="px-2 py-1 text-xs rounded border border-[var(--border-default)] text-[var(--text-primary)] hover:bg-[var(--nav-button-hover)] cursor-pointer transition-colors"
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Password */}
+                  <div>
+                    <label className="block text-xs text-[var(--text-muted)] mb-1">Password</label>
+                    {!isEditingPassword ? (
+                      <div className="flex items-center gap-2">
+                        <p className="text-xs text-[var(--text-secondary)]">••••••••</p>
+                        <button
+                          onClick={() => setIsEditingPassword(true)}
+                          className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors cursor-pointer"
+                          aria-label="Change password"
+                        >
+                          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                          </svg>
+                        </button>
+                        {passwordSuccess && <p className="text-xs text-[var(--positive)]">Updated!</p>}
+                      </div>
+                    ) : (
+                      <div className="space-y-2">
+                        <input
+                          type="password"
+                          value={newPassword}
+                          onChange={(e) => { setNewPassword(e.target.value); setPasswordError(null) }}
+                          placeholder="New password"
+                          className="w-full px-2 py-1 text-xs rounded border border-[var(--border-default)] bg-[var(--bg-input)] text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent)]"
+                        />
+                        <input
+                          type="password"
+                          value={confirmPassword}
+                          onChange={(e) => { setConfirmPassword(e.target.value); setPasswordError(null) }}
+                          placeholder="Confirm password"
+                          className="w-full px-2 py-1 text-xs rounded border border-[var(--border-default)] bg-[var(--bg-input)] text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent)]"
+                        />
+                        {passwordError && <p className="text-xs text-[var(--negative)]">{passwordError}</p>}
+                        <div className="flex gap-2">
+                          <button
+                            onClick={handlePasswordSave}
+                            disabled={passwordLoading || !newPassword || !confirmPassword}
+                            className="px-2 py-1 text-xs rounded bg-[var(--accent)] text-white hover:opacity-90 disabled:opacity-50 cursor-pointer transition-opacity"
+                          >
+                            {passwordLoading ? 'Saving...' : 'Save'}
+                          </button>
+                          <button
+                            onClick={handlePasswordCancel}
+                            disabled={passwordLoading}
                             className="px-2 py-1 text-xs rounded border border-[var(--border-default)] text-[var(--text-primary)] hover:bg-[var(--nav-button-hover)] cursor-pointer transition-colors"
                           >
                             Cancel

@@ -71,6 +71,16 @@ export function AuthForm({ redirectTo }: AuthFormProps = {}) {
         required
         minLength={6}
       />
+      {mode === 'login' && (
+        <div className="flex justify-end -mt-2">
+          <a
+            href="/forgot-password"
+            className="text-xs text-[var(--text-muted)] hover:text-[var(--text-secondary)] transition-colors"
+          >
+            Forgot password?
+          </a>
+        </div>
+      )}
       {mode === 'signup' && (
         <Input
           label="Display Name"
